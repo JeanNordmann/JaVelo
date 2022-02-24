@@ -88,7 +88,7 @@ public final class Math2 {
      * @return produit scalaire de V1 ^ V2
      */
     public static double dotProduct(double uX, double uY, double vX, double vY) {
-        return uX*vY-uY*uX;
+        return uX*vX+vY*uY;
     }
 
     /**
@@ -107,7 +107,7 @@ public final class Math2 {
      * @param uY coordonnée Y
      * @return norme
      */
-    public static double Norm(double uX, double uY) {
+    public static double norm(double uX, double uY) {
         return Math.pow(squaredNorm(uX,uY),0.5);
     }
 
@@ -124,7 +124,7 @@ public final class Math2 {
      */
     public static double projectionLength(double aX, double aY,
                   double bX, double bY, double pX, double pY) {
-        return (dotProduct(aX - pX, aY - pY, aX - bX, aY - bY)/Norm(aX - bX, aY - bY));
+        return (dotProduct(aX - pX, aY - pY, aX - bX, aY - bY)/norm(aX - bX, aY - bY));
     }
 
 }
