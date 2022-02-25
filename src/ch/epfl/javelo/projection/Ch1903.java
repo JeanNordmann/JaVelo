@@ -75,6 +75,4 @@ public final class Ch1903 {
         return Math.toRadians(phi*100.0/36.0);
     }
 
-
-
 }

@@ -1,5 +1,11 @@
 package ch.epfl.javelo.projection;
 
+import ch.epfl.javelo.Preconditions;
+import ch.epfl.javelo.Math2;
+
+import static ch.epfl.javelo.Math2.norm;
+import static ch.epfl.javelo.Math2.squaredNorm;
+
 /**
  * 1.3.7
  * PointCh
@@ -18,7 +24,7 @@ public record PointCh(double e, double n) {
      */
 
     public PointCh {
-        if (!SwissBounds.containsEN(e, n)) throw new IllegalArgumentException();
+        Preconditions.checkArgument(SwissBounds.containsEN(e, n));
     }
 
     /**
@@ -28,7 +34,7 @@ public record PointCh(double e, double n) {
      */
 
     public double squaredDistanceTo(PointCh that) {
-        return Math.pow(that.e - this.e, 2) + Math.pow(that.n - this.n, 2);
+        return squaredNorm(that.e - this.e,that.n - this.n);
     }
 
     /**
@@ -38,7 +44,7 @@ public record PointCh(double e, double n) {
      */
 
     public double distanceTo(PointCh that) {
-        return Math.sqrt(squaredDistanceTo(that));
+        return norm(that.e - this.e,that.n - this.n);
     }
 
     /**

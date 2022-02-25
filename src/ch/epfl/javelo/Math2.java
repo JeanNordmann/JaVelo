@@ -98,7 +98,7 @@ public final class Math2 {
      * @return norme au carré
      */
     public static double squaredNorm(double uX, double uY) {
-        return uX*uX+uY*uY;
+        return Math.pow(norm(uX,uY),2);
     }
 
     /**
@@ -108,7 +108,7 @@ public final class Math2 {
      * @return norme
      */
     public static double norm(double uX, double uY) {
-        return Math.pow(squaredNorm(uX,uY),0.5);
+        return Math.hypot(uX, uY);
     }
 
     /**
