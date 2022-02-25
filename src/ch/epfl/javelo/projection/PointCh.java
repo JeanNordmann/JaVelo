@@ -1,8 +1,6 @@
 package ch.epfl.javelo.projection;
 
 import ch.epfl.javelo.Preconditions;
-import ch.epfl.javelo.Math2;
-
 import static ch.epfl.javelo.Math2.norm;
 import static ch.epfl.javelo.Math2.squaredNorm;
 
