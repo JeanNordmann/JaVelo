@@ -24,7 +24,7 @@ public final class WebMercator {
      * @return la coordonnée x de la projection d'un point se trouvant à la longitude lon, donnée en radians.
      */
     public static double x(double lon) {
-        return 0;
+        return (1/(2*Math.PI)) * (lon + Math.PI);
     }
 
     /**
@@ -41,8 +41,8 @@ public final class WebMercator {
      * @param x
      * @return la longitude, en radians, d'un point dont la projection se trouve à la coordonnée x donnée.
      */
-    double lon(double x){
-        return 0;
+    public static double lon(double x) {
+        return 2*Math.PI*x - Math.PI;
     }
 
     /**
@@ -50,7 +50,8 @@ public final class WebMercator {
      * @param y
      * @return la latitude, en radians, d'un point dont la projection se trouve à la coordonnée y donnée.
      */
-    double lat(double y){
-        return 0;
+
+    public static double lat(double y) {
+        return Math.atan(Math.sinh(Math.PI - 2*Math.PI*y));
     }
 }
