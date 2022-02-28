@@ -8,10 +8,11 @@ package ch.epfl.javelo;
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
  */
+
 public final class Math2 {
 
     /**
-     * constructeur privé, car cette class n'est pas censée être instantiable.
+     * Constructeur privé, car cette classe n'est pas censée être instantiable.
      */
     private Math2() {}
 
