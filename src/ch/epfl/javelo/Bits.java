@@ -52,8 +52,4 @@ public final class Bits {
         int shiftValue = 32 - length - start;
         return value << shiftValue >>> 32 - length;
     }
-    //qui fait la même chose que la méthode précédente, à deux différences près : d'une part, la valeur extraite est interpretée de manière non signée, et d'autre part l'exception IllegalArgumentException est également levée si length vaut 32.
-
-
-
 }
