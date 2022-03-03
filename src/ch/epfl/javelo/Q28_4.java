@@ -1,5 +1,14 @@
 package ch.epfl.javelo;
-
+/**
+ * 2.3.4
+ * Q28_4
+ *
+ * Classe utile pour convertir des nombres entre la représentation Q28.4
+ * et d'autres représentations
+ *
+ * @author Jean Nordmann (344692)
+ * @author Maxime Ducourau (329544)
+ */
 public final class Q28_4 {
 
     /**
@@ -35,6 +44,6 @@ public final class Q28_4 {
      */
 
     public static float asFloat(int q28_4) {
-        return Math.scalb(q28_4,-4);
+        return (float)Math.scalb(q28_4,-4);
     }
 }

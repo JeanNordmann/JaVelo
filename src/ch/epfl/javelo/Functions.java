@@ -18,13 +18,26 @@ public final class Functions {
     private Functions() {
     }
 
-/*    public static DoubleUnaryOperator constant(double y) {
-        return Constant(y);
-    }*/
+    public static DoubleUnaryOperator constant(double y) {
+        return new Constant(y);
+    }
+
+    /**
+     * Retourne une fonction obtenue par interpolation linéaire entre les échantillons samples, espacés
+     * régulièrement et couvrant la plage allant de 0 à xMax ; lève IllegalArgumentException si le tableau
+     * samples contient moins de deux éléments, ou si xMax est inférieur ou égal à 0.
+     * @param samples Tableau d'échantillons desquels on veut faire l'interpolation.
+     * @param xMax Valeur jusqu'à laquelle la plage est couverte.
+     * @return
+     */
+
+    public static DoubleUnaryOperator sampled(float[] samples, double xMax) throws IllegalArgumentException {
+        return new Sampled(samples, xMax);
+    }
 
     private static final class Constant implements DoubleUnaryOperator {
 
-        private double constant;
+        private final double constant;
 
         public Constant(double y) {
             this.constant = y;
@@ -32,7 +45,7 @@ public final class Functions {
 
         @Override
         public double applyAsDouble(double x) {
-            return x;
+            return constant;
         }
 
     }

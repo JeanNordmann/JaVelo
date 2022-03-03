@@ -3,7 +3,7 @@ package ch.epfl.javelo.projection;
 import org.junit.jupiter.api.Test;
 import ch.epfl.javelo.projection.PointWebMercator.*;
 
-import static ch.epfl.javelo.projection.PointWebMercator.PointWebMercatorof;
+import static ch.epfl.javelo.projection.PointWebMercator.of;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PointWebMercatorTest {
@@ -28,7 +28,7 @@ public class PointWebMercatorTest {
 
     @Test
     void putedeZoomLevel() {
-        PointWebMercator p = PointWebMercatorof(19,69561772 , 47468099);
+        PointWebMercator p = of(19,69561772 , 47468099);
         PointWebMercator pp = new PointWebMercator(0.518275214444,0.3536648947499);
         double expectedX = 0.518275214444;
         double expectedY = 0.3536648947499;

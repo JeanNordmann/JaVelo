@@ -1,47 +1,78 @@
-/*
+
+
 package ch.epfl.javelo.data;
 
-public class record AttributeSet {
+import ch.epfl.javelo.Preconditions;
 
-    */
-/**
-     * long bits, qui représente le contenu de l'ensemble au moyen d'un bit par valeur possible ;
-     * c'est-à-dire que le bit d'index b de cette valeur vaut 1 si et seulement si l'attribut b est
-     * contenu dans l'ensemble.
-     *//*
+import java.util.StringJoiner;
 
+public record AttributeSet(long bits) {
 
-*/
-/*Le constructeur compact de AttributeSet lève une IllegalArgumentException si la valeur passée
- au constructeur contient un bit à 1 qui ne correspond à aucun attribut valide.*//*
+    /**
+     * 2.3.7
+     * AttributeSet
+     *
+     * Classe utile pour représenter les différents attributs OpenStreetMap attachés
+     * aux éléments (nœuds, voies et relation) qui seront utiles au projet.
+     *
+     * @author Jean Nordmann (344692)
+     * @author Maxime Ducourau (329544)
+     *
+     * Le constructeur compact de AttributeSet lève une IllegalArgumentException si la valeur passée
+     * au constructeur contient un bit à 1 qui ne correspond à aucun attribut valide.
+     */
 
+    public AttributeSet {
+        Preconditions.checkArgument(bits < Math.scalb(1, Attribute.COUNT));
+    }
 
-    */
-/**
+    /**
      *
      * @param attributes
      * @return un ensemble contenant uniquement les attributs donnés en argument
-     *//*
+     */
+    public static AttributeSet of(Attribute... attributes) {
+        long masque = 0 ;
+        for (int i = 0; i < attributes.length; i++) {
+            long masqueTemporaire = 1L << attributes[i].ordinal() ;
+            masque = masque | masqueTemporaire ;
+        }
+        return new AttributeSet(masque);
+    }
 
-    public static AttributeSet of(Attribute... attributes){}
 
-    */
-/**
+    /**
      *
      * @param attribute
      * @return vrai ssi l'ensemble récepteur (this) contient l'attribut donné
-     *//*
-
-    boolean contains(Attribute attribute){return false}
-
     */
-/**
+    public boolean contains(Attribute attribute) {
+        long masque = 1L << attribute.ordinal() ;
+        if(masque== (masque & bits) ) return true ;
+        else return false ;
+    }
+
+
+
+    /**
      *
      * @param that
      * @return vrai ssi l'intersection de l'ensemble récepteur (this) avec celui
      * passé en argument (that) n'est pas vide.
-     *//*
+     */
+    public boolean intersects(AttributeSet that){
+        return (bits & that.bits) != 0;
+    }
 
-    boolean intersects(AttributeSet that){return false}
+    @Override
+    public String toString() {
+        StringJoiner chaine = new StringJoiner(",", "{", "}");
+        for (Attribute attribut : Attribute.ALL) {
+            long masque = 1L << attribut.ordinal()  ;
+            if((masque & bits) != 0) chaine.add(attribut.toString());
+        }
+        return chaine.toString();
+    }
 }
-*/
+
+

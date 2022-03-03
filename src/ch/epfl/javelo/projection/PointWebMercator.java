@@ -6,6 +6,7 @@ import ch.epfl.javelo.Preconditions;
  * 2.3.2
  * PointWebMercator
  *
+ * classe utile pour représenter un point dans le système Web Mercator
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
  */
@@ -28,7 +29,7 @@ public record PointWebMercator(double x, double y) {
      * @return le point dont les coordonnées sont x et y au niveau de zoom zoomLevel
      */
 
-    public static PointWebMercator PointWebMercatorof(int zoomLevel, double x, double y) {
+    public static PointWebMercator of(int zoomLevel, double x, double y) {
         Preconditions.checkArgument(0<=zoomLevel&&zoomLevel<=20);
         return new PointWebMercator( Math.scalb(x, -8 - zoomLevel), Math.scalb(y, -8 - zoomLevel));
     }
