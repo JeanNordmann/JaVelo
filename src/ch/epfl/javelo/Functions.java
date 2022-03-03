@@ -5,8 +5,11 @@ import java.util.function.DoubleUnaryOperator;
 /**
  * 2.3.5
  * Functions
+ *
  * Classe contenant des méthodes permettant de créer des objets représentant des fonctions mathématiques des réels
  * vers les réels.
+ * @author Jean Nordmann (344692)
+ * @author Maxime Ducourau (329544)
  */
 
 public final class Functions {
@@ -48,6 +51,30 @@ public final class Functions {
             return constant;
         }
 
+    }
+
+    private static final class Sampled implements DoubleUnaryOperator {
+
+        private final float[] samples;
+        private final double xMax;
+
+        public Sampled(float[] samples, double xMax) {
+            this.samples = samples;
+            this.xMax = xMax;
+        }
+
+        @Override
+        public double applyAsDouble(double x) {
+            Preconditions.checkArgument(samples.length >= 2 && xMax > 0);
+            x = Math2.clamp(0, x, xMax);
+
+            double spaceBetween2Points = xMax/(samples.length-1);
+            int firstPoint = (int)Math.floor(x/spaceBetween2Points);
+            int secondPoint = (int)Math.ceil(x/spaceBetween2Points);
+            if (firstPoint == secondPoint) return samples[firstPoint];
+            return Math2.interpolate(samples[firstPoint], samples[secondPoint], x/spaceBetween2Points - firstPoint);
+
+        }
     }
 
 }
