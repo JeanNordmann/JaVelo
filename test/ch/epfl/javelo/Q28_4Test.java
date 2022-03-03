@@ -9,18 +9,6 @@ public class Q28_4Test {
     double DELTA = 1e-7;
 
     @Test
-    void ofIntWork() {
-        int expected = 1;
-        int expected1 = 3;
-
-        assertEquals(expected, Q28_4.ofInt(16),DELTA);
-        assertEquals(expected, Q28_4.ofInt(17),DELTA);
-        assertEquals(expected, Q28_4.ofInt(31),DELTA);
-        assertEquals(expected1, Q28_4.ofInt(50),DELTA);
-    }
-
-
-    @Test
     void asDoubleWork() {
         double expected = 6.25;
         assertEquals(expected, Q28_4.asDouble(100),DELTA);
@@ -29,5 +17,26 @@ public class Q28_4Test {
     void asFloatWork() {
         float expected = 6.25f;
         assertEquals(expected, Q28_4.asDouble(100),DELTA);
+    }
+
+    @Test
+    public void ofIntOnKnownValues() {
+        var actual1 = Q28_4.ofInt(1);
+        var expected1 = 16;
+        assertEquals(actual1, expected1);
+    }
+
+    @Test
+    public void asDoubleOnKnownValues() {
+        var actual1 = Q28_4.asDouble(1);
+        var expected1 = 1.0/16.0;
+        assertEquals(expected1, actual1);
+    }
+
+    @Test
+    public void asFloatOnKnownValues() {
+        var actual1 = Q28_4.asFloat(1);
+        var expected1 = 1.0f/16.0f;
+        assertEquals(expected1, actual1);
     }
 }
