@@ -25,7 +25,7 @@ public final class Bits {
      * @param value Vecteur de 32 bits initial
      * @param start Position du bit de début
      * @param length Longueur à extraire
-     * @return Le bit extrait en signée
+     * @return Le bit extrait en version signée
      */
 
     public static int extractSigned(int value, int start, int length) {
@@ -35,15 +35,14 @@ public final class Bits {
         return value << shiftValue >> 32 - length;
     }
 
-
     /**
-     * méthode qui extrait du vecteur de 32 bits value la plage de length bits commençant au bit d'index start,
+     * Méthode qui extrait du vecteur de 32 bits value la plage de length bits commençant au bit d'index start,
      * qu'elle interprète comme une VALEUR NON-SIGNEE en complément à deux, ou lève une exception si la plage
      * est invalide.
      * @param value Vecteur de 32 bits initial
      * @param start Position du bit de début
      * @param length Longueur à extraire
-     * @return Le bit extrait en non signée
+     * @return Le bit extrait en version non signée
      */
 
     public static int extractUnsigned(int value, int start, int length) {

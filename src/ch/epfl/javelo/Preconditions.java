@@ -12,6 +12,11 @@ package ch.epfl.javelo;
  */
 
 public final class Preconditions {
+
+    /**
+     * Constructeur privé, car cette classe n'est pas censée être instantiable.
+     */
+
     private Preconditions() {}
 
     /**

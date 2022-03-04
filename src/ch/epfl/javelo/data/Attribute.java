@@ -3,8 +3,12 @@ package ch.epfl.javelo.data;
 import java.util.List;
 
 /**
- * 2.3.6 Enum fourni dans une archives
+ * 2.3.6
+ * Attribute
+ *
+ * Type énuméré fourni dans une archive.
  */
+
 public enum Attribute {
     // See https://wiki.openstreetmap.org/wiki/Map_features
     // and https://taginfo.openstreetmap.ch/

@@ -6,7 +6,7 @@ import ch.epfl.javelo.Math2;
  * 2.3.1
  * WebMercator
  *
- * classe utile pour convertir entre les coordonnées WGS 84 et les coordonnées Web Mercator.
+ * Classe utile pour convertir entre les coordonnées WGS 84 et les coordonnées Web Mercator.
  * (WebMercator ne valident pas leurs arguments, ce travail étant laissé aux classes représentant les points.)
  *
  * @author Jean Nordmann (344692)
@@ -37,7 +37,7 @@ public final class WebMercator {
      */
 
     public static double y(double lat) {
-        return (1/(Math.PI*2))*(Math.PI - Math2.asinh(Math.tan(lat)));
+        return (1/(Math.PI*2)) * (Math.PI - Math2.asinh(Math.tan(lat)));
     }
 
     /**

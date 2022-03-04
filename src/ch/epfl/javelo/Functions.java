@@ -21,6 +21,12 @@ public final class Functions {
     private Functions() {
     }
 
+    /**
+     *
+     * @param y Valeur constante désirée.
+     * @return Une fonction constante, dont la valeur est toujours y.
+     */
+
     public static DoubleUnaryOperator constant(double y) {
         return new Constant(y);
     }
@@ -38,13 +44,26 @@ public final class Functions {
         return new Sampled(samples, xMax);
     }
 
+    /**
+     * Classe privée Constant imbriquée dans la classe Functions
+     */
+
     private static final class Constant implements DoubleUnaryOperator {
+        /**
+         * Attribut contenant la valeur de la constante de la fonction.
+         */
 
         private final double constant;
 
         public Constant(double y) {
             this.constant = y;
         }
+
+        /**
+         *
+         * @param x Valeur en abscisse de laquelle on souhaite obtenir l'ordonnée.
+         * @return La valeur y correspondant à l'abscisse x de la fonction, dans ce cas une constante.
+         */
 
         @Override
         public double applyAsDouble(double x) {
@@ -53,7 +72,16 @@ public final class Functions {
 
     }
 
+    /**
+     * Classe privée Sampled imbriquée dans la classe Functions
+     */
+
     private static final class Sampled implements DoubleUnaryOperator {
+
+        /**
+         * Attributs samples (tableau d'échantillons), et xMax (valeur maximale jusqu'à laquelle la
+         * plage va).
+         */
 
         private final float[] samples;
         private final double xMax;
@@ -63,15 +91,24 @@ public final class Functions {
             this.xMax = xMax;
         }
 
+        /**
+         *
+         * @param x Valeur en abscisse de laquelle on souhaite l'interpolation linéaire.
+         * @return L'interpolation linéaire voulue, en fonction des points échantillonnés, répartis
+         * régulièrement entre 0 et xMax.
+         */
+
         @Override
         public double applyAsDouble(double x) {
             Preconditions.checkArgument(samples.length >= 2 && xMax > 0);
             x = Math2.clamp(0, x, xMax);
 
-            double spaceBetween2Points = xMax/(samples.length-1);
+            double spaceBetween2Points = xMax / (samples.length-1);
             int firstPoint = (int)Math.floor(x/spaceBetween2Points);
             int secondPoint = (int)Math.ceil(x/spaceBetween2Points);
+
             if (firstPoint == secondPoint) return samples[firstPoint];
+
             return Math2.interpolate(samples[firstPoint], samples[secondPoint], x/spaceBetween2Points - firstPoint);
 
         }

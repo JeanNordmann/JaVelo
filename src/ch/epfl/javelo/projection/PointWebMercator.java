@@ -6,7 +6,8 @@ import ch.epfl.javelo.Preconditions;
  * 2.3.2
  * PointWebMercator
  *
- * classe utile pour représenter un point dans le système Web Mercator
+ * Classe utile pour représenter un point dans le système Web Mercator
+ *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
  */
@@ -18,7 +19,7 @@ public record PointWebMercator(double x, double y) {
      */
 
     public PointWebMercator {
-        Preconditions.checkArgument((0<=x&&x<=1)&&(0<=y&&y<=1));
+        Preconditions.checkArgument(0 <= x && x <= 1 && 0 <= y && y <= 1);
     }
 
     /**
@@ -30,8 +31,8 @@ public record PointWebMercator(double x, double y) {
      */
 
     public static PointWebMercator of(int zoomLevel, double x, double y) {
-        Preconditions.checkArgument(0<=zoomLevel&&zoomLevel<=20);
-        return new PointWebMercator( Math.scalb(x, -8 - zoomLevel), Math.scalb(y, -8 - zoomLevel));
+        Preconditions.checkArgument(0 <= zoomLevel && zoomLevel <= 20);
+        return new PointWebMercator(Math.scalb(x, -8 - zoomLevel), Math.scalb(y, -8 - zoomLevel));
     }
 
     /**
@@ -40,7 +41,7 @@ public record PointWebMercator(double x, double y) {
      * @return le point Web Mercator correspondant au point du système de coordonnées suisse donné.
      */
     public static PointWebMercator ofPointCh(PointCh pointCh) {
-        return new PointWebMercator(WebMercator.x(pointCh.lon()),WebMercator.y(pointCh.lat()));
+        return new PointWebMercator(WebMercator.x(pointCh.lon()), WebMercator.y(pointCh.lat()));
     }
 
     /**
@@ -49,7 +50,7 @@ public record PointWebMercator(double x, double y) {
      * @return la coordonnée x au niveau de zoom donné
      */
     public double xAtZoomLevel(int zoomLevel) {
-        Preconditions.checkArgument(0<=zoomLevel&&zoomLevel<=20);
+        Preconditions.checkArgument(0 <= zoomLevel && zoomLevel <= 20);
         return Math.scalb(x, 8 + zoomLevel);
     }
 
@@ -59,7 +60,7 @@ public record PointWebMercator(double x, double y) {
      * @return la coordonnée y au niveau de zoom donné
      */
     public double yAtZoomLevel(int zoomLevel) {
-        Preconditions.checkArgument(0<=zoomLevel&&zoomLevel<=20);
+        Preconditions.checkArgument(0 <= zoomLevel && zoomLevel <= 20);
         return Math.scalb(y, 8 + zoomLevel);
     }
 
@@ -84,6 +85,7 @@ public record PointWebMercator(double x, double y) {
      * @return le point de coordonnées suisses se trouvant à la même position que le récepteur (this)
      * ou null si ce point n'est pas dans les limites de la Suisse définies par SwissBounds.
      */
+
     public PointCh toPointCh() {
         if (!SwissBounds.containsEN(Ch1903.e(lon(),lat()),Ch1903.n(lon(),lat()))) return null;
         return new PointCh(Ch1903.e(lon(),lat()),Ch1903.n(lon(),lat()));
