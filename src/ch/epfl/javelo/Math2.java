@@ -70,7 +70,7 @@ public final class Math2 {
 
     public static double clamp(double min, double v, double max) {
         Preconditions.checkArgument(max >= min);
-        if (min < v & v < max) return v;
+        if (min < v && v < max) return v;
         if (min >= v) {
             return min;
         } else return max;

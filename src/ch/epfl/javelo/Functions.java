@@ -87,6 +87,7 @@ public final class Functions {
         private final double xMax;
 
         public Sampled(float[] samples, double xMax) {
+            Preconditions.checkArgument(samples.length >= 2 && xMax > 0);
             this.samples = samples;
             this.xMax = xMax;
         }
@@ -103,7 +104,7 @@ public final class Functions {
             if(x >= xMax) return samples[samples.length-1];
             if(x <= 0) return samples[0];
 
-            double spaceBetween2Points = xMax / (samples.length-1);
+            double spaceBetween2Points = xMax / (samples.length - 1);
             int firstPoint = (int)Math.floor(x/spaceBetween2Points);
             int secondPoint = (int)Math.ceil(x/spaceBetween2Points);
 
