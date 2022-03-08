@@ -30,7 +30,7 @@ public final class Bits {
 
     public static int extractSigned(int value, int start, int length) {
         Preconditions.checkArgument((0 <= start && start <= 31 &&
-                0 <= length && length <= 31 && (start + length) <= 32));
+                0 <= length && length <= 32 && (start + length) <= 32));
         int shiftValue = 32 - length - start;
         return value << shiftValue >> 32 - length;
     }

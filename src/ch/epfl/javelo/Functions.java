@@ -100,8 +100,8 @@ public final class Functions {
 
         @Override
         public double applyAsDouble(double x) {
-            Preconditions.checkArgument(samples.length >= 2 && xMax > 0);
-            x = Math2.clamp(0, x, xMax);
+            if(x >= xMax) return samples[samples.length-1];
+            if(x <= 0) return samples[0];
 
             double spaceBetween2Points = xMax / (samples.length-1);
             int firstPoint = (int)Math.floor(x/spaceBetween2Points);

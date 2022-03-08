@@ -8,8 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GraphNodesTest {
 
+    //TODO faire les 4 tests par classe
     @Test
-    void Graph1() {
+    void GraphNodeWorkOnBasicValue() {
         IntBuffer b = IntBuffer.wrap(new int[]{
                 2_764_547 << 4,
                 1_258_478 << 4,
@@ -30,25 +31,36 @@ public class GraphNodesTest {
 
         assertEquals(0x1832, ns.edgeId(1, 1));
         assertEquals(0x1833, ns.edgeId(1, 2));
-    }
 
-    @Test
-    void Graph2() {
-
-        byte a= 0;
-        System.out.println((byte)(a+128));
-        IntBuffer b = IntBuffer.wrap(new int[]{
+        IntBuffer c = IntBuffer.wrap(new int[]{
                 2_600_000 << 4,
                 1_200_000 << 4,
                 0x2_000_1234
         });
-        GraphNodes ns = new GraphNodes(b);
-        assertEquals(1, ns.count());
-        assertEquals(2_600_000, ns.nodeE(0));
-        assertEquals(1_200_000, ns.nodeN(0));
-        assertEquals(2, ns.outDegree(0));
-        assertEquals(0x1234, ns.edgeId(0, 0));
-        assertEquals(0x1235, ns.edgeId(0, 1));
+        GraphNodes ns2 = new GraphNodes(c);
+        assertEquals(1, ns2.count());
+        assertEquals(2_600_000, ns2.nodeE(0));
+        assertEquals(1_200_000, ns2.nodeN(0));
+        assertEquals(2, ns2.outDegree(0));
+        assertEquals(0x1234, ns2.edgeId(0, 0));
+        assertEquals(0x1235, ns2.edgeId(0, 1));
+
+    }
+
+    /*@Test
+    void GraphNodeWorkOnTrivialValue() {
+        IntBuffer a = IntBuffer.wrap(new int[]{
+
+        })
+
+
+    }*/
+
+    @Test
+    void GraphNodesTestOnLimitValues() {
+        IntBuffer a = IntBuffer.wrap(new int[]{
+
+        });
 
     }
 }

@@ -40,10 +40,10 @@ public record GraphSectors(ByteBuffer buffer) {
      */
 
     public List<Sector> sectorsInArea(PointCh center, double distance) {
-        PointCh coinGaucheBasZoneDesSecteursPCH = new PointCh(Math2.clamp(SwissBounds.MIN_E,center.e() - distance,SwissBounds.MAX_E),
-                Math2.clamp(SwissBounds.MIN_N,center.n() - distance,SwissBounds.MAX_N));
-        PointCh coinDroiteHautZoneDesSecteursPCH = new PointCh(Math2.clamp(SwissBounds.MIN_E,center.e() + distance,SwissBounds.MAX_E),
-                Math2.clamp(SwissBounds.MIN_N,center.n() + distance,SwissBounds.MAX_N));
+        PointCh coinGaucheBasZoneDesSecteursPCH = new PointCh((int)Math2.clamp(SwissBounds.MIN_E,center.e() - distance,SwissBounds.MAX_E),
+                (int)Math2.clamp(SwissBounds.MIN_N,center.n() - distance,SwissBounds.MAX_N));
+        PointCh coinDroiteHautZoneDesSecteursPCH = new PointCh((int)Math2.clamp(SwissBounds.MIN_E,center.e() + distance,SwissBounds.MAX_E),
+                (int)Math2.clamp(SwissBounds.MIN_N,center.n() + distance,SwissBounds.MAX_N));
         List<Sector> sectorList = new ArrayList<>();
         for (double i = coinGaucheBasZoneDesSecteursPCH.e() ; i < coinDroiteHautZoneDesSecteursPCH.e() ; i += SECTOR_WIDTH) {
             for (double j = coinGaucheBasZoneDesSecteursPCH.n(); j < coinDroiteHautZoneDesSecteursPCH.n() ; j += SECTOR_HEIGHT) {
@@ -52,10 +52,10 @@ public record GraphSectors(ByteBuffer buffer) {
                 byte sectorY = (byte) Math.floor((j - SwissBounds.MIN_N) / SECTOR_HEIGHT);
                 Preconditions.checkArgument(sectorX >=0 && sectorY >= 0);
 
-                sectorList.add(new Sector(buffer.getInt(OFFSET_BYTES * (sectorX + 128 * sectorY)), buffer.getShort(OFFSET_BYTES * (sectorX + 128 * sectorY)+Integer.BYTES)));
+                sectorList.add(new Sector(buffer.getInt(OFFSET_BYTES * (sectorX + 128 * sectorY)), Short.toUnsignedInt(buffer.getShort(OFFSET_BYTES * (sectorX + 128 * sectorY)+Integer.BYTES))));
             }
         }
-        //TODO check 3.3.3.1 toUnsignedInt à mettre qqpart nan?
+        //TODO faire les Test
 
         return sectorList;
     }

@@ -18,6 +18,8 @@ import java.util.StringJoiner;
  * au constructeur contient un bit à 1 qui ne correspond à aucun attribut valide.
  */
 
+//TODO corriger cette classe ainsi que les autres test qui n'ont pas passé l'étape 2
+
 public record AttributeSet(long bits) {
 
     /**
@@ -26,7 +28,7 @@ public record AttributeSet(long bits) {
      */
 
     public AttributeSet {
-        Preconditions.checkArgument(bits <  Math.scalb(1, Attribute.COUNT) && bits >= 0);
+        Preconditions.checkArgument(bits < (1L << Attribute.COUNT) && bits >= 0);
     }
 
     /**
