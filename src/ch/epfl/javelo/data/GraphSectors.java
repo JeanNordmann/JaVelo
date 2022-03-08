@@ -26,8 +26,8 @@ public record GraphSectors(ByteBuffer buffer) {
     private static final double SECTOR_HEIGHT = SwissBounds.HEIGHT/128.0;
     private static final int OFFSET_BYTES = (Integer.BYTES + Short.BYTES);
 
-
-    private record Sector(int startNodeId, int endNodeId) {
+//TODO étais en privé, passé publique pour les tests
+    public record Sector(int startNodeId, int endNodeId) {
 
     }
 
@@ -39,25 +39,26 @@ public record GraphSectors(ByteBuffer buffer) {
      * au point donné et de côté égal au double (!) de la distance donnée.
      */
 
-    public List<Sector> sectorsInArea(PointCh center, double distance) {
-        PointCh coinGaucheBasZoneDesSecteursPCH = new PointCh((int)Math2.clamp(SwissBounds.MIN_E,center.e() - distance,SwissBounds.MAX_E),
-                (int)Math2.clamp(SwissBounds.MIN_N,center.n() - distance,SwissBounds.MAX_N));
-        PointCh coinDroiteHautZoneDesSecteursPCH = new PointCh((int)Math2.clamp(SwissBounds.MIN_E,center.e() + distance,SwissBounds.MAX_E),
-                (int)Math2.clamp(SwissBounds.MIN_N,center.n() + distance,SwissBounds.MAX_N));
+
+public List<Sector> sectorsInArea(PointCh center, double distance) {
+
+        int xmin = Math2.clamp(0, (int)((center.e()-distance-SwissBounds.MIN_E)/SECTOR_WIDTH) ,127);
+        int xmax = Math2.clamp(0, (int)((center.e()+distance-SwissBounds.MIN_E)/SECTOR_WIDTH) ,127);
+        int ymin = Math2.clamp(0, (int)((center.n()-distance-SwissBounds.MIN_N)/SECTOR_HEIGHT) ,127);
+        int ymax = Math2.clamp(0, (int)((center.n()+distance-SwissBounds.MIN_N)/SECTOR_HEIGHT) ,127);
+
         List<Sector> sectorList = new ArrayList<>();
-        for (double i = coinGaucheBasZoneDesSecteursPCH.e() ; i < coinDroiteHautZoneDesSecteursPCH.e() ; i += SECTOR_WIDTH) {
-            for (double j = coinGaucheBasZoneDesSecteursPCH.n(); j < coinDroiteHautZoneDesSecteursPCH.n() ; j += SECTOR_HEIGHT) {
+            for (double j = ymin; j <= ymax ; j++) {
+                for (double i = xmin ; i <= xmax ; i++) {
 
-                byte sectorX = (byte) Math.floor((i - SwissBounds.MIN_E) / SECTOR_WIDTH);
-                byte sectorY = (byte) Math.floor((j - SwissBounds.MIN_N) / SECTOR_HEIGHT);
-                Preconditions.checkArgument(sectorX >=0 && sectorY >= 0);
+                int sectorIndexOfFirstByte = OFFSET_BYTES * (int) (i + 128 * j);
+                int startNode = buffer.getInt(sectorIndexOfFirstByte);
+                int endNode = startNode + Short.toUnsignedInt(buffer.getShort(sectorIndexOfFirstByte+Integer.BYTES));
 
-                sectorList.add(new Sector(buffer.getInt(OFFSET_BYTES * (sectorX + 128 * sectorY)), Short.toUnsignedInt(buffer.getShort(OFFSET_BYTES * (sectorX + 128 * sectorY)+Integer.BYTES))));
+                sectorList.add(new Sector(startNode,endNode));
             }
         }
-        //TODO faire les Test
-
         return sectorList;
     }
-
 }
+
