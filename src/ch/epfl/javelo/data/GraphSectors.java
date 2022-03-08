@@ -13,13 +13,14 @@ import ch.epfl.javelo.projection.PointCh;
  * 3.3.3
  * GraphSectors
  *
- * Classe permettant le tableau contenant les 16384 secteurs de JaVelo
+ * Enregistrement représentant le tableau contenant les 16384 secteurs de JaVelo
  *
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
  *
  */
+
 public record GraphSectors(ByteBuffer buffer) {
 
     private static final double SECTOR_WIDTH = SwissBounds.WIDTH/128.0;

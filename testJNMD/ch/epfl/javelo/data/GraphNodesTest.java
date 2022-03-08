@@ -63,7 +63,15 @@ public class GraphNodesTest {
     @Test
     void edgeIdTestOnLimitValues() {
         IntBuffer a = IntBuffer.wrap(new int[]{
+                2_600_000 << 4,
+                1_200_000 << 4,
+                0x2_FFF_1234
+        });
 
+        GraphNodes rs3 = new GraphNodes(a);
+
+        assertThrows(AssertionError.class, ()-> {
+            rs3.edgeId(-897, -23);
         });
 
     }
