@@ -49,8 +49,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return Retourne l'identité du noeud destination de l'arête d'identité donnée.
      */
 
-    public static int targetNodeId(int edgeId) {
-        return 0;
+    public int targetNodeId(int edgeId) {
+        return Bits.extractUnsigned(edgesBuffer.getInt(edgeId * EDGE_INTS + OFFSET_WAY_AND_ID), 0, 31);
     }
 
     /**
@@ -59,8 +59,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return Retourne la longueur en mètres de l'arête d'identité donnée.
      */
 
-    public static double length(int edgeId) {
-        return 0;
+    public double length(int edgeId) {
+        return Q28_4.asDouble(Bits.extractUnsigned(edgesBuffer.getShort
+                (edgeId * EDGE_INTS + OFFSET_EDGE_LENGTH), 0, 16));
     }
 
     /**
@@ -69,8 +70,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return Retourne le dénivelé positif, en mètres, de l'arête d'identité donnée.
      */
 
-    public static double elevationGain(int edgeId) {
-        return 0;
+    public double elevationGain(int edgeId)  {
+        return Q28_4.asDouble(Bits.extractUnsigned(edgesBuffer.getShort
+                (edgeId * EDGE_INTS + OFFSET_ASCENDING_ELEVATION), 0, 16));
     }
 
     /**
@@ -79,8 +81,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return Retourne si l'arête donnée possède un profil.
      */
 
-    public static boolean hasProfile(int edgeId) {
-        return true;
+    public boolean hasProfile(int edgeId) {
+        int profilByte = Bits.extractUnsigned(profileIds.get(edgeId), 30,2);
+        return profilByte !=0;
     }
 
     /**
@@ -89,8 +92,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return Retourne le tableau des échantillons du profil de l'arête d'identité
      * donnée, qui est vide si l'arête ne possède pas de profil.
      */
+    public float[] profileSamples(int edgeId) {
+        int numberSamples = 1 + Math2.ceilDiv((int)(length(edgeId)) , Q28_4.ofInt(2));
 
-    public static float[] profileSamples(int edgeId) {
         return null;
     }
 
@@ -101,7 +105,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * d'identité donnée.
      */
 
-    public static int attributesIndex(int edgeId) {
+    public int attributesIndex(int edgeId) {
         return 0;
     }
 }

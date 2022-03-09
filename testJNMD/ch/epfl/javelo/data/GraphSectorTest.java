@@ -18,18 +18,18 @@ public class GraphSectorTest {
         //création d'un Buffer rempli aléatoirement
         ByteBuffer graphSector = ByteBuffer.allocate(98304);
         int a = 0;
-        List<Sector> excpectedGS = new ArrayList<Sector>();
+        List<Sector> expectedGS = new ArrayList<Sector>();
 
         for (int i = 0; i < 16384; i++) {
             graphSector.putInt(a);
             int b = (int) Math.round(Math.random()*10);
             a +=b;
             graphSector.putShort((short)b);
-            excpectedGS.add(new Sector(a - b, a));
+            expectedGS.add(new Sector(a - b, a));
         }
         GraphSectors gss = new GraphSectors(graphSector);
         List<Sector> actualSector = gss.sectorsInArea(new PointCh(2500000, 1100000),1000000);
-        assertEquals(excpectedGS, actualSector); ;
+        assertEquals(expectedGS, actualSector); ;
     }
 
     @Test
