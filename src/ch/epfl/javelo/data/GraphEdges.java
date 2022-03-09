@@ -1,5 +1,9 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Bits;
+import ch.epfl.javelo.Math2;
+import ch.epfl.javelo.Q28_4;
+
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -18,6 +22,13 @@ import java.nio.ShortBuffer;
 
 public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
 
+
+    private static final int OFFSET_WAY_AND_ID = 0;
+    private static final int OFFSET_EDGE_LENGTH = OFFSET_WAY_AND_ID + Integer.BYTES;
+    private static final int OFFSET_ASCENDING_ELEVATION = OFFSET_EDGE_LENGTH + Short.BYTES;
+    private static final int OFFSET_ID_OSM_ATTRIBUTE = OFFSET_ASCENDING_ELEVATION + Short.BYTES;
+    private static final int EDGE_INTS = OFFSET_ID_OSM_ATTRIBUTE + Short.BYTES;
+
     /**
      *
      * @param edgeId Identité de l'arête donnée.
@@ -25,8 +36,11 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * de la voie OSM dont elle provient.
      */
 
-    public static boolean isInverted(int edgeId) {
-        return true;
+    public boolean isInverted(int edgeId) {
+        byte isInvertedBit = (byte) Bits.extractUnsigned(
+                edgesBuffer.getInt(edgeId * EDGE_INTS + OFFSET_WAY_AND_ID),
+                31,1);
+        return 1 == isInvertedBit ;
     }
 
     /**

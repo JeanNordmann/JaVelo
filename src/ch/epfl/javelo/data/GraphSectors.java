@@ -28,9 +28,7 @@ public record GraphSectors(ByteBuffer buffer) {
     private static final int OFFSET_BYTES = (Integer.BYTES + Short.BYTES);
 
 //TODO étais en privé, passé publique pour les tests
-    public record Sector(int startNodeId, int endNodeId) {
-
-    }
+    public record Sector(int startNodeId, int endNodeId) {}
 
     /**
      *
