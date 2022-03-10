@@ -168,6 +168,7 @@ public class GraphEdgesTest {
                 (short) 0,
                 (short) 6720, (short) 0b0010_0100_0100_1111,
                 (short) 0b1010_0100_0100_1111,
+                (byte) 0b1010_0100
 
 
 
@@ -182,7 +183,7 @@ public class GraphEdgesTest {
         assertEquals(15.0, edges.elevationGain(0));
         assertEquals(8239, edges.attributesIndex(0));
         float[] expectedSamples = new float[]{
-                420f, 422.25f, 427.1875f, 415.6875f
+                421.4375f, 427.1875f, 422.25f, 420f
         };
         assertArrayEquals(expectedSamples, edges.profileSamples(0));
     }
