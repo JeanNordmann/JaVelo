@@ -23,8 +23,8 @@ import ch.epfl.javelo.projection.PointCh;
 
 public record GraphSectors(ByteBuffer buffer) {
 
-    private static final double SECTOR_WIDTH = SwissBounds.WIDTH/128.0;
-    private static final double SECTOR_HEIGHT = SwissBounds.HEIGHT/128.0;
+    private static final double SECTOR_WIDTH = SwissBounds.WIDTH / 128.0;
+    private static final double SECTOR_HEIGHT = SwissBounds.HEIGHT / 128.0;
     private static final int OFFSET_BYTES = (Integer.BYTES + Short.BYTES);
 
 //TODO étais en privé, passé publique pour les tests

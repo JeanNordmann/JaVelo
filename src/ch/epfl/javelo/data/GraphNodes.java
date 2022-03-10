@@ -11,7 +11,9 @@ import static ch.epfl.javelo.Bits.extractUnsigned;
  * GraphNodes
  *
  * Classe permettant de représenter le tableau de tous les nœuds du
- * graphe JaVelo. Il possède un seul attribut
+ * graphe JaVelo. Il possède un seul attribut : le Buffer permettant de
+ * compresser les données, ainsi que les méthodes nous permettant d'y
+ * accéder de façon lisible.
  *
  *
  * @author Jean Nordmann (344692)
@@ -20,6 +22,10 @@ import static ch.epfl.javelo.Bits.extractUnsigned;
  */
 
 public record GraphNodes(IntBuffer buffer) {
+
+    /**
+     * Diverses constantes de décalage pour accéder aux données du Buffer.
+     */
 
     private static final int OFFSET_E = 0;
     private static final int OFFSET_N = OFFSET_E + 1;
@@ -31,7 +37,7 @@ public record GraphNodes(IntBuffer buffer) {
      */
 
     public int count() {
-        return buffer.capacity()/NODE_INTS;
+        return buffer.capacity() / NODE_INTS;
     }
 
     /**
