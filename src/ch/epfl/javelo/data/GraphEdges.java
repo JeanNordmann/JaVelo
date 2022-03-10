@@ -8,6 +8,8 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import static java.lang.Math.scalb;
+
 /**
  * 3.3.4
  * GraphEdges
@@ -93,9 +95,67 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * donnée, qui est vide si l'arête ne possède pas de profil.
      */
     public float[] profileSamples(int edgeId) {
-        int numberSamples = 1 + Math2.ceilDiv((int)(length(edgeId)) , Q28_4.ofInt(2));
+        if (!hasProfile(edgeId)) return new float[]{};
+        int numberSamples = 1 + Math2.ceilDiv((int)(scalb(length(edgeId),4)) , Q28_4.ofInt(2));
+        float[] toReturn = new float[numberSamples];
+        int firstAltiId = Bits.extractUnsigned(profileIds.get(edgeId), 0, 30);
+        byte profilType = (byte) Bits.extractUnsigned(profileIds.get(edgeId), 30,2);
+        switch (profilType) {
+            case (byte) 1 :
+                for (int i = 0; i < numberSamples; i++) {
+                    toReturn[i] = asFloat(elevations.get(firstAltiId + i));
+                }
+                break;
+            case (byte) 2 :
+                int shortsToRead2 = numberSamples/2;
+                toReturn[0] = asFloat(elevations.get(firstAltiId));
+                for (int i = 1; i <= shortsToRead2 ; i++) {
+                    short extractShort = elevations.get(firstAltiId + i);
+                    toReturn[2 * i - 1] = toReturn[2 * (i-1)] + Bits.extractSigned(Short.toUnsignedInt(extractShort), 8, 8);
+                    if (numberSamples - 1 < 2 * i) break; // pour éviter OutOfBoundException si les 8 derniers bits du shorts sont inutiles
+                    toReturn[2 * i] = toReturn[2 * i - 1] + Bits.extractSigned(Short.toUnsignedInt(extractShort), 0, 8);
+                }
+                break;
+            case (byte) 3 :
+                //shortsToRead4 = nbr de shorts à lire après le premier short, sachant qu'un short contient 4 nibble.
+                int shortsToRead4 = (numberSamples + 2)/4;
+                toReturn[0] = asFloat(elevations.get(firstAltiId));
+                for (int i = 1; i <= shortsToRead4 ; i++) {
+                    short extractShort = elevations.get(firstAltiId + i);
 
-        return null;
+                    toReturn[4 * i - 3] = toReturn[4 * (i-1) ] + Bits.extractSigned(Short.toUnsignedInt(extractShort), 12, 4);
+                    //break si n=2 s=1
+                    //break si n=6 s=2
+                    if (numberSamples + 1 < 4 * i) break; // pour éviter OutOfBoundException si les 8 derniers bits du shorts sont inutiles
+                    toReturn[4 * i - 2] = toReturn[4 * i - 3] + Bits.extractSigned(Short.toUnsignedInt(extractShort), 8, 4);
+                    //break si n=3 s=1
+                    //break si n=7 s=2
+                    if (numberSamples < 4 * i) break; // pour éviter OutOfBoundException si les 8 derniers bits du shorts sont inutiles
+                    toReturn[4 * i - 1] = toReturn[4 * i - 2] + Bits.extractSigned(Short.toUnsignedInt(extractShort), 4, 4);
+                    //break si n=4 s =1
+                    //break si n=8 s =2
+                    if (numberSamples - 1 < 4 * i) break; // pour éviter OutOfBoundException si les 8 derniers bits du shorts sont inutiles
+                    toReturn[4 * i] = toReturn[4 * i - 1] + Bits.extractSigned(Short.toUnsignedInt(extractShort), 0, 4);
+                }
+        }
+        if (isInverted(edgeId)) {
+            float[] temporaire = new float[numberSamples];
+            for (int i = 0; i < numberSamples; i++) {
+                temporaire[i] = toReturn[numberSamples - 1 - i];
+            }
+            return temporaire;
+        }
+        return toReturn;
+    }
+
+    /**
+     * 
+     * @param q12_4 Nombre de type float donné
+     * @return La valeur de type float correspondant à la valeur Q12.4 donnée
+     */
+    
+    private static float asFloat(short q12_4) {
+        return scalb((float)q12_4,-4);
     }
 
     /**

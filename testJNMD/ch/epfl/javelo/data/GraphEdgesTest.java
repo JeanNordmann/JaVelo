@@ -45,14 +45,9 @@ public class GraphEdgesTest {
                 (byte) 0b10000000, (byte) 0b0110_1001,(byte) 0b1101_1011,(byte) 0b1000_0111,0,0,0,0,0,0,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,0,0,0
         }), IntBuffer.allocate(100), ShortBuffer.allocate(100));
-        assertEquals(0b0111_1111_1111_1111_1111_1111_1111_1111,graphEdges.targetNodeId(1));
-        assertEquals(0b111_1111_1111_1111_1111_1111_1111_1111,graphEdges.targetNodeId(1));
-        assertEquals(0b0111_1111_0000_0000_0000_0000_0000_0000, graphEdges.targetNodeId(2));
-        assertEquals(0b111_1111_0000_0000_0000_0000_0000_0000, graphEdges.targetNodeId(2));
-        assertEquals(0b000_0000_0110_1001_1101_1011_1000_0111, graphEdges.targetNodeId(6));
-        assertEquals(0b0000_0110_1001_1101_1011_1000_0111, graphEdges.targetNodeId(6));
-        assertEquals(0b0110_1001_1101_1011_1000_0111, graphEdges.targetNodeId(6));
-        assertEquals(0b110_1001_1101_1011_1000_0111, graphEdges.targetNodeId(6));
+        assertEquals(0,graphEdges.targetNodeId(1));
+        assertEquals(-16777216, graphEdges.targetNodeId(2));
+        assertEquals(-6937480, graphEdges.targetNodeId(6));
     }
 
     @Test
@@ -100,8 +95,8 @@ public class GraphEdgesTest {
         });
 
         ShortBuffer elevations = ShortBuffer.wrap(new short[]{
-                (short) 0,
-                (short) 0x180C, (short) 0xFEFF,
+                (short) 0b0,
+                (short) 6156, (short) 0xFEFF,
                 (short) 0xFFFE, (short) 0xF000
         });
 
