@@ -117,11 +117,10 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 for (int i = 1; i <= shortsToRead2 ; i++) {
 
                     int extractShort =  Short.toUnsignedInt(elevations.get(firstAltiId + i));
-                    /*short extractShort2 = elevations.get(firstAltiId + i);*/
                     float firstShift = asFloat16(Bits.extractSigned(extractShort, 8, 8));
                     toReturn[2 * i - 1] = toReturn[2 * (i-1)] + firstShift;
-
-                    if (numberSamples - 1 < 2 * i) break; // pour éviter OutOfBoundException si les 8 derniers bits du shorts sont
+                    // pour éviter OutOfBoundException si les 8 derniers bits du shorts sont
+                    if (numberSamples - 1 < 2 * i) break;
                     float secondShift = asFloat16(Bits.extractSigned(extractShort, 0, 8));
                     toReturn[2 * i] = toReturn[2 * i - 1] + secondShift;
                 } break;
