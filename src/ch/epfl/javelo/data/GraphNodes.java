@@ -56,7 +56,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return La coordonnée N du nœud d'identité donnée.
      */
 
-    double nodeN(int nodeId){
+    public double nodeN(int nodeId){
         return Q28_4.asDouble(buffer.get((nodeId) * NODE_INTS + OFFSET_N));
     }
 

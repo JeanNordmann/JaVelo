@@ -117,6 +117,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 for (int i = 1; i <= shortsToRead2 ; i++) {
 
                     int extractShort =  Short.toUnsignedInt(elevations.get(firstAltiId + i));
+
                     float firstShift = asFloat16(Bits.extractSigned(extractShort, 8, 8));
                     toReturn[2 * i - 1] = toReturn[2 * (i-1)] + firstShift;
                     // pour éviter OutOfBoundException si les 8 derniers bits du shorts sont
@@ -130,15 +131,16 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 int shortsToRead4 = (numberSamples + 2) / 4;
                 toReturn[0] = asFloat16(elevations.get(firstAltiId));
                 for (int i = 1; i <= shortsToRead4 ; i++) {
-                    short extractShort = elevations.get(firstAltiId + i);
+                    /*short extractShort = elevations.get(firstAltiId + i);*/
+                    int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
 
-                    float firstShift = asFloat8(Bits.extractSigned(Short.toUnsignedInt(extractShort), 12, 4));
+                    float firstShift = asFloat8(Bits.extractSigned(extractShort, 12, 4));
                     toReturn[4 * i - 3] = toReturn[4 * (i-1) ] + firstShift;
 
                     // pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
                     if (numberSamples + 1 < 4 * i) break;
 
-                    float secondShift = asFloat8(Bits.extractSigned(Short.toUnsignedInt(extractShort), 8, 4));
+                    float secondShift = asFloat8(Bits.extractSigned(extractShort, 8, 4));
                     toReturn[4 * i - 2] = toReturn[4 * i - 3] + secondShift;
 
                     // pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
@@ -180,8 +182,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return La valeur de type float correspondant à la valeur Q12.4 donnée
      */
 
-    private static float asFloat8(float q4_4) {
-        return scalb((float)q4_4,-4);
+    private static float asFloat8(int q4_4) {
+        return scalb((float) q4_4, -4);
     }
 
     /**
