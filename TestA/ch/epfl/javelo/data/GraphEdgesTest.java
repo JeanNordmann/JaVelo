@@ -117,4 +117,73 @@ public class GraphEdgesTest {
         };
         assertArrayEquals(expectedSamples, edges.profileSamples(0));
     }
+
+    @Test
+    void testGraphEdgesOnProfile0AndOtherValues() {
+
+        ByteBuffer edgesBuffer = ByteBuffer.allocate(10);
+// Sens : inversé. Nœud destination : 15.
+        edgesBuffer.putInt(0, ~15);
+// Longueur : 0x2e.e m (= 47.9375 m)
+        edgesBuffer.putShort(4, (short) 0x2e_e);
+// Dénivelé : 0x0f.0 m (= 15.0 m)
+        edgesBuffer.putShort(6, (short) 0x0f_0);
+// Identité de l'ensemble d'attributs OSM : 8239
+        edgesBuffer.putShort(8, (short) 2095);
+
+        IntBuffer profileIds = IntBuffer.wrap(new int[]{
+                // Type : 2. Index du premier échantillon : 1.
+                0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
+        });
+
+        ShortBuffer elevations = ShortBuffer.wrap(new short[]{
+                (short) 0b0,
+                (short) 6156, (short) 0xFEFF,
+                (short) 0xFFFE, (short) 0xF000
+        });
+
+        GraphEdges edges =
+                new GraphEdges(edgesBuffer, profileIds, elevations);
+        assertArrayEquals(new float[]{},edges.profileSamples(0));
+    }
+
+    @Test
+    void testGraphEdgesOnProfile2AndOtherValues() {
+        ByteBuffer edgesBuffer = ByteBuffer.allocate(10);
+// Sens : inversé. Nœud destination : 15.
+        edgesBuffer.putInt(0, ~15);
+// Longueur : 0x58 m (= 5.5 m)
+        edgesBuffer.putShort(4, (short) 0x58);
+// Dénivelé : 0x0f.0 m (= 15.0 m)
+        edgesBuffer.putShort(6, (short) 0x0f_0);
+// Identité de l'ensemble d'attributs OSM : 8239
+        edgesBuffer.putShort(8, (short) 8239);
+
+        IntBuffer profileIds = IntBuffer.wrap(new int[]{
+                // Type : 2. Index du premier échantillon : 1.
+                (2 << 30) | 1
+        });
+
+        ShortBuffer elevations = ShortBuffer.wrap(new short[]{
+                (short) 0,
+                (short) 6720, (short) 0b0010_0100_0100_1111,
+                (short) 0b1010_0100_0100_1111,
+
+
+
+        });
+
+        GraphEdges edges =
+                new GraphEdges(edgesBuffer, profileIds, elevations);
+
+        assertTrue(edges.isInverted(0));
+        assertEquals(15, edges.targetNodeId(0));
+        assertEquals(5.5, edges.length(0));
+        assertEquals(15.0, edges.elevationGain(0));
+        assertEquals(8239, edges.attributesIndex(0));
+        float[] expectedSamples = new float[]{
+                420f, 422.25f, 427.1875f, 415.6875f
+        };
+        assertArrayEquals(expectedSamples, edges.profileSamples(0));
+    }
 }

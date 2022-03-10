@@ -106,6 +106,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         int firstAltiId = Bits.extractUnsigned(profileIds.get(edgeId), 0, 30);
         byte profilType = (byte) Bits.extractUnsigned(profileIds.get(edgeId), 30,2);
         switch (profilType) {
+
             case (byte) 1 :
                 for (int i = 0; i < numberSamples; i++) {
                     toReturn[i] = asFloat16(elevations.get(firstAltiId + i));
@@ -120,8 +121,10 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
                     float firstShift = asFloat16(Bits.extractSigned(extractShort, 8, 8));
                     toReturn[2 * i - 1] = toReturn[2 * (i-1)] + firstShift;
-                    // pour éviter OutOfBoundException si les 8 derniers bits du shorts sont
+
+                    // pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles.
                     if (numberSamples - 1 < 2 * i) break;
+
                     float secondShift = asFloat16(Bits.extractSigned(extractShort, 0, 8));
                     toReturn[2 * i] = toReturn[2 * i - 1] + secondShift;
                 } break;
@@ -146,13 +149,13 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                     // pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
                     if (numberSamples < 4 * i) break;
 
-                    float thirdShift = asFloat8(Bits.extractSigned(Short.toUnsignedInt(extractShort), 4, 4));
+                    float thirdShift = asFloat8(Bits.extractSigned(extractShort, 4, 4));
                     toReturn[4 * i - 1] = toReturn[4 * i - 2] + thirdShift;
 
                     // pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
                     if (numberSamples - 1 < 4 * i) break;
 
-                    float fourthShift = asFloat8(Bits.extractSigned(Short.toUnsignedInt(extractShort), 0, 4));
+                    float fourthShift = asFloat8(Bits.extractSigned(extractShort, 0, 4));
                     toReturn[4 * i] = toReturn[4 * i - 1] + fourthShift;
                 }
         }
@@ -174,7 +177,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
     
     private static float asFloat16(int q12_4) {
-        return scalb((float)q12_4,-4);
+        return scalb((float) q12_4, -4);
     }
     /**
      *
