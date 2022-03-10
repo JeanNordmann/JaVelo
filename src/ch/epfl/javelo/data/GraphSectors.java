@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.epfl.javelo.Math2;
-import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.SwissBounds;
 import ch.epfl.javelo.projection.PointCh;
 
@@ -13,7 +12,7 @@ import ch.epfl.javelo.projection.PointCh;
  * 3.3.3
  * GraphSectors
  *
- * Enregistrement représentant le tableau contenant les 16384 secteurs de JaVelo
+ * Enregistrement représentant le tableau contenant les 16384 secteurs de JaVelo.
  *
  *
  * @author Jean Nordmann (344692)
@@ -23,11 +22,22 @@ import ch.epfl.javelo.projection.PointCh;
 
 public record GraphSectors(ByteBuffer buffer) {
 
+    /**
+     * Diverses constantes représentant les dimensions d'un secteur, ainsi que le
+     * décalage voulu pour accéder aux données du Buffer.
+     */
+
     private static final double SECTOR_WIDTH = SwissBounds.WIDTH / 128.0;
     private static final double SECTOR_HEIGHT = SwissBounds.HEIGHT / 128.0;
     private static final int OFFSET_BYTES = (Integer.BYTES + Short.BYTES);
 
-//TODO étais en privé, passé publique pour les tests
+    //TODO était en privé, passé publique pour les tests
+
+    /**
+     * Enregistrement représentant un seul secteur, caractérisé par son nœud
+     * de départ et celui de fin.
+     */
+
     public record Sector(int startNodeId, int endNodeId) {}
 
     /**
@@ -41,10 +51,10 @@ public record GraphSectors(ByteBuffer buffer) {
 
 public List<Sector> sectorsInArea(PointCh center, double distance) {
 
-        int xmin = Math2.clamp(0, (int)((center.e()-distance-SwissBounds.MIN_E)/SECTOR_WIDTH) ,127);
-        int xmax = Math2.clamp(0, (int)((center.e()+distance-SwissBounds.MIN_E)/SECTOR_WIDTH) ,127);
-        int ymin = Math2.clamp(0, (int)((center.n()-distance-SwissBounds.MIN_N)/SECTOR_HEIGHT) ,127);
-        int ymax = Math2.clamp(0, (int)((center.n()+distance-SwissBounds.MIN_N)/SECTOR_HEIGHT) ,127);
+        int xmin = Math2.clamp(0, (int)((center.e() - distance - SwissBounds.MIN_E) / SECTOR_WIDTH),127);
+        int xmax = Math2.clamp(0, (int)((center.e() + distance - SwissBounds.MIN_E) / SECTOR_WIDTH),127);
+        int ymin = Math2.clamp(0, (int)((center.n() - distance - SwissBounds.MIN_N) / SECTOR_HEIGHT),127);
+        int ymax = Math2.clamp(0, (int)((center.n() + distance - SwissBounds.MIN_N) / SECTOR_HEIGHT),127);
 
         List<Sector> sectorList = new ArrayList<>();
             for (double j = ymin; j <= ymax ; j++) {
@@ -52,9 +62,9 @@ public List<Sector> sectorsInArea(PointCh center, double distance) {
 
                 int sectorIndexOfFirstByte = OFFSET_BYTES * (int) (i + 128 * j);
                 int startNode = buffer.getInt(sectorIndexOfFirstByte);
-                int endNode = startNode + Short.toUnsignedInt(buffer.getShort(sectorIndexOfFirstByte+Integer.BYTES));
+                int endNode = startNode + Short.toUnsignedInt(buffer.getShort(sectorIndexOfFirstByte + Integer.BYTES));
 
-                sectorList.add(new Sector(startNode,endNode));
+                sectorList.add(new Sector(startNode, endNode));
             }
         }
         return sectorList;

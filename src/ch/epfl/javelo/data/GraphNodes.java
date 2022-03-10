@@ -33,7 +33,7 @@ public record GraphNodes(IntBuffer buffer) {
     private static final int NODE_INTS = OFFSET_OUT_EDGES + 1;
 
     /**
-     * @return Le nombre total de noeuds.
+     * @return Le nombre total de nœuds présents dans le Buffer.
      */
 
     public int count() {
@@ -42,8 +42,8 @@ public record GraphNodes(IntBuffer buffer) {
 
     /**
      *
-     * @param nodeId Noeud dont on souhaite la coordonnée E.
-     * @return La coordonnée E du noeud d'identité donné.
+     * @param nodeId Identité du nœud dont on souhaite connaître la coordonnée E.
+     * @return La coordonnée E du nœud d'identité donné.
      */
 
     public double nodeE(int nodeId) {
@@ -52,7 +52,7 @@ public record GraphNodes(IntBuffer buffer) {
 
     /**
      *
-     * @param nodeId Noeud dont on souhaite la coordonnée N.
+     * @param nodeId Identité du nœud dont on souhaite connaître la coordonnée N.
      * @return La coordonnée N du nœud d'identité donnée.
      */
 
@@ -62,7 +62,7 @@ public record GraphNodes(IntBuffer buffer) {
 
     /**
      *
-     * @param nodeId Noeud dont on souhaite le nombre d'arêtes sortant de celui-ci.
+     * @param nodeId Nœud dont on souhaite le nombre d'arêtes sortant de celui-ci.
      * @return Le nombre d'arêtes sortant du nœud d'identité donné.
      */
 
@@ -73,7 +73,7 @@ public record GraphNodes(IntBuffer buffer) {
 
     /**
      * @param nodeId Noeud dont on souhaite l'identité de la edgeIndex-ième arête.
-     * @param edgeIndex Index de l'arête vis-à-vis de la première arrête du noeud.
+     * @param edgeIndex Index de l'arête vis-à-vis de la première arête du nœud.
      * @return L'identité de la edgeIndex-ième arête sortant du nœud d'identité nodeId.
      */
 
