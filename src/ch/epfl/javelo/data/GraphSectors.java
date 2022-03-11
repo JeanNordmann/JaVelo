@@ -31,8 +31,6 @@ public record GraphSectors(ByteBuffer buffer) {
     private static final double SECTOR_HEIGHT = SwissBounds.HEIGHT / 128.0;
     private static final int OFFSET_BYTES = (Integer.BYTES + Short.BYTES);
 
-    //TODO était en privé, passé publique pour les tests
-
     /**
      * Enregistrement représentant un seul secteur, caractérisé par son nœud
      * de départ et celui de fin.

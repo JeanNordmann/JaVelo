@@ -11,6 +11,7 @@
       <sourceFolder url="file://$MODULE_DIR$/testJNMD" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/TestA" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/TestB" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/TESetjuju" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test2" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test4F" isTestSource="true" />
     </content>
