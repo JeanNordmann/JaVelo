@@ -53,8 +53,8 @@ public record AttributeSet(long bits) {
     */
 
     public boolean contains(Attribute attribute) {
-        long masque = 1L << attribute.ordinal() ;
-        return (masque == (masque & bits));
+        long mask = 1L << attribute.ordinal();
+        return (mask == (mask & bits));
     }
 
     /**
@@ -69,7 +69,7 @@ public record AttributeSet(long bits) {
     }
 
     /**
-     * @return une chaîne composée de la représentation textuelle des éléments de l'ensemble entourés
+     * @return Une chaîne composée de la représentation textuelle des éléments de l'ensemble entourés
      * d'accolades et séparés par des virgules.
      */
 
