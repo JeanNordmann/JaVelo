@@ -114,7 +114,7 @@ public final class Graph {
 
     /**
      * @param nodeId Identité du nœud donné.
-     * @return Retourne le nombre d
+     * @return Retourne le nombre d'arêtes sortant du nœud d'identité donné.
      */
 
     public int nodeOutDegree(int nodeId) {
@@ -122,8 +122,8 @@ public final class Graph {
     }
 
     /**
-     * @param nodeId Identité dunœud donné.
-     * @param edgeIndex
+     * @param nodeId Identité du nœud donné.
+     * @param edgeIndex Index de l'arête vis-à-vis de la première arête du nœud.
      * @return Retourne l'identité de la edgeIndex-ième arête soratnt du nœud
      * d'identité donné.
      */
@@ -131,6 +131,14 @@ public final class Graph {
     public int nodeOutEdgeId(int nodeId, int edgeIndex) {
         return nodes.edgeId(nodeId, edgeIndex);
     }
+
+    /**
+     * @param point Point donné.
+     * @param searchDistance Distance maximale de recherche donnée.
+     * @return Retourne l'identité du nœud se trouvant le plus proche du point
+     * donné, à la distance maximale donnée (en mètres), ou -1 si aucun nœud ne
+     * correspond à ces critères.
+     */
 
     public int nodeClosestTo(PointCh point, double searchDistance) {
         //TODO check si aucun noeud ne correspond aux critères;
@@ -152,9 +160,19 @@ public final class Graph {
         return nodeId;
     }
 
+    /**
+     * @param edgeId Identité de l'arête donnée.
+     * @return Retourne l'identité du nœud destination de l'arête d'identité donnée.
+     */
+
     public int edgeTargetNodeId(int edgeId) {
         return edges.targetNodeId(edgeId);
     }
+
+    /**
+     * @param edgeId
+     * @return
+     */
 
     public boolean edgeIsInverted(int edgeId) {
         return edges.isInverted(edgeId);
