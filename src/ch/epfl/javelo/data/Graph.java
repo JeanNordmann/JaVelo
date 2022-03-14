@@ -98,6 +98,8 @@ public final class Graph {
      * @throws IOException En cas d'erreur d'entrée/sortie.
      */
 
+    //TODO suprimé les getteur pour les test
+
 
     public static Graph loadFrom(Path basePath) throws IOException {
         //Nodes

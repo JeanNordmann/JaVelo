@@ -72,19 +72,19 @@ public final class ElevationProfile {
 
     public double totalAscent() {
         double total = 0;
-        double memorie = elevationSamples[0];
+        double memory = elevationSamples[0];
         double delta;
         for (float i : elevationSamples) {
-            delta = (double) i - memorie;
+            delta = (double) i - memory;
             total = delta > 0 ? total + delta : total;
-            memorie = i;
+            memory = i;
         }
         return total;
     }
 
     /**
      *
-     * @return Le dénivelé négatif total du profil, en mètres.(valeur toujours positive)
+     * @return Le dénivelé négatif total du profil, en mètres. (valeur toujours positive)
      */
 
     public double totalDescent() {
@@ -101,10 +101,11 @@ public final class ElevationProfile {
 
     /**
      * Permet de savoir l'altitude d'un point dont on connait l'abscisse X.
-     * @param position Position x dont on aimerait connaitre l'altitude
+     * @param position Position x dont on aimerait connaître l'altitude
      * @return L'altitude du profil à la position donnée, qui n'est pas forcément comprise entre 0 et la longueur du profil;
      * le premier échantillon est retourné lorsque la position est négative, le dernier lorsqu'elle est supérieure à la longueur.
      */
+
     public double elevationAt(double position) {
         position = Math2.clamp(0, position, length);
         return Functions.sampled(elevationSamples, length).applyAsDouble(position);

@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GraphNodesTest {
 
-    //TODO faire les 4 tests par classe
     @Test
     void graphNodeWorkOnBasicValueA() {
         IntBuffer b = IntBuffer.wrap(new int[]{
