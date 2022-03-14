@@ -30,11 +30,19 @@ import ch.epfl.javelo.data.GraphNodes;
 
 public final class Graph {
 
+    /**
+     * Divers attributs représentants les nœuds, les secteurs, les arêtes, et les
+     * ensembles d'attributs du graphe.
+     */
+
     private final GraphNodes nodes;
     private final GraphSectors sectors;
     private final GraphEdges edges;
     private final List<AttributeSet> attributeSets;
 
+    /**
+     * Constructeur initialisant les attributs de la classe Graph.
+     */
     Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets) {
         this.nodes = nodes;
         this.sectors = sectors;
@@ -142,8 +150,6 @@ public final class Graph {
      */
 
     public int nodeClosestTo(PointCh point, double searchDistance) {
-        //TODO check si aucun noeud ne correspond aux critères;
-
         List<GraphSectors.Sector> sectorList = sectors.sectorsInArea(point, searchDistance);
         double min = Double.POSITIVE_INFINITY;
         int nodeId = -1;
@@ -171,31 +177,51 @@ public final class Graph {
     }
 
     /**
-     * @param edgeId
-     * @return
+     * @param edgeId Identité de l'arête donnée.
+     * @return Retourne vrai si et seulement si l'arête d'identité donnée va dans le
+     * sens contraire de la voie OSM dont elle provient.
      */
 
     public boolean edgeIsInverted(int edgeId) {
         return edges.isInverted(edgeId);
     }
 
+    /**
+     * @param edgeId Identité de l'arête donnée.
+     * @return Retourne l'ensemble des attributs OSM attachés à l'arête d'identité donnée.
+     */
 
     public AttributeSet edgeAttributes(int edgeId) {
         return attributeSets.get(edges.attributesIndex(edgeId));
     }
 
+    /**
+     * @param edgeId Identité de l'arête donnée.
+     * @return La longueur de l'arête d'identité donnée.
+     */
+
     public double edgeLength(int edgeId) {
         return edges.length(edgeId);
     }
+
+    /**
+     * @param edgeId Identité de l'arête donnée.
+     * @return Retourne le dénivelé positif total de l'arête donnée.
+     */
 
     public double edgeElevationGain(int edgeId) {
         return edges.elevationGain(edgeId);
     }
 
+    /**
+     * @param edgeId Identité de l'arête donnée.
+     * @return Retourne le profil en long de l'arête d'identité donnée, sous la forme
+     * d'une fonction ; si l'arête ne possède pas de profil, alors cette fonction doit
+     * retourner Double.NaN pour n'importe quel argument.
+     */
+
     public DoubleUnaryOperator edgeProfile(int edgeId) {
         if (edges.hasProfile(edgeId)) { return Functions.sampled(edges.profileSamples(edgeId), edgeLength(edgeId)); }
         else { return Functions.constant(Double.NaN);}
     }
-
-
 }
