@@ -109,7 +109,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
             case (byte) 1 :
                 for (int i = 0; i < numberSamples; i++) {
-                    toReturn[i] = asFloat16(elevations.get(firstAltiId + i));
+                    toReturn[i] = asFloat16(Short.toUnsignedInt(elevations.get(firstAltiId + i)));
                 } break;
 
             case (byte) 2 :
