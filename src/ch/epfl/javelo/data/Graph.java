@@ -49,6 +49,7 @@ public final class Graph {
      * @throws IOException En cas d'erreur d'entrée/sortie.
      */
 
+
     public static Graph loadFrom(Path basePath) throws IOException {
         //Nodes
         Path nodesPath = basePath.resolve("nodes.bin");
