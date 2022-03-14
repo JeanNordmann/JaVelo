@@ -1,5 +1,7 @@
 package ch.epfl.javelo;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.DoubleUnaryOperator;
 
 /**
@@ -113,6 +115,23 @@ public final class Functions {
             return Math2.interpolate(samples[firstPoint], samples[secondPoint], x/spaceBetween2Points - firstPoint);
 
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Sampled sampled = (Sampled) o;
+            return Double.compare(sampled.xMax, xMax) == 0 && Arrays.equals(samples, sampled.samples);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(xMax);
+            result = 31 * result + Arrays.hashCode(samples);
+            return result;
+        }
     }
+
+
 
 }

@@ -3,6 +3,7 @@ package ch.epfl.javelo.data;
 import ch.epfl.javelo.Q28_4;
 
 import java.nio.*;
+import java.util.Objects;
 
 import static ch.epfl.javelo.Bits.extractUnsigned;
 
@@ -81,5 +82,18 @@ public record GraphNodes(IntBuffer buffer) {
         assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
         int contraction = buffer.get((nodeId) * NODE_INTS + OFFSET_OUT_EDGES);
         return extractUnsigned(contraction, 0, 28) + edgeIndex;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GraphNodes that = (GraphNodes) o;
+        return Objects.equals(buffer, that.buffer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(buffer);
     }
 }
