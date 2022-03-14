@@ -120,8 +120,8 @@ public final class Math2 {
     }
 
     /**
-     * méthode qui retourne la longueur de la projection du vecteur allant du point A (de coordonnées aX et aY)
-     * au point P (de coordonnées pX et pY) sur le vecteur allant du point A au point B (de composantes bY et bY)
+     * Méthode qui retourne la longueur de la projection du vecteur allant du point A (de coordonnées aX et aY)
+     * au point P (de coordonnées pX et pY) sur le vecteur allant du point A au point B (de composantes bX et bY)
      * @param aX coordonnée X de A
      * @param aY coordonnée Y de A
      * @param bX coordonnée X de B

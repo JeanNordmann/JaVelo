@@ -74,14 +74,14 @@ public final class Graph {
         ByteBuffer edgeBuffer = mappedBuffer(edgesPath);
         Path profileIdsPath = basePath.resolve("profile_ids.bin");
         IntBuffer profilBuffer = mappedBuffer(profileIdsPath).asIntBuffer();
-        Path elevationPath = basePath.resolve("elevation.bin");
+        Path elevationPath = basePath.resolve("elevations.bin");
         ShortBuffer elevationBuffer = mappedBuffer(elevationPath).asShortBuffer();
         GraphEdges edges = new GraphEdges(edgeBuffer, profilBuffer, elevationBuffer);
 
         //Attributes
         Path attributesPath = basePath.resolve("attributes.bin");
-        LongBuffer attributeBuffer = mappedBuffer(basePath).asLongBuffer();
-        List<AttributeSet> attributeSets = null;
+        LongBuffer attributeBuffer = mappedBuffer(attributesPath).asLongBuffer();
+        List<AttributeSet> attributeSets = new ArrayList<>();
         for (int i = 0; i < attributeBuffer.capacity(); i++) {
             attributeSets.add(new AttributeSet(attributeBuffer.get(i)));
         }
