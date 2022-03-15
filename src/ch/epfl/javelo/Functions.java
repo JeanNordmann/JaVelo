@@ -72,6 +72,18 @@ public final class Functions {
             return constant;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Constant constant1 = (Constant) o;
+            return Double.compare(constant1.constant, constant) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(constant);
+        }
     }
 
     /**

@@ -29,31 +29,7 @@ import ch.epfl.javelo.data.GraphNodes;
  */
 
 public final class Graph {
-    //TODO suprimé code de jean
-    public static int[] loadFrom2(Path basePath) throws IOException{
-        Path nodesPath = basePath.resolve("nodes.bin");
-        IntBuffer nodesBuffer = mappedBuffer(nodesPath).asIntBuffer() ;
-        int[] nodes = new int[nodesBuffer.capacity()];
-        for (int i = 0; i < nodesBuffer.capacity(); i++) {
-            nodes[i] = nodesBuffer.get(i);
-        }
-        return nodes;
-    }
 
-    public static AttributeSet[] loadFrom3(Path basePath) throws IOException{
-        Path attributeSetsPath = basePath.resolve("attributes.bin");
-        LongBuffer attributeSets = mappedBuffer(attributeSetsPath).asLongBuffer() ;
-        List<AttributeSet> attributeSetsList = new ArrayList<>();
-        for (int i = 0; i < attributeSets.capacity(); i++) {
-            attributeSetsList.add(new AttributeSet(attributeSets.get(i)));
-        }
-        AttributeSet[] a = new AttributeSet[attributeSetsList.size()];
-        for (int i = 0; i < attributeSetsList.size(); i++) {
-            a[i] = attributeSetsList.get(i);
-        }
-        return a;
-    }
-    //TODO fin code Jean
 
     /**
      * Divers attributs représentants les nœuds, les secteurs, les arêtes, et les
@@ -68,11 +44,12 @@ public final class Graph {
     /**
      * Constructeur initialisant les attributs de la classe Graph.
      */
+
     public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets) {
         this.nodes = nodes;
         this.sectors = sectors;
         this.edges = edges;
-        this.attributeSets = attributeSets;
+        this.attributeSets = List.copyOf(attributeSets);
     }
 
 
@@ -82,8 +59,6 @@ public final class Graph {
      * @return Le graphe Javelo obtenu à partir des fichiers se trouvant dans le répertoire.
      * @throws IOException En cas d'erreur d'entrée/sortie.
      */
-
-    //TODO suprimé les getteur pour les test
 
 
     public static Graph loadFrom(Path basePath) throws IOException {
@@ -133,7 +108,7 @@ public final class Graph {
     }
 
     /** 
-     * @returnn Le nombre total de nœuds dans le graphe.
+     * @return Le nombre total de nœuds dans le graphe.
      */
     
     public int nodeCount() {
