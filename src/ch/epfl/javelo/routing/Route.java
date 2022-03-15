@@ -45,11 +45,20 @@ public interface Route {
     public List<PointCh> points();
 
     /**
+     * @param position Position donnée.
      * @return Retourne le point se trouvant à la position donnée
      * le long de l'itinéraire.
      */
 
-    public PointCh pointAt();
+    public PointCh pointAt(double position);
+
+    /**
+     * @param position Position donnée.
+     * @return Retourne l'altitude à la position donnée
+     * le long de l'itinéraire.
+     */
+
+    public double elevationAt(double position);
 
     /**
      * @param position Position donnée.
