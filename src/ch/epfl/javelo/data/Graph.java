@@ -75,21 +75,6 @@ public final class Graph {
         this.attributeSets = attributeSets;
     }
 
-    public GraphNodes getNodes() {
-        return nodes;
-    }
-
-    public GraphEdges getEdges() {
-        return edges;
-    }
-
-    public GraphSectors getSectors() {
-        return sectors;
-    }
-
-    public List<AttributeSet> getAttributeSets() {
-        return attributeSets;
-    }
 
     /**
      *
@@ -199,10 +184,11 @@ public final class Graph {
         for (GraphSectors.Sector sector : sectorList) {
             int startNode = sector.startNodeId();
             int endNode = sector.endNodeId();
-            for (int j = startNode; j <= endNode; j++) {
-                double distance = point.squaredDistanceTo(new PointCh(nodes.nodeE(j), nodes.nodeN(j)));
-                if (distance < min) {
-                    min = distance;
+            for (int j = startNode; j < endNode; j++) {
+
+                double squaredDistance = point.squaredDistanceTo(new PointCh(nodes.nodeE(j), nodes.nodeN(j)));
+                if (squaredDistance < min && squaredDistance <= searchDistance*searchDistance) {
+                    min = squaredDistance;
                     nodeId = j;
                 }
             }

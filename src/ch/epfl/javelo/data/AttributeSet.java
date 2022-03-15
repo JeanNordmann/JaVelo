@@ -18,7 +18,6 @@ import java.util.StringJoiner;
  * au constructeur contient un bit à 1 qui ne correspond à aucun attribut valide.
  */
 
-//TODO corriger cette classe ainsi que les autres test qui n'ont pas passé l'étape 2
 
 public record AttributeSet(long bits) {
 
