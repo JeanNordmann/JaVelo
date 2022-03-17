@@ -38,10 +38,11 @@ public record AttributeSet(long bits) {
 
     public static AttributeSet of(Attribute... attributes) {
         long mask = 0 ;
-        for (int i = 0; i < attributes.length; i++) {
-            long tempMask = 1L << attributes[i].ordinal() ;
+        for (Attribute attribute : attributes) {
+            long tempMask = 1L << attribute.ordinal() ;
             mask = mask | tempMask ;
         }
+
         return new AttributeSet(mask);
     }
 

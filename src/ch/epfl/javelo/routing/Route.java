@@ -23,26 +23,26 @@ public interface Route {
      */
 
 
-    public int indexOfSegmentAt(double position);
+    int indexOfSegmentAt(double position);
 
     /**
      * @return Retourne la longueur de l'itinéraire (en mètres).
      */
 
-    public double length();
+    double length();
 
     /**
      * @return Retourne la totalité des arêtes de l'itinéraire.
      */
 
-    public List<Edge> edges();
+    List<Edge> edges();
 
     /**
      * @return Retourne la totalité des points situés aux
      * extrémités des arêtes de l'itinéraire.
      */
 
-    public List<PointCh> points();
+    List<PointCh> points();
 
     /**
      * @param position Position donnée.
@@ -50,7 +50,7 @@ public interface Route {
      * le long de l'itinéraire.
      */
 
-    public PointCh pointAt(double position);
+    PointCh pointAt(double position);
 
     /**
      * @param position Position donnée.
@@ -58,7 +58,7 @@ public interface Route {
      * le long de l'itinéraire.
      */
 
-    public double elevationAt(double position);
+    double elevationAt(double position);
 
     /**
      * @param position Position donnée.
@@ -66,7 +66,7 @@ public interface Route {
      * et se trouvant le plus proche de la position donnée.
      */
 
-    public int nodeClosestTo(double position);
+    int nodeClosestTo(double position);
 
     /**
      * @param point Point de référence donné.
@@ -74,6 +74,6 @@ public interface Route {
      * proche du point de référence donné.
      */
 
-    public RoutePoint pointClosestTo(PointCh point);
+    RoutePoint pointClosestTo(PointCh point);
 
 }

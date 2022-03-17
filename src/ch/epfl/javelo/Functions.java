@@ -39,7 +39,8 @@ public final class Functions {
      * samples contient moins de deux éléments, ou si xMax est inférieur ou égal à 0.
      * @param samples Tableau d'échantillons desquels on veut faire l'interpolation.
      * @param xMax Valeur jusqu'à laquelle la plage est couverte.
-     * @return
+     * @return une fonction obtenue par interpolation linéaire entre les échantillons samples, espacés
+     * régulièrement
      */
 
     public static DoubleUnaryOperator sampled(float[] samples, double xMax) throws IllegalArgumentException {

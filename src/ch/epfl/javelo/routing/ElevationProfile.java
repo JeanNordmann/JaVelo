@@ -5,7 +5,6 @@ import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 
 import java.util.DoubleSummaryStatistics;
-import java.util.Objects;
 
 
 /**

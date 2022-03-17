@@ -21,7 +21,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
 
     /**
      *
-     * @param positionDifference
+     * @param positionDifference différence de position
      * @return un point identique au récepteur (this) mais dont la position est décalée de la différence donnée,
      * qui peut être positive ou négative.
      */
@@ -31,7 +31,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
 
     /**
      *
-     * @param that
+     * @param that RoutePoint avec le quel on veut comparer
      * @return this si sa distance à la référence est inférieure ou égale à celle de that, et that sinon
      */
     public RoutePoint min(RoutePoint that){
