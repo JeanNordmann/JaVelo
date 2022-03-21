@@ -46,6 +46,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * @return this si sa distance à la référence est inférieure ou égale à thatDistanceToReference,
      * et une nouvelle instance de RoutePoint dont les attributs sont les arguments passés à min sinon.
      */
+
     public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference){
         return this.distanceToReference <= thatDistanceToReference ? this :
                 new RoutePoint(thatPoint, thatPosition, thatDistanceToReference);
