@@ -110,10 +110,18 @@ public final class SingleRoute implements Route {
 
     @Override
     public PointCh pointAt(double position) {
-        int result, absoluteResult;
-        result = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
-        absoluteResult = Math.abs(result + 2);
-        return edges.get(absoluteResult).pointAt(position - positionsTab[absoluteResult]);
+        int index, absoluteResult;
+        index = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
+        if (index >= 0) {
+            if (index == edges.size()) {
+                return edges.get(edges.size() - 1).pointAt(edges.get(edges.size() - 1).length());
+            } else {
+                return edges.get(index).pointAt(0);
+            }
+        } else {
+            absoluteResult = Math.abs(index + 2);
+            return edges.get(absoluteResult).pointAt(position - positionsTab[absoluteResult]);
+        }
     }
 
     /**
@@ -125,10 +133,18 @@ public final class SingleRoute implements Route {
 
     @Override
     public double elevationAt(double position) {
-        int result, absoluteResult;
-        result = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
-        absoluteResult = Math.abs(result + 2);
-        return edges.get(absoluteResult).elevationAt(position - positionsTab[absoluteResult]);
+        int index, absoluteResult;
+        index = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
+        if (index >= 0) {
+            if (index == edges.size()) {
+                return edges.get(edges.size() - 1).elevationAt(edges.get(edges.size() - 1).length());
+            } else {
+                return edges.get(index).elevationAt(0);
+            }
+        } else {
+            absoluteResult = Math.abs(index + 2);
+            return edges.get(absoluteResult).elevationAt(position - positionsTab[absoluteResult]);
+        }
     }
 
     /**
@@ -137,15 +153,14 @@ public final class SingleRoute implements Route {
      * et se trouvant le plus proche de la position donnée.
      */
 
-    //TODO LES 2 DERNIERES METHODES
-
+// idée : crée un tableau avec les distances puis faire une recherche dichotomique ?
     @Override
     public int nodeClosestTo(double position) {
-        int result, absoluteResult;
-        result = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
-        absoluteResult = Math.abs(result + 2);
-        return 0;
-
+        int index = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
+        if (index >= 0) return index;
+        double fstNodePos = positionsTab[-index - 2];
+        double sndNodePos = positionsTab[-index - 1];
+        return (position - fstNodePos) <= ((sndNodePos - fstNodePos) / 2) ? -index - 2 : -index - 1;
     }
 
     /**
@@ -156,6 +171,33 @@ public final class SingleRoute implements Route {
 
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-        return null;
+        RoutePoint routePointTemp, routePoint = RoutePoint.NONE ;
+        double position, clampedPosition;
+        for (Edge edge : edges) {
+            position = edge.positionClosestTo(point);
+            clampedPosition = Math2.clamp(0, position, edge.length());
+            PointCh pointCh = (edge.pointAt(position));
+            routePointTemp = new RoutePoint(pointCh, clampedPosition, pointCh.distanceTo(point));
+            routePoint =routePoint.min(routePointTemp);
+        }
+        return routePoint;
+    }
+
+
+
+    public RoutePoint pointClosestTo2(PointCh point) {
+        double minPosition = 0, position, minDistance = Double.POSITIVE_INFINITY, distance;
+        int index = 0;
+        for (int i = 0; i < edges.size(); i++) {
+            position = edges.get(i).positionClosestTo(point);
+            distance = edges.get(i).pointAt(position).distanceTo(point);
+            if (minDistance > distance) {
+                minDistance = distance;
+                minPosition = position;
+                index = i;
+            }
+        }
+        return new RoutePoint(edges.get(index).pointAt(minPosition), minPosition,
+                edges.get(index).pointAt(minPosition).distanceTo(point));
     }
 }
