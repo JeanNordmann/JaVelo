@@ -3,7 +3,6 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 
-import java.sql.SQLOutput;
 import java.util.Arrays;
 
 /**
