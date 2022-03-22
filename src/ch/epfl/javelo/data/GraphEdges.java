@@ -134,7 +134,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 int shortsToRead4 = (numberSamples + 2) / 4;
                 toReturn[0] = asFloat16(elevations.get(firstAltiId));
                 for (int i = 1; i <= shortsToRead4 ; i++) {
-                    /*short extractShort = elevations.get(firstAltiId + i);*/
+
                     int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
 
                     float firstShift = asFloat8(Bits.extractSigned(extractShort, 12, 4));

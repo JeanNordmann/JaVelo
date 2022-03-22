@@ -38,7 +38,7 @@ public final class SingleRoute implements Route {
 
     /**
      * Constructeur public, initialisant une SingleRoute,
-     * donc sa liste d'arête, et son tableau de positions.
+     * donc sa liste d'arêtes, et son tableau de positions.
      * @param edges Liste d'arêtes donnée.
      */
 
@@ -184,7 +184,7 @@ public final class SingleRoute implements Route {
             clampedPosition = Math2.clamp(0, position, edge.length());
             PointCh pointCh = new PointCh(edge.pointAt(clampedPosition).e(), edge.pointAt(clampedPosition).n());
             routePointTemp = new RoutePoint(pointCh, clampedPosition + previousLengths , pointCh.distanceTo(point));
-            routePoint =routePoint.min(routePointTemp);
+            routePoint = routePoint.min(routePointTemp);
             previousLengths += edge.length();
         }
         return routePoint;
