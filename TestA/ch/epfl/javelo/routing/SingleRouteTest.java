@@ -79,6 +79,7 @@ public class SingleRouteTest {
         assertEquals(new PointCh(2578_707, 1075_500), singleRoute.pointAt(218548.53341969293));
         assertEquals(new PointCh(2491_750, 1075_500), singleRoute.pointAt(131_591.53341969293));
 
+
     }
 
     @Test
