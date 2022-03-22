@@ -117,7 +117,7 @@ public final class ElevationProfile {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ElevationProfile that = (ElevationProfile) o;
-        return Arrays.equals(elevationSamples, that.elevationSamples);
+        return Double.compare(that.length, length) == 0 && Arrays.equals(elevationSamples, that.elevationSamples);
     }
 
     @Override

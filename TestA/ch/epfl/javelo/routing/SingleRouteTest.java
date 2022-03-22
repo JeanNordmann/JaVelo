@@ -124,8 +124,25 @@ public class SingleRouteTest {
         assertEquals(2, singleRoute.nodeClosestTo(270000));
         assertEquals(2, singleRoute.nodeClosestTo(310000));
         assertEquals(2, singleRoute.nodeClosestTo(125341.53341969+114500+314500/2));
-        assertEquals(3, singleRoute.nodeClosestTo(125341.53341969294+114500+314500/2));
+        assertEquals(3, singleRoute.nodeClosestTo(125341.53341969293+114500+314500/2+0.1));
     }
+
+    @Test
+    void nodeClosestToWorkProperly3(){
+        List<Edge> edges = new ArrayList<>();
+        edges.add(new Edge(0, 1, new PointCh(2485_500, 1075_500), new PointCh(2485_500, 1075_500),  0, null));
+        edges.add(new Edge(1, 2,  new PointCh(2485_500, 1075_500), new PointCh(2600_000,1075_500), new PointCh(2600_000,1075_500).distanceTo( new PointCh(2485_500, 1075_500)), null));
+        edges.add(new Edge(2, 3,  new PointCh(2600_000,1075_500), new PointCh(2830_000, 1290_000), new PointCh(2600_000,1075_500).distanceTo( new PointCh(2830_000, 1290_000)), null));
+
+        SingleRoute singleRoute = new SingleRoute(edges);
+
+
+        assertEquals(2, singleRoute.nodeClosestTo(114500+314500/2));
+        assertEquals(2, singleRoute.nodeClosestTo(114500+314500/2));
+        assertEquals(3, singleRoute.nodeClosestTo(114500+314500/2+0.00000001));
+    }
+
+
     @Test
     void nodeClosestToWorkProperly2(){
         List<Edge> edges = new ArrayList<>();

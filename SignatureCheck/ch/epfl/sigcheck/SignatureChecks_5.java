@@ -11,7 +11,7 @@ final class SignatureChecks_5 {
     void checkElevationProfileComputer() throws Exception {
         v03 = ch.epfl.javelo.routing.ElevationProfileComputer.elevationProfile(v01, v02);
     }
-
+//TODO check avertissement
     void checkSingleRoute() throws Exception {
         v04 = new ch.epfl.javelo.routing.SingleRoute(v05);
         v05 = v04.edges();

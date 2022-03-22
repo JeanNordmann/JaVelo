@@ -79,7 +79,7 @@ public final class ElevationProfileComputer {
             }
         }
         System.out.println(Arrays.toString(floatsProfile));
-        return new ElevationProfile(nbrEchantillons, floatsProfile);
+        return new ElevationProfile(route.length(), floatsProfile);
     }
 
 

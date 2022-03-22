@@ -165,7 +165,8 @@ public final class SingleRoute implements Route {
         if (index >= 0) return index;
         double fstNodePos = positionsTab[-index - 2];
         double sndNodePos = positionsTab[-index - 1];
-        return (position - fstNodePos) <= ((sndNodePos - fstNodePos) / 2) ? -index - 2 : -index - 1;
+
+        return (position - fstNodePos) <= ((sndNodePos - fstNodePos) / 2.0) ? -index - 2 : -index - 1;
     }
 
     /**

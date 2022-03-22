@@ -24,7 +24,7 @@ public class ElevationProfileComputerTest {
         edges.add(new Edge(0, 1, new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N), new PointCh(SwissBounds.MIN_E + 6, SwissBounds.MAX_N), 6, profile2));
         SingleRoute route = new SingleRoute(edges);
 
-        ElevationProfile expected1 = new ElevationProfile(6, new float[]{0,0,0, 0,0,0,0});
+        ElevationProfile expected1 = new ElevationProfile(18, new float[]{0,0,0, 0,0,0,0});
         ElevationProfile elevationProfile1 = ElevationProfileComputer.elevationProfile(route, 3);
         assertEquals(expected1, elevationProfile1);
     }
@@ -38,7 +38,7 @@ public class ElevationProfileComputerTest {
         edges.add(new Edge(0, 1, new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N), new PointCh(SwissBounds.MIN_E + 6, SwissBounds.MAX_N), 6, profile2));
         SingleRoute route = new SingleRoute(edges);
 
-        ElevationProfile expected1 = new ElevationProfile(6, new float[]{3, 3,3, 4, 9, 9, 9});
+        ElevationProfile expected1 = new ElevationProfile(18, new float[]{3, 3,3, 4, 9, 9, 9});
         ElevationProfile elevationProfile1 = ElevationProfileComputer.elevationProfile(route, 3);
         assertEquals(expected1, elevationProfile1);
     }
@@ -95,7 +95,7 @@ public class ElevationProfileComputerTest {
         edges.add(new Edge(0, 1, new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N), new PointCh(SwissBounds.MIN_E + 6, SwissBounds.MAX_N), 3, profile2));
         SingleRoute route = new SingleRoute(edges);
 
-        ElevationProfile expected1 = new ElevationProfile(13, new float[]{1, 8, 7, 4, 8});
+        ElevationProfile expected1 = new ElevationProfile(13, new float[]{1, 5, 7, 8, 9, 8, 7, 6, 5, 4, 3, 7, 8, 2});
         ElevationProfile elevationProfile1 = ElevationProfileComputer.elevationProfile(route, 1);
         assertEquals(expected1, elevationProfile1);
     }
