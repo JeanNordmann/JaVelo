@@ -136,10 +136,15 @@ public final class SingleRoute implements Route {
     public double elevationAt(double position) {
         int index, absoluteResult;
         index = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
-        if (index >= 0) {
+        if(index == 0) {
+            return edges.get(index).elevationAt(0);
+        }
+
+        if (index > 0) {
             if (index == edges.size()) {
                 return edges.get(edges.size() - 1).elevationAt(edges.get(edges.size() - 1).length());
             } else {
+                if (Float.isNaN((float)edges.get(index).elevationAt(0))) return edges.get(index - 1).elevationAt(edges.get(index - 1).length());
                 return edges.get(index).elevationAt(0);
             }
         } else {
@@ -172,34 +177,19 @@ public final class SingleRoute implements Route {
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint routePointTemp, routePoint = RoutePoint.NONE ;
-        double position, clampedPosition;
+        double position, clampedPosition, previousLengths =0;
         for (Edge edge : edges) {
             position = edge.positionClosestTo(point);
             clampedPosition = Math2.clamp(0, position, edge.length());
-            PointCh pointCh = (edge.pointAt(position));
-            routePointTemp = new RoutePoint(pointCh, clampedPosition, pointCh.distanceTo(point));
+            PointCh pointCh = new PointCh(edge.pointAt(clampedPosition).e(), edge.pointAt(clampedPosition).n());
+            routePointTemp = new RoutePoint(pointCh, clampedPosition + previousLengths , pointCh.distanceTo(point));
             routePoint =routePoint.min(routePointTemp);
+            previousLengths += edge.length();
         }
         return routePoint;
     }
 
 
-
-    public RoutePoint pointClosestTo2(PointCh point) {
-        double minPosition = 0, position, minDistance = Double.POSITIVE_INFINITY, distance;
-        int index = 0;
-        for (int i = 0; i < edges.size(); i++) {
-            position = edges.get(i).positionClosestTo(point);
-            distance = edges.get(i).pointAt(position).distanceTo(point);
-            if (minDistance > distance) {
-                minDistance = distance;
-                minPosition = position;
-                index = i;
-            }
-        }
-        return new RoutePoint(edges.get(index).pointAt(minPosition), minPosition,
-                edges.get(index).pointAt(minPosition).distanceTo(point));
-    }
 
     @Override
     public boolean equals(Object o) {

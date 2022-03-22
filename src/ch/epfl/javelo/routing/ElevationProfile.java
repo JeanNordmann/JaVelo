@@ -90,12 +90,12 @@ public final class ElevationProfile {
 
     public double totalDescent() {
         double total = 0;
-        double memorie = elevationSamples[0];
+        double memory = elevationSamples[0];
         double delta;
         for (float i : elevationSamples) {
-            delta = (double) i - memorie;
+            delta = (double) i - memory;
             total = delta < 0 ? total - delta : total;
-            memorie = i;
+            memory = i;
         }
         return total;
     }

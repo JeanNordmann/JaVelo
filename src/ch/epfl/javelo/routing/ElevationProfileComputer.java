@@ -3,6 +3,7 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 
+import java.sql.SQLOutput;
 import java.util.Arrays;
 
 /**
@@ -41,6 +42,7 @@ public final class ElevationProfileComputer {
         for (int i = 0; i < nbrEchantillons; i++) {
             floatsProfile[i] = (float) route.elevationAt(maxStepLength * i);
         }
+        System.out.println(Arrays.toString(floatsProfile));
         //Remplir les trous du début du tableau.
         for (int i = 0; i < nbrEchantillons; i++) {
             if(!Float.isNaN(floatsProfile[i])) {
@@ -53,7 +55,7 @@ public final class ElevationProfileComputer {
         //Remplir les trous de la fin du tableau.
         for (int i = nbrEchantillons - 1; i >= 0; i--) {
             if (!Float.isNaN(floatsProfile[i])) {
-                Arrays.fill(floatsProfile, i + 1, nbrEchantillons , floatsProfile[i]);
+                Arrays.fill(floatsProfile, i + 1, nbrEchantillons, floatsProfile[i]);
                 break;
             }
         }
@@ -77,6 +79,9 @@ public final class ElevationProfileComputer {
                 i = endIndex;
             }
         }
+        System.out.println(Arrays.toString(floatsProfile));
         return new ElevationProfile(nbrEchantillons, floatsProfile);
     }
+
+
 }
