@@ -7,6 +7,7 @@ import ch.epfl.javelo.projection.PointCh;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 5.3.2
@@ -153,7 +154,6 @@ public final class SingleRoute implements Route {
      * et se trouvant le plus proche de la position donnée.
      */
 
-// idée : crée un tableau avec les distances puis faire une recherche dichotomique ?
     @Override
     public int nodeClosestTo(double position) {
         int index = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
@@ -199,5 +199,20 @@ public final class SingleRoute implements Route {
         }
         return new RoutePoint(edges.get(index).pointAt(minPosition), minPosition,
                 edges.get(index).pointAt(minPosition).distanceTo(point));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SingleRoute that = (SingleRoute) o;
+        return Objects.equals(edges, that.edges) && Arrays.equals(positionsTab, that.positionsTab);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(edges);
+        result = 31 * result + Arrays.hashCode(positionsTab);
+        return result;
     }
 }

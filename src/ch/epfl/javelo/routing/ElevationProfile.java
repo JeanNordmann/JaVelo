@@ -4,7 +4,9 @@ import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 
+import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
+import java.util.Objects;
 
 
 /**
@@ -108,5 +110,20 @@ public final class ElevationProfile {
     public double elevationAt(double position) {
         position = Math2.clamp(0, position, length);
         return Functions.sampled(elevationSamples, length).applyAsDouble(position);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ElevationProfile that = (ElevationProfile) o;
+        return Arrays.equals(elevationSamples, that.elevationSamples);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(length);
+        result = 31 * result + Arrays.hashCode(elevationSamples);
+        return result;
     }
 }

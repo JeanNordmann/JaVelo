@@ -2,6 +2,8 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.projection.PointCh;
 
+import java.util.Objects;
+
 import static java.lang.Double.POSITIVE_INFINITY;
 
 /**
@@ -50,5 +52,18 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
     public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference){
         return this.distanceToReference <= thatDistanceToReference ? this :
                 new RoutePoint(thatPoint, thatPosition, thatDistanceToReference);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoutePoint that = (RoutePoint) o;
+        return Double.compare(that.position, position) == 0 && Double.compare(that.distanceToReference, distanceToReference) == 0 && Objects.equals(point, that.point);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(point, position, distanceToReference);
     }
 }

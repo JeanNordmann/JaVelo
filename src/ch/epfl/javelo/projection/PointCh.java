@@ -1,6 +1,9 @@
 package ch.epfl.javelo.projection;
 
 import ch.epfl.javelo.Preconditions;
+
+import java.util.Objects;
+
 import static ch.epfl.javelo.Math2.norm;
 import static ch.epfl.javelo.Math2.squaredNorm;
 
@@ -59,5 +62,18 @@ public record PointCh(double e, double n) {
 
     public double lat() {
         return Ch1903.lat(e, n);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PointCh pointCh = (PointCh) o;
+        return Double.compare(pointCh.e, e) == 0 && Double.compare(pointCh.n, n) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(e, n);
     }
 }

@@ -70,9 +70,9 @@ public final class ElevationProfileComputer {
                         break;
                     }
                 }
-                for (int j = 1; j < endIndex-i; j++) {
-                    floatsProfile[i] = (float) Math2.interpolate(floatsProfile[i-1],
-                            interpolationLimit, (double) j / (endIndex - i));
+                for (int j = 1; j < endIndex; j++) {
+                    floatsProfile[i + j - 1] = (float) Math2.interpolate(floatsProfile[i - 1],
+                            interpolationLimit, (double) j / (endIndex));
                 }
                 i = endIndex;
             }
