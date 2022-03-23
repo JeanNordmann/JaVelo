@@ -52,15 +52,17 @@ public final class MultiRoute implements Route {
     //TODO FLEMME DE REFLECHIR LA
     @Override
     public int indexOfSegmentAt(double position) {
-        double actualPosition = 0;
-        position = Math2.clamp(0,position,length());
-
+        double actualPosition = 0, previousPosition = 0;
+        int index = 0;
+        position = Math2.clamp(0, position, this.length());
         for (Route segment : segments) {
             actualPosition += segment.length();
-            if (position < actualPosition) {
-                //TODO
+            if (position <= actualPosition) {
+                index += segment.indexOfSegmentAt(position - previousPosition);
+                return index;
             }
-if ()
+            index += segment.indexOfSegmentAt(actualPosition) + 1;
+            previousPosition += segment.length();
         }
         return 0;
     }

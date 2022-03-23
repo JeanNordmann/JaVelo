@@ -18,23 +18,34 @@ public class MultiRouteTest {
         Edge edge4 = new Edge(3, 4, new PointCh(2503000, 1200000), new PointCh(2504000, 1200000), 1000, null);
         Edge edge5 = new Edge(4, 5, new PointCh(2504000, 1200000), new PointCh(2505000, 1200000), 1000, null);
         Edge edge6 = new Edge(5, 6, new PointCh(2505000, 1200000), new PointCh(2506000, 1200000), 1000, null);
-        List<Edge> edgeList = new ArrayList<>();
-        edgeList.add(edge1);
-        edgeList.add(edge2);
-        edgeList.add(edge3);
+        List<Edge> edgeList1 = new ArrayList<>();
+        edgeList1.add(edge1);
         List<Edge> edgeList2 = new ArrayList<>();
-        edgeList2.add(edge4);
-        edgeList2.add(edge5);
-        edgeList2.add(edge6);
+        edgeList2.add(edge2);
+        List<Edge> edgeList3 = new ArrayList<>();
+        edgeList3.add(edge3);
+        List<Edge> edgeList4 = new ArrayList<>();
+        edgeList4.add(edge4);
+        List<Edge> edgeList5 = new ArrayList<>();
+        edgeList5.add(edge5);
+        List<Edge> edgeList6 = new ArrayList<>();
+        edgeList6.add(edge6);
 
-        SingleRoute singleRoute1 = new SingleRoute(edgeList);
+        SingleRoute singleRoute1 = new SingleRoute(edgeList1);
         SingleRoute singleRoute2 = new SingleRoute(edgeList2);
+        SingleRoute singleRoute3 = new SingleRoute(edgeList3);
+        SingleRoute singleRoute4 = new SingleRoute(edgeList4);
+        SingleRoute singleRoute5 = new SingleRoute(edgeList5);
+        SingleRoute singleRoute6 = new SingleRoute(edgeList6);
+
         List<Route> singleRouteList1 = new ArrayList<>();
         List<Route> singleRouteList2 = new ArrayList<>();
         singleRouteList1.add(singleRoute1);
         singleRouteList1.add(singleRoute2);
-        singleRouteList2.add(singleRoute1);
-        singleRouteList2.add(singleRoute2);
+        singleRouteList1.add(singleRoute3);
+        singleRouteList2.add(singleRoute4);
+        singleRouteList2.add(singleRoute5);
+        singleRouteList2.add(singleRoute6);
 
         MultiRoute multiRoute1 = new MultiRoute(singleRouteList1);
         MultiRoute multiRoute2 = new MultiRoute(singleRouteList2);
@@ -43,7 +54,8 @@ public class MultiRouteTest {
         routeList.add(multiRoute2);
         MultiRoute multiRoute = new MultiRoute(routeList);
 
-        assertEquals(12000, multiRoute.length());
+        assertEquals(6000, multiRoute.length());
+        assertEquals(5, multiRoute.indexOfSegmentAt(5500));
     }
 
     @Test
