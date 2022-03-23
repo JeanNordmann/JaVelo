@@ -1,10 +1,12 @@
 package ch.epfl.javelo.routing;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 6.3.1
@@ -50,6 +52,16 @@ public final class MultiRoute implements Route {
     //TODO FLEMME DE REFLECHIR LA
     @Override
     public int indexOfSegmentAt(double position) {
+        double actualPosition = 0;
+        position = Math2.clamp(0,position,length());
+
+        for (Route segment : segments) {
+            actualPosition += segment.length();
+            if (position < actualPosition) {
+                //TODO
+            }
+if ()
+        }
         return 0;
     }
 
@@ -113,5 +125,18 @@ public final class MultiRoute implements Route {
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MultiRoute that = (MultiRoute) o;
+        return Objects.equals(segments, that.segments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(segments);
     }
 }
