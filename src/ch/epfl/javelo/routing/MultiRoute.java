@@ -120,7 +120,7 @@ public final class MultiRoute implements Route {
         position = Math2.clamp(0, position, this.length());
         for (Route segment : segments) {
             actualPosition += segment.length();
-            if (position <= actualPosition)  return segment.pointAt(position - previousPosition);
+            if (position <= actualPosition) return segment.pointAt(position - previousPosition);
             previousPosition += segment.length();
         }
         return null;
