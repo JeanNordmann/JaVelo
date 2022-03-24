@@ -124,6 +124,7 @@ public final class MultiRoute implements Route {
         return 0;
     }
 
+
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         return null;
