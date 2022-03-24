@@ -49,7 +49,6 @@ public final class MultiRoute implements Route {
      * position donnée.
      */
 
-    //TODO FLEMME DE REFLECHIR LA
     @Override
     public int indexOfSegmentAt(double position) {
         double actualPosition = 0, previousPosition = 0;
