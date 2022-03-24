@@ -1,5 +1,6 @@
 package ch.epfl.javelo.routing;
 
+import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.projection.PointCh;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,8 +13,8 @@ public class MultiRouteTest {
 
     @Test
     void lengthMethodIsWorkingProperly() {
-        Edge edge1 = new Edge(0, 1, new PointCh(2500000, 1200000), new PointCh(2501000, 1200000), 1000, null);
-        Edge edge2 = new Edge(1, 2, new PointCh(2501000, 1200000), new PointCh(2502000, 1200000), 1000, null);
+        Edge edge1 = new Edge(0, 1, new PointCh(2500000, 1200000), new PointCh(2501000, 1200000), 1000, Functions.constant(100));
+        Edge edge2 = new Edge(1, 2, new PointCh(2501000, 1200000), new PointCh(2502000, 1200000), 1000, Functions.constant(100));
         Edge edge3 = new Edge(2, 3, new PointCh(2502000, 1200000), new PointCh(2503000, 1200000), 1000, null);
         Edge edge4 = new Edge(3, 4, new PointCh(2503000, 1200000), new PointCh(2504000, 1200000), 1000, null);
         Edge edge5 = new Edge(4, 5, new PointCh(2504000, 1200000), new PointCh(2505000, 1200000), 1000, null);
@@ -56,6 +57,9 @@ public class MultiRouteTest {
 
         assertEquals(6000, multiRoute.length());
         assertEquals(5, multiRoute.indexOfSegmentAt(5500));
+        assertEquals(new PointCh(2504000, 1200000), multiRoute.pointAt(4000));
+        assertEquals(5, multiRoute.nodeClosestTo(4600));
+        assertEquals(3, multiRoute.nodeClosestTo(3200));
     }
 
     @Test

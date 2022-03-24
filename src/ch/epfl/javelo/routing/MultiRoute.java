@@ -109,18 +109,58 @@ public final class MultiRoute implements Route {
         return pointChList;
     }
 
+    /**
+     * @param position Position donnée.
+     * @return Retourne le point se trouvant à la position donnée le
+     * long de l'itinéraire.
+     */
+
     @Override
     public PointCh pointAt(double position) {
+        double actualPosition = 0, previousPosition = 0;
+        position = Math2.clamp(0, position, this.length());
+        for (Route segment : segments) {
+            actualPosition += segment.length();
+            if (position <= actualPosition)  return segment.pointAt(position - previousPosition);
+            previousPosition += segment.length();
+        }
         return null;
     }
 
+    /**
+     * @param position Position donnée.
+     * @return Retourne l'altitude à la position donnée le long
+     * de l'itinéraire, qui peut valoir NaN si l'arête contenant
+     * cette position n'a pas de profil.
+     */
+
     @Override
     public double elevationAt(double position) {
+        double actualPosition = 0, previousPosition = 0;
+        position = Math2.clamp(0, position, this.length());
+        for (Route segment : segments) {
+            actualPosition += segment.length();
+            if (position <= actualPosition) return segment.elevationAt(position - previousPosition);
+            previousPosition += segment.length();
+        }
         return 0;
     }
 
+
     @Override
     public int nodeClosestTo(double position) {
+        double actualPosition = 0, previousPosition = 0;
+        int node = 0;
+        position = Math2.clamp(0, position, this.length());
+        for (Route segment : segments) {
+            actualPosition += segment.length();
+            if (position <= actualPosition) {
+                 node += segment.nodeClosestTo(position - previousPosition);
+                 return node;
+            }
+            node += segment.nodeClosestTo(actualPosition);
+            previousPosition += segment.length();
+        }
         return 0;
     }
 
