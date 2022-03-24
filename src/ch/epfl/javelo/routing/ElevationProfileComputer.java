@@ -38,12 +38,11 @@ public final class ElevationProfileComputer {
         Preconditions.checkArgument(maxStepLength > 0);
         int nbrEchantillons = (int) Math.ceil(route.length()/maxStepLength) + 1;
         //TODO pk ne faut il pas mettre ça
-        /*maxStepLength = (route.length()-1.0)/nbrEchantillons;*/
+        maxStepLength = route.length()/(nbrEchantillons-1.0);
         float[] floatsProfile = new float[nbrEchantillons];
         for (int i = 0; i < nbrEchantillons; i++) {
             floatsProfile[i] = (float) route.elevationAt(maxStepLength * i);
         }
-        System.out.println(Arrays.toString(floatsProfile));
         //Remplir les trous du début du tableau.
         for (int i = 0; i < nbrEchantillons; i++) {
             if(!Float.isNaN(floatsProfile[i])) {
@@ -80,7 +79,6 @@ public final class ElevationProfileComputer {
                 i = endIndex;
             }
         }
-        System.out.println(Arrays.toString(floatsProfile));
     return new ElevationProfile(route.length(), floatsProfile);
     }
 
