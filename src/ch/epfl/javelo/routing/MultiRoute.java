@@ -89,7 +89,7 @@ public final class MultiRoute implements Route {
         for (Route segment : segments) {
             edgeList.addAll(segment.edges());
         }
-        return List.copyOf(edgeList);
+        return edgeList;
     }
 
     /**
@@ -108,7 +108,7 @@ public final class MultiRoute implements Route {
         return pointChList;
     }
 
-    /**
+   /**
      * @param position Position donnée.
      * @return Retourne le point se trouvant à la position donnée le
      * long de l'itinéraire.

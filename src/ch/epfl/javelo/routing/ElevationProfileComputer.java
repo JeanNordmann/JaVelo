@@ -32,12 +32,9 @@ public final class ElevationProfileComputer {
      * si cet espacement n'est pas strictement positif.
      */
 
-    //TODO A TESTER L'EQUIPAGE
-
     public static ElevationProfile elevationProfile(Route route, double maxStepLength) {
         Preconditions.checkArgument(maxStepLength > 0);
         int nbrEchantillons = (int) Math.ceil(route.length()/maxStepLength) + 1;
-        //TODO pk ne faut il pas mettre ça
         maxStepLength = route.length()/(nbrEchantillons-1.0);
         float[] floatsProfile = new float[nbrEchantillons];
         for (int i = 0; i < nbrEchantillons; i++) {
