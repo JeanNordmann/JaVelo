@@ -45,9 +45,9 @@ public class RouteComputer {
     //TODO attention ne pas confondre les edgeID et les edgesIndex
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
 
-        /**
-         * Record utile pour stoker les noeuds en cours d'utilisation avec leur distance associée.
-         */
+
+        // Record utile pour stoker les noeuds en cours d'utilisation avec leur distance associée.
+
 
         record WeightedNode(int nodeId, float distance, int previousNode, int edgeIndex)
                 implements Comparable<WeightedNode> {
@@ -82,7 +82,7 @@ public class RouteComputer {
 
             int actualNodeIndex = actualWeightedNodeFrom.nodeId;
             int nbrEdgesSortantesDuNode = graph.nodeOutDegree(actualNodeIndex);
-            int targetNodeId = 0, edgeId = -1;
+            int targetNodeId , edgeId;
 
             //Ajout de tous les nodes connectés aux arêtes sortantes du node récupéré.
             for (int i = 0; i < nbrEdgesSortantesDuNode; i++) {
@@ -90,11 +90,7 @@ public class RouteComputer {
                 targetNodeId = graph.edgeTargetNodeId(edgeId);
                 //Sauter les nodes dont la distance à déjà été calculée.
                 if (weightedNodeList.get(targetNodeId).distance != Float.POSITIVE_INFINITY) continue;
-                //Si on a atteint le dernier node.
-                if (targetNodeId == endNodeId) {
-                    stop = false;
-                    break;
-                }
+
 
                 //Ajout du WeightedNode avec la distance calculée selon la CostFunction.
                 float distance = (float) graph.edgeLength(edgeId);
@@ -102,6 +98,11 @@ public class RouteComputer {
                 distance += actualWeightedNodeFrom.distance;
                 weightedNodeList.set(targetNodeId, new WeightedNode(targetNodeId, distance, actualNodeIndex, i));
                 weightedNodePriorityQueue.add(weightedNodeList.get(targetNodeId));
+                //Si on a atteint le dernier node.
+                if (targetNodeId == endNodeId) {
+                    stop = false;
+                    break;
+                }
             }
             } while (stop);
 
