@@ -22,7 +22,7 @@ public class RouteComputer {
 
     /**
      * edgeIdETPASSONINDEX
-     * @param graph le graph donné
+     * @param graph Le graph donné
      * @param costFunction la fonction de coût donnée
      */
     RouteComputer(Graph graph, CostFunction costFunction) {
@@ -33,8 +33,8 @@ public class RouteComputer {
 
     /**
      *
-     * @param startNodeId noeud de départ
-     * @param endNodeId noeud de fin
+     * @param startNodeId Nœud de départ
+     * @param endNodeId Nœud de fin
      * @return l'itinéraire de coût total minimal allant du nœud d'identité startNodeId au nœud d'identité endNodeId
      * dans le graphe passé au constructeur, ou null si aucun itinéraire n'existe.
      * Si le nœud de départ et d'arrivée sont identiques, lève IllegalArgumentException.
@@ -57,9 +57,11 @@ public class RouteComputer {
             }
         }
 
-        //début de la méthode
+        //Début de la méthode
         Preconditions.checkArgument(startNodeId != endNodeId);
-        int[] nodes = new int[graph.nodeCount()];
+
+        //Remplissage de la liste des WeightedNodes, avec leurs valeurs par défaut.
+        List<WeightedNode> weightedNodeList = new ArrayList<>();
         for (int i = 0; i < graph.nodeCount(); i++) {
             weightedNodeList.add(new WeightedNode(i, Float.POSITIVE_INFINITY, -1,-1));
         }
