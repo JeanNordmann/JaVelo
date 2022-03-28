@@ -35,6 +35,7 @@ public final class SingleRoute implements Route {
 
     private final List<Edge> edges;
     private final double[] positionsTab;
+    private final List<Edge> copyOfEdges;
 
     /**
      * Constructeur public, initialisant une SingleRoute,
@@ -50,6 +51,8 @@ public final class SingleRoute implements Route {
         for (int i = 1; i <= edges.size(); i++) {
             positionsTab[i] = edges.get(i - 1).length() + positionsTab[i - 1];
         }
+        this.copyOfEdges = List.copyOf(edges);
+
     }
 
     /**
@@ -85,7 +88,7 @@ public final class SingleRoute implements Route {
 
     @Override
     public List<Edge> edges() {
-        return List.copyOf(edges);
+        return copyOfEdges;
     }
 
     /**
