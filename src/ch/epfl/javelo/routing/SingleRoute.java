@@ -4,6 +4,7 @@ import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,6 @@ public final class SingleRoute implements Route {
 
     private final List<Edge> edges;
     private final double[] positionsTab;
-    private final List<Edge> copyOfEdges;
 
     /**
      * Constructeur public, initialisant une SingleRoute,
@@ -45,14 +45,12 @@ public final class SingleRoute implements Route {
 
     public SingleRoute(List<Edge> edges) {
         Preconditions.checkArgument(!edges.isEmpty());
-        this.edges = edges;
+        this.edges = List.copyOf(edges);
         positionsTab = new double[edges.size() + 1];
         positionsTab[0] = 0;
         for (int i = 1; i <= edges.size(); i++) {
             positionsTab[i] = edges.get(i - 1).length() + positionsTab[i - 1];
         }
-        this.copyOfEdges = List.copyOf(edges);
-
     }
 
     /**
@@ -88,7 +86,7 @@ public final class SingleRoute implements Route {
 
     @Override
     public List<Edge> edges() {
-        return copyOfEdges;
+        return new ArrayList<>(edges);
     }
 
     /**
