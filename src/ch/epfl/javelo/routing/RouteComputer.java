@@ -49,11 +49,11 @@ public class RouteComputer {
         // Record utile pour stoker les noeuds en cours d'utilisation avec leur distance associée.
 
 
-        record WeightedNode(int nodeId, float distance, int previousNode, int edgeIndex)
+        record WeightedNode(int nodeId, float distance, int previousNode, int edgeIndex, float distanceAndFliesDisstance)
                 implements Comparable<WeightedNode> {
             @Override
             public int compareTo(WeightedNode that) {
-                return Float.compare(this.distance, that.distance);
+                return Float.compare(this.distanceAndFliesDisstance, that.distanceAndFliesDisstance);
             }
         }
 
@@ -63,10 +63,10 @@ public class RouteComputer {
         //Remplissage de la liste des WeightedNodes, avec leurs valeurs par défaut.
         List<WeightedNode> weightedNodeList = new ArrayList<>();
         for (int i = 0; i < graph.nodeCount(); i++) {
-            weightedNodeList.add(new WeightedNode(i, Float.POSITIVE_INFINITY, -1,-1));
+            weightedNodeList.add(new WeightedNode(i, Float.POSITIVE_INFINITY, -1,-1, Float.POSITIVE_INFINITY));
         }
         //Initialisation de la distance du premier nœud.
-        weightedNodeList.set(startNodeId, new WeightedNode(startNodeId, 0, startNodeId,-1));
+        weightedNodeList.set(startNodeId, new WeightedNode(startNodeId, 0, startNodeId,-1, Float.POSITIVE_INFINITY));
 
         //Création de la WeightedNodePriorityQueue (correspond à en_exploration), et ajout du premier
         //nœud.
@@ -96,7 +96,9 @@ public class RouteComputer {
                 float distance = (float) graph.edgeLength(edgeId);
                 distance *= (float) costFunction.costFactor(actualNodeIndex, edgeId);
                 distance += actualWeightedNodeFrom.distance;
-                weightedNodeList.set(targetNodeId, new WeightedNode(targetNodeId, distance, actualNodeIndex, i));
+                float distanceAndFlieDistance = distance +
+                        (float) graph.nodePoint(endNodeId).distanceTo(graph.nodePoint(targetNodeId));
+                weightedNodeList.set(targetNodeId, new WeightedNode(targetNodeId, distance, actualNodeIndex, i, distanceAndFlieDistance));
                 weightedNodePriorityQueue.add(weightedNodeList.get(targetNodeId));
                 //Si on a atteint le dernier node.
                 if (targetNodeId == endNodeId) {

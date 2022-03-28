@@ -40,7 +40,7 @@ public final class MultiRoute implements Route {
 
     public MultiRoute(List<Route> segments) {
         Preconditions.checkArgument(!segments.isEmpty());
-        this.segments = segments;
+        this.segments = List.copyOf(segments);
     }
 
     /**
