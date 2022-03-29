@@ -8,6 +8,8 @@ import java.util.List;
  *
  *
  * Type énuméré fourni dans une archive.
+ *
+ * @author CS-108
  */
 
 public enum Attribute {

@@ -47,8 +47,7 @@ public class RouteComputer {
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
 
         //Record utile pour stoker les nœuds en cours d'utilisation avec leur distance associée.
-//TODO viré
-        record WeightedNode(int nodeId, float distance, int previousNode, int edgeIndex,
+        record WeightedNode(int nodeId, float distance, int previousNode,
                             float distanceAndFliesDistance) implements Comparable<WeightedNode> {
             @Override
             public int compareTo(WeightedNode that) {
@@ -64,7 +63,7 @@ public class RouteComputer {
         //Remplissage de la liste des WeightedNodes, avec leurs valeurs par défaut.
         List<WeightedNode> weightedNodeList = new ArrayList<>();
         for (int i = 0; i < graph.nodeCount(); i++) {
-            weightedNodeList.add(new WeightedNode(i, Float.POSITIVE_INFINITY, -1,-1,
+            weightedNodeList.add(new WeightedNode(i, Float.POSITIVE_INFINITY, -1,
                     Float.POSITIVE_INFINITY));
         }
         //Initialisation de la distance du premier nœud.
@@ -104,10 +103,10 @@ public class RouteComputer {
                 //Si on a atteint le dernier node.
                 if (targetNodeId == endNodeId) break;
             }
-            } while (stop);
+            } while (targetNodeId != endNodeId);
 
         //Construction de la liste d'index du chemin trouvé.
-        List<Edge> wayEdgeList = new ArrayList<>();
+        List<Edge> wayEdgeList = new LinkedList<>();
 
         int edgeIndex = -1, edgeId, previousNodeIndex = endNodeId;
         WeightedNode actualWeightedNodeFrom;
