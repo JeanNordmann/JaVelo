@@ -161,10 +161,13 @@ public final class SingleRoute implements Route {
      * et se trouvant le plus proche de la position donnée.
      */
 
-    @Override
     public int nodeClosestTo(double position) {
-        int index = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
-        if (index >= 0) return index;
+        double clampedPosition = Math2.clamp(0, position, length());
+        int index = Arrays.binarySearch(positionsTab, clampedPosition);
+
+        if (index == edges.size()) return edges.get(index - 1).toNodeId();
+        if (index >= 0) return edges.get(index).fromNodeId();
+
         double fstNodePos = positionsTab[-index - 2];
         double sndNodePos = positionsTab[-index - 1];
 

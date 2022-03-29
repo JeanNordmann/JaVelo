@@ -148,16 +148,11 @@ public final class MultiRoute implements Route {
 
     @Override
     public int nodeClosestTo(double position) {
-        double actualPosition = 0, previousPosition = 0;
-        int node = 0;
-        position = Math2.clamp(0, position, this.length());
+        double nextPosition = 0, previousPosition =0;
+        double clampedPosition = Math2.clamp(0, position, this.length());
         for (Route segment : segments) {
-            actualPosition += segment.length();
-            if (position <= actualPosition) {
-                 node += segment.nodeClosestTo(position - previousPosition);
-                 return node;
-            }
-            node += segment.nodeClosestTo(actualPosition);
+            nextPosition += segment.length();
+        if (clampedPosition - nextPosition <= 0) return segment.nodeClosestTo(clampedPosition - previousPosition);
             previousPosition += segment.length();
         }
         return 0;
@@ -167,10 +162,13 @@ public final class MultiRoute implements Route {
 
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-        RoutePoint routePoint = RoutePoint.NONE;
+        RoutePoint routePointTemp, routePoint = RoutePoint.NONE;
         double actualPosition = 0, previousPosition = 0;
         for (Route segment : segments) {
-            routePoint = routePoint.min(segment.pointClosestTo(point));
+            routePointTemp = segment.pointClosestTo(point);
+            routePoint = routePoint.min(routePointTemp.point(), actualPosition + routePointTemp.position(),
+                    routePointTemp.distanceToReference());
+            actualPosition += segment.length();
         }
         return routePoint;
     }

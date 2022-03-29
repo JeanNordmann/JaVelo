@@ -1,3 +1,4 @@
+
 package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Preconditions;
@@ -5,6 +6,7 @@ import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
+
 
 /**
  * 6.3.4
@@ -15,20 +17,24 @@ import java.util.function.DoubleUnaryOperator;
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
  */
+
 public class RouteComputer {
 
     private final Graph graph;
     private final CostFunction costFunction;
+
 
     /**
      * edgeIdETPASSONINDEX
      * @param graph Le graph donné
      * @param costFunction la fonction de coût donnée
      */
-    RouteComputer(Graph graph, CostFunction costFunction) {
+
+    public RouteComputer(Graph graph, CostFunction costFunction) {
         this.graph = graph;
         this.costFunction = costFunction;
     }
+
 
 
     /**
@@ -41,7 +47,8 @@ public class RouteComputer {
      *
      * Si plusieurs itinéraires de coût total minimal existent, bestRouteBetween retourne n'importe lequel d'entre eux.
      */
-//TODO relire si forme de tableau adapté aux opérations effectuées !
+
+    //TODO relire si forme de tableau adapté aux opérations effectuées !
     //TODO attention ne pas confondre les edgeID et les edgesIndex
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
 
@@ -53,7 +60,10 @@ public class RouteComputer {
                 implements Comparable<WeightedNode> {
             @Override
             public int compareTo(WeightedNode that) {
-                return Float.compare(this.distanceAndFliesDisstance, that.distanceAndFliesDisstance);
+                //sans optimisation
+                /*return Float.compare(this.distance, that.distance);*/
+
+                return Float.compare(this.distanceAndFliesDistance, that.distanceAndFliesDistance);
             }
         }
 
@@ -146,3 +156,4 @@ public class RouteComputer {
         return new SingleRoute(wayEdgeList);
     }
 }
+
