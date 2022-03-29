@@ -38,7 +38,6 @@ public class RouteComputer {
 
 
     /**
-     *
      * @param startNodeId Nœud de départ
      * @param endNodeId Nœud de fin
      * @return l'itinéraire de coût total minimal allant du nœud d'identité startNodeId au nœud d'identité endNodeId
@@ -52,12 +51,10 @@ public class RouteComputer {
     //TODO attention ne pas confondre les edgeID et les edgesIndex
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
 
-
-        // Record utile pour stoker les noeuds en cours d'utilisation avec leur distance associée.
-
-
-        record WeightedNode(int nodeId, float distance, int previousNode, int edgeIndex, float distanceAndFliesDisstance)
-                implements Comparable<WeightedNode> {
+        //Record utile pour stoker les nœuds en cours d'utilisation avec leur distance associée.
+//TODO viré
+        record WeightedNode(int nodeId, float distance, int previousNode, int edgeIndex,
+                            float distanceAndFliesDistance) implements Comparable<WeightedNode> {
             @Override
             public int compareTo(WeightedNode that) {
                 //sans optimisation
@@ -73,10 +70,12 @@ public class RouteComputer {
         //Remplissage de la liste des WeightedNodes, avec leurs valeurs par défaut.
         List<WeightedNode> weightedNodeList = new ArrayList<>();
         for (int i = 0; i < graph.nodeCount(); i++) {
-            weightedNodeList.add(new WeightedNode(i, Float.POSITIVE_INFINITY, -1,-1, Float.POSITIVE_INFINITY));
+            weightedNodeList.add(new WeightedNode(i, Float.POSITIVE_INFINITY, -1,-1,
+                    Float.POSITIVE_INFINITY));
         }
         //Initialisation de la distance du premier nœud.
-        weightedNodeList.set(startNodeId, new WeightedNode(startNodeId, 0, startNodeId,-1, Float.POSITIVE_INFINITY));
+        weightedNodeList.set(startNodeId, new WeightedNode(startNodeId, 0, startNodeId,-1,
+                Float.POSITIVE_INFINITY));
 
         //Création de la WeightedNodePriorityQueue (correspond à en_exploration), et ajout du premier
         //nœud.
@@ -101,14 +100,14 @@ public class RouteComputer {
                 //Sauter les nodes dont la distance à déjà été calculée.
                 if (weightedNodeList.get(targetNodeId).distance != Float.POSITIVE_INFINITY) continue;
 
-
                 //Ajout du WeightedNode avec la distance calculée selon la CostFunction.
                 float distance = (float) graph.edgeLength(edgeId);
                 distance *= (float) costFunction.costFactor(actualNodeIndex, edgeId);
                 distance += actualWeightedNodeFrom.distance;
-                float distanceAndFlieDistance = distance +
+                float distanceAndFlyDistance = distance +
                         (float) graph.nodePoint(endNodeId).distanceTo(graph.nodePoint(targetNodeId));
-                weightedNodeList.set(targetNodeId, new WeightedNode(targetNodeId, distance, actualNodeIndex, i, distanceAndFlieDistance));
+                weightedNodeList.set(targetNodeId, new WeightedNode(targetNodeId, distance, actualNodeIndex,
+                        i, distanceAndFlyDistance));
                 weightedNodePriorityQueue.add(weightedNodeList.get(targetNodeId));
                 //Si on a atteint le dernier node.
                 if (targetNodeId == endNodeId) {

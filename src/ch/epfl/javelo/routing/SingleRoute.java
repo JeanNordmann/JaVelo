@@ -171,7 +171,8 @@ public final class SingleRoute implements Route {
         double fstNodePos = positionsTab[-index - 2];
         double sndNodePos = positionsTab[-index - 1];
 
-        return (position - fstNodePos) <= ((sndNodePos - fstNodePos) / 2.0) ? -index - 2 : -index - 1;
+        return (clampedPosition - fstNodePos) <= ((sndNodePos - fstNodePos) / 2.0) ?
+                edges.get(-index - 2).fromNodeId() : edges.get(-index - 2).toNodeId();
     }
 
     /**

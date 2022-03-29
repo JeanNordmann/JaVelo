@@ -145,6 +145,11 @@ public final class MultiRoute implements Route {
         return 0;
     }
 
+    /**
+     * @param position Position donnée.
+     * @return Retourne l'identité du nœud appartenant à l'itinéraire et se
+     * trouvant le plus proche de la position donnée.
+     */
 
     @Override
     public int nodeClosestTo(double position) {
@@ -158,8 +163,13 @@ public final class MultiRoute implements Route {
         return 0;
     }
 
-    //TODO CORRIGER PROBLEME CASSIO
+    /**
+     * @param point Point de référence donné.
+     * @return Retourne le point de l'itinéraire se trouvant le plus proche du
+     * point de référence donné.
+     */
 
+    //TODO CORRIGER PROBLEME CASSIO
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint routePointTemp, routePoint = RoutePoint.NONE;
@@ -172,6 +182,10 @@ public final class MultiRoute implements Route {
         }
         return routePoint;
     }
+
+    //Utile pour comparer des objets de type MultiRoute dans les tests,
+    //qui sans cette méthode, comparent les références des objets, et pas
+    //leurs contenus.
 
     @Override
     public boolean equals(Object o) {
