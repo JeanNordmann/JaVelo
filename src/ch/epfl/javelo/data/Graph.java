@@ -91,7 +91,8 @@ public final class Graph {
     }
 
     /**
-     * Méthode permettant de lire un fichier bin et de le retourner en ByteBuffer.
+     * Méthode privée pour éviter la répétition de code.
+     * Elle permet de lire un fichier bin et de le retourner en ByteBuffer.
      * ATTENTION à ensuite "recast" en Buffer du type voulu (int/short...)
      * @param basePath Chemin d'accès donné.
      * @return Retourne le fichier bin lu en ByteBuffer.

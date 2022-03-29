@@ -6,6 +6,7 @@ import java.util.List;
  * 2.3.6
  * Attribute
  *
+ *
  * Type énuméré fourni dans une archive.
  */
 

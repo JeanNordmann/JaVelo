@@ -172,7 +172,6 @@ public class MultiRouteTest {
         assertEquals(3,multiRoute.nodeClosestTo(77000));
         assertEquals(5,multiRoute.nodeClosestTo(170000));
         assertEquals(6,multiRoute.nodeClosestTo(243000));
-        //TODO cas limites
         assertEquals(6,multiRoute.nodeClosestTo(4_500_000));
         assertEquals(0,multiRoute.nodeClosestTo(-170000));
     }

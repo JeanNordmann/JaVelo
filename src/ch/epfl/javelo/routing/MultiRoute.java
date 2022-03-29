@@ -169,11 +169,10 @@ public final class MultiRoute implements Route {
      * point de référence donné.
      */
 
-    //TODO CORRIGER PROBLEME CASSIO
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint routePointTemp, routePoint = RoutePoint.NONE;
-        double actualPosition = 0, previousPosition = 0;
+        double actualPosition = 0;
         for (Route segment : segments) {
             routePointTemp = segment.pointClosestTo(point);
             routePoint = routePoint.min(routePointTemp.point(), actualPosition + routePointTemp.position(),

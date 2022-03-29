@@ -14,13 +14,12 @@ public interface CostFunction {
 
     /**
      * @param nodeId Nœud d'identité donnée.
-     * @param edgeIdETPASSONINDEX Arête d'identité donnée.
+     * @param edgeId Arête d'identité donnée.
      * @return Retourne le facteur par lequel la longueur d'arête
      * d'identité donnée, partant du nœud d'identité donnée, doit
      * être multipliée ; ce facteur doit impérativement être
      * supérieur ou égal à 1.
      */
-//TODO mettreun nom plus propre (edgeId)
-    double costFactor(int nodeId, int edgeIdETPASSONINDEX);
+    double costFactor(int nodeId, int edgeId);
 
 }

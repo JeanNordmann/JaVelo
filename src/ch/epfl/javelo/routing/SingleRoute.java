@@ -88,7 +88,6 @@ public final class SingleRoute implements Route {
     public List<Edge> edges() {
         return new ArrayList<>(edges);
     }
-    //TODO faire la même pour multiroute
 
     /**
      * @return Retourne la totalité des points situés aux
