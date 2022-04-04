@@ -3,10 +3,7 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.projection.PointCh;
-
 import java.util.*;
-import java.util.function.DoubleUnaryOperator;
 
 
 /**
@@ -26,7 +23,8 @@ public class RouteComputer {
 
     /**
      * edgeIdETPASSONINDEX
-     * @param graph Le graph donné
+     *
+     * @param graph        Le graph donné
      * @param costFunction la fonction de coût donnée
      */
 
@@ -37,26 +35,27 @@ public class RouteComputer {
 
     /**
      * @param startNodeId Nœud de départ
-     * @param endNodeId Nœud de fin
+     * @param endNodeId   Nœud de fin
      * @return l'itinéraire de coût total minimal allant du nœud d'identité startNodeId au nœud d'identité endNodeId
      * dans le graphe passé au constructeur, ou null si aucun itinéraire n'existe.
      * Si le nœud de départ et d'arrivée sont identiques, lève IllegalArgumentException.
-     *
+     * <p>
      * Si plusieurs itinéraires de coût total minimal existent, bestRouteBetween retourne n'importe lequel d'entre eux.
      */
 
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
 
         //Record utile pour stoker les nœuds en cours d'utilisation avec leur distance associée.
-        record WeightedNode(int nodeId, float distance, int previousNode,
-                            float distanceAndFliesDistance) implements Comparable<WeightedNode> {
+        //l'attribut distance représente : distance parcourue + distance à vol d'oiseau
+
+        record WeightedNode(int nodeId, float distance)
+                implements Comparable<WeightedNode> {
             @Override
             public int compareTo(WeightedNode that) {
-                //sans optimisation
-                /*return Float.compare(this.distance, that.distance);*/
-                return Float.compare(this.distanceAndFliesDistance, that.distanceAndFliesDistance);
+                return Float.compare(this.distance, that.distance);
             }
         }
+
 
         //Début de la méthode
         Preconditions.checkArgument(startNodeId != endNodeId);
@@ -64,101 +63,90 @@ public class RouteComputer {
         //Remplissage de la liste des WeightedNodes, avec leurs valeurs par défaut.
         List<WeightedNode> weightedNodeList = new ArrayList<>();
         for (int i = 0; i < graph.nodeCount(); i++) {
-            weightedNodeList.add(new WeightedNode(i, Float.POSITIVE_INFINITY, -1,
-                    Float.POSITIVE_INFINITY));
+            weightedNodeList.add(new WeightedNode(i, Float.POSITIVE_INFINITY));
         }
-        //Initialisation de la distance du premier nœud.
-        weightedNodeList.set(startNodeId, new WeightedNode(startNodeId, 0, startNodeId,
-                Float.POSITIVE_INFINITY));
 
-        //Création de la WeightedNodePriorityQueue (correspond à en_exploration), et ajout du premier
-        //nœud.
-        Queue<WeightedNode> weightedNodePriorityQueue = new PriorityQueue<>();
-        weightedNodePriorityQueue.add(weightedNodeList.get(startNodeId));
-        List<Integer> listeIndiceNoeud = new ArrayList<>();
+        //Remplissage d'un tableau avec pour chaque point (position dans le tableau), sa distance
+        //parcourue pour arriver jusque-là (distance par défaut : infini)
 
+        double[] lengthTraveled = new double[graph.nodeCount()];
+        for (int i = 0; i < graph.nodeCount(); i++) {
+            lengthTraveled[i] = Double.POSITIVE_INFINITY;
+        }
 
-        // Définini ici et pas dans le while pour pouvoir y accéder dans la condition d'arrêt.
-        int targetNodeId =-1;
-        do {
-            //Récupération du WeightedNode qui a la plus petite distance, dans la WeightedNodePriorityQueue.
-            WeightedNode actualWeightedNodeFrom = weightedNodePriorityQueue.remove();
+        //Remplissage d'un tableau de previousNode, ce tableau contient pour chaque nœud l'identité du nœud
+        //précédant. (Information utile à la reconstruction de l'itinéraire.)
+        int[] previousNodeIds = new int[graph.nodeCount()];
 
-            int actualNodeIndex = actualWeightedNodeFrom.nodeId;
-            int nbrEdgesSortantesDuNode = graph.nodeOutDegree(actualNodeIndex);
-            int edgeId;
+        //Initialisation de la distance du nœud de départ du tableau à 0.
+        lengthTraveled[startNodeId] = 0;
 
-            //Ajout de tous les nodes connectés aux arêtes sortantes du node récupéré.
-            for (int i = 0; i < nbrEdgesSortantesDuNode; i++) {
-                edgeId = graph.nodeOutEdgeId(actualNodeIndex, i);
-                targetNodeId = graph.edgeTargetNodeId(edgeId);
-                //Sauter les nodes dont la distance à déjà été calculée.
-                if (weightedNodeList.get(targetNodeId).distance != Float.POSITIVE_INFINITY) continue;
+        //Création de la weightedNodePriorityQueue (équivalent de "en Exploration")
+        Queue<WeightedNode> weightedNodeQueue = new PriorityQueue<>();
 
-                //Ajout du WeightedNode avec la distance calculée selon la CostFunction.
-                float distance = (float) graph.edgeLength(edgeId);
-                distance *= (float) costFunction.costFactor(actualNodeIndex, edgeId);
-                distance += actualWeightedNodeFrom.distance;
-                float distanceAndFlyDistance = distance +
-                        (float) graph.nodePoint(endNodeId).distanceTo(graph.nodePoint(targetNodeId));
-                weightedNodeList.set(targetNodeId, new WeightedNode(targetNodeId, distance,actualNodeIndex, distanceAndFlyDistance));
-                weightedNodePriorityQueue.add(weightedNodeList.get(targetNodeId));
-                listeIndiceNoeud.add(targetNodeId);
-                if (listeIndiceNoeud.size() == weightedNodeList.size()) return null;
-                //Si on a atteint le dernier node.
-                if (targetNodeId == endNodeId) break;
-            }
+        //Ajout du premier noeud au tableau
+        weightedNodeQueue.add(weightedNodeList.get(startNodeId));
 
-            } while (targetNodeId != endNodeId);
+        //Boucle qui s'exécute jusqu'au moment où on a trouvé l'itinéraire le plus court.
+        //Condition d'arrêt : la liste de nœuds en exploration est vide (i.e aucun itinéraire a été trouvé)
 
-        //Construction de la liste d'index du chemin trouvé.
-        List<Edge> wayEdgeList = new LinkedList<>();
+        //Définition en dehors du while pour éviter de les redéfinir à chaque appelle.
+        WeightedNode actualWeightedNode;
+        int actualNodeId, actualEdgeId, targetNodeId, index;
+        while (!weightedNodeQueue.isEmpty()) {
+            //Remove le noeud dont la distance parcourue + distance à vol d'oiseau est la plus petite,
+            actualWeightedNode = weightedNodeQueue.remove();
+            actualNodeId = actualWeightedNode.nodeId;
+            //Ajout des tous les nœuds connectés au nœud en exploration
+            for (int i = 0; i < graph.nodeOutDegree(actualNodeId); i++) {
+                actualEdgeId = graph.nodeOutEdgeId(actualNodeId, i);
+                targetNodeId = graph.edgeTargetNodeId(actualEdgeId);
 
-        int edgeIndex = 0, edgeId, previousNodeIndex = endNodeId;
-        WeightedNode actualWeightedNodeFrom;
+                //Vérification que le nœud connecté à la i-ème arête sortante n'ait pas encore été exploré.
+                if(weightedNodeList.get(targetNodeId).distance != Float.POSITIVE_INFINITY) continue;
+                //Mise à jour de l'attribut previous node du tableau. (Qui est l'ID du nœud actuel à la position de
+                //l'identité du nœud connecté)
+                previousNodeIds[targetNodeId] = actualNodeId;
 
-        //Initialisation des attributs de Edge, ainsi qu'elle-même.
-        int fromNodeId, toNodeId;
-        PointCh fromPoint, toPoint;
-        double length;
-        DoubleUnaryOperator profile;
-        Edge edge;
+                //Vérification si nœud en exploration == endNode
+                if (actualNodeId == endNodeId) {
+                    //initialisation de la liste d'arête utile à la création de la route à retourner
+                    List<Edge> edgeList = new LinkedList<>();
 
-        //Construction et ajout des Edge à la wayEdgeList.
-        do {
-            actualWeightedNodeFrom = weightedNodeList.get(previousNodeIndex);
-            // Récupération du EdgeIndex (info anciennement stockée pour tout les WeightedNodes dans le record), mais
-            // ce n'était pas optimisé car on stockait cette info alors qu'elle est "retrouvable" avec "previousNode"
-            // et de plus, elle n'est utile que pour les noeuds de l'itinéraire le plus court.
+                    //Construction de l'itinéraire dans l'ordre inverse.
+                    //Condition d'arrêt : le noeud précédent == startNode
+                    while (previousNodeIds[i] != startNodeId) {
+                        //Récupération de l'index de l'arête sortante du nœud précédant allant jusqu'au nœud actuel.
+                        index = 0;
+                        while (graph.nodeOutEdgeId(previousNodeIds[targetNodeId], index) != previousNodeIds[i]) {
+                            ++index;
+                        }
+                        //Ajout de l'arête à la liste
+                        edgeList.add(Edge.of(graph, graph.nodeOutEdgeId(
+                                previousNodeIds[targetNodeId], index), previousNodeIds[targetNodeId], targetNodeId));
 
-            fromNodeId =actualWeightedNodeFrom.previousNode  ;
-            toNodeId = previousNodeIndex;
-            int maxEdgeOutFromNodeID = graph.nodeOutDegree(fromNodeId);
-            for (int i = 0; i < maxEdgeOutFromNodeID; i++) {
-                if (graph.nodeOutEdgeId(fromNodeId, i) == toNodeId) {
-                    edgeIndex = i;
-                    break;
+                    }
+                    //Inversion de l'ordre des éléments de la liste puis retour de la route construite à l'aide
+                    //De la liste.
+                    Collections.reverse(edgeList);
+                    return new SingleRoute(edgeList);
                 }
+
+                //Ajout dans le tableau de distance, la distance du chemin terrestre (incluant CostFunction)
+                float distance = (float) graph.edgeLength(actualEdgeId);
+                distance *= (float) costFunction.costFactor(actualNodeId, actualEdgeId);
+                distance += lengthTraveled[actualNodeId];
+                lengthTraveled[targetNodeId] = distance;
+                distance += graph.nodePoint(actualNodeId).distanceTo(graph.nodePoint(targetNodeId));
+
+                //Modification de la distance du WeightNode selon A* dans l'attribut distance, qui représente
+                //La somme de la distance parcourue + la distance à vol d'oiseau.
+                weightedNodeList.set(targetNodeId, new WeightedNode(targetNodeId, distance));
+                //Ajout de ce WeightedNode à la liste en Exploration
+                weightedNodeQueue.add(weightedNodeList.get(targetNodeId));
             }
-            edgeId = graph.nodeOutEdgeId(previousNodeIndex, edgeIndex);
-
-            //Initialisation des attributs de Edge.
-            fromPoint = graph.nodePoint(fromNodeId);
-            toPoint = graph.nodePoint(toNodeId);
-            length = graph.edgeLength(edgeId);
-            profile = graph.edgeProfile(edgeId);
-
-            edge = new Edge(fromNodeId, toNodeId, fromPoint, toPoint, length, profile);
-
-            //Ajout des Edge à l'index 0, car on le construit dans le chemin inverse.
-            wayEdgeList.add(0, edge);
-
-            previousNodeIndex = actualWeightedNodeFrom.previousNode ;
-        } while (toNodeId != startNodeId);
-        //TODO trop getto a enlever
-
-
-        return new SingleRoute(wayEdgeList);
+        }
+        //return null si aucun itinéraire trouvé
+        return null;
     }
 }
-
