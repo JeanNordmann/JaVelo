@@ -120,7 +120,7 @@ public class RouteComputer {
                     //Condition d'arrêt : le noeud précédent == startNode
                     while (previousNodeIds[i] != startNodeId) {
                         //Récupération de l'index de l'arête sortante du nœud précédant allant jusqu'au nœud actuel.
-                        index = 0;
+                        int index = 0;
                         while (graph.nodeOutEdgeId(previousNodeIds[targetNodeId], index) != previousNodeIds[i]) {
                             ++index;
                         }
