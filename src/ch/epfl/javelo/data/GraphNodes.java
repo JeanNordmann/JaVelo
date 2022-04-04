@@ -84,16 +84,12 @@ public record GraphNodes(IntBuffer buffer) {
         return extractUnsigned(contraction, 0, 28) + edgeIndex;
     }
 
+    //Pour comparer des graphNodes dans les tests
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GraphNodes that = (GraphNodes) o;
         return Objects.equals(buffer, that.buffer);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(buffer);
     }
 }

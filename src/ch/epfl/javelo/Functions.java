@@ -73,17 +73,13 @@ public final class Functions {
             return constant;
         }
 
+        //Pour comparer des Constants dans les tests
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Constant constant1 = (Constant) o;
             return Double.compare(constant1.constant, constant) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(constant);
         }
     }
 
@@ -113,7 +109,7 @@ public final class Functions {
          * @return L'interpolation linéaire voulue, en fonction des points échantillonnés, répartis
          * régulièrement entre 0 et xMax.
          */
-
+//TODO
         @Override
         public double applyAsDouble(double x) {
             if(x >= xMax) return samples[samples.length-1];
@@ -129,19 +125,13 @@ public final class Functions {
 
         }
 
+        //Pour comparer des Sampled dans les tests
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Sampled sampled = (Sampled) o;
             return Double.compare(sampled.xMax, xMax) == 0 && Arrays.equals(samples, sampled.samples);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = Objects.hash(xMax);
-            result = 31 * result + Arrays.hashCode(samples);
-            return result;
         }
     }
 

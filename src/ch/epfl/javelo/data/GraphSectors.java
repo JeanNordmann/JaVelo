@@ -46,7 +46,7 @@ public record GraphSectors(ByteBuffer buffer) {
      * au point donné et de côté égal au double (!) de la distance donnée.
      */
 
-
+//TODO
 public List<Sector> sectorsInArea(PointCh center, double distance) {
 
         int xmin = Math2.clamp(0, (int)((center.e() - distance - SwissBounds.MIN_E) / SECTOR_WIDTH),127);

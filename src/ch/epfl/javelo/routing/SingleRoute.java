@@ -43,6 +43,7 @@ public final class SingleRoute implements Route {
      * @param edges Liste d'arêtes donnée.
      */
 
+    //TODO
     public SingleRoute(List<Edge> edges) {
         Preconditions.checkArgument(!edges.isEmpty());
         this.edges = List.copyOf(edges);
@@ -94,6 +95,7 @@ public final class SingleRoute implements Route {
      * extrémités des arêtes de l'itinéraire.
      */
 
+    //TODO
     @Override
     public List<PointCh> points() {
         List<PointCh> pointChList = new ArrayList<>();
@@ -110,6 +112,7 @@ public final class SingleRoute implements Route {
      * donnée le long de l'itinéraire.
      */
 
+    //TODO
     @Override
     public PointCh pointAt(double position) {
         int index, absoluteResult;
@@ -133,6 +136,7 @@ public final class SingleRoute implements Route {
      * cette position n'a pas de profil.
      */
 
+    //TODO
     @Override
     public double elevationAt(double position) {
         int index, absoluteResult;
@@ -160,6 +164,7 @@ public final class SingleRoute implements Route {
      * et se trouvant le plus proche de la position donnée.
      */
 
+    //TODO
     public int nodeClosestTo(double position) {
         double clampedPosition = Math2.clamp(0, position, length());
         int index = Arrays.binarySearch(positionsTab, clampedPosition);
@@ -180,6 +185,7 @@ public final class SingleRoute implements Route {
      * proche du point de référence donné.
      */
 
+    //TODO
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint routePointTemp, routePoint = RoutePoint.NONE ;
@@ -196,19 +202,12 @@ public final class SingleRoute implements Route {
     }
 
 
-
+    //Pour comparer des SingleRoute dans les tests
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SingleRoute that = (SingleRoute) o;
         return Objects.equals(edges, that.edges) && Arrays.equals(positionsTab, that.positionsTab);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(edges);
-        result = 31 * result + Arrays.hashCode(positionsTab);
-        return result;
     }
 }

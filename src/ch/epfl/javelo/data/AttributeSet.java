@@ -42,7 +42,6 @@ public record AttributeSet(long bits) {
             long tempMask = 1L << attribute.ordinal() ;
             mask = mask | tempMask ;
         }
-
         return new AttributeSet(mask);
     }
 

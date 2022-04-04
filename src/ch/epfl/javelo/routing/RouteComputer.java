@@ -5,7 +5,6 @@ import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 
-import java.io.File;
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
 

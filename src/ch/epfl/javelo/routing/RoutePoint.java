@@ -54,6 +54,8 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
                 new RoutePoint(thatPoint, thatPosition, thatDistanceToReference);
     }
 
+
+    //Pour comparer des RoutePoint dans les tests
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,8 +64,4 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
         return Double.compare(that.position, position) == 0 && Double.compare(that.distanceToReference, distanceToReference) == 0 && Objects.equals(point, that.point);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(point, position, distanceToReference);
-    }
 }

@@ -112,6 +112,7 @@ public final class ElevationProfile {
         return Functions.sampled(elevationSamples, length).applyAsDouble(position);
     }
 
+    //Pour comparer des elevationProfile dans les tests
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -120,10 +121,4 @@ public final class ElevationProfile {
         return Double.compare(that.length, length) == 0 && Arrays.equals(elevationSamples, that.elevationSamples);
     }
 
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(length);
-        result = 31 * result + Arrays.hashCode(elevationSamples);
-        return result;
-    }
 }

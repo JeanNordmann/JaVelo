@@ -49,6 +49,7 @@ public final class MultiRoute implements Route {
      * position donnée.
      */
 
+    //TODO
     @Override
     public int indexOfSegmentAt(double position) {
         double actualPosition = 0, previousPosition = 0;
@@ -83,6 +84,7 @@ public final class MultiRoute implements Route {
      * @return La totalité des arêtes de l'itinéraire.
      */
 
+    //TODO
     @Override
     public List<Edge> edges() {
         List<Edge> edgeList = new ArrayList<>();
@@ -97,6 +99,7 @@ public final class MultiRoute implements Route {
      * extrémités des arêtes de l'itinéraire, sans doublons.
      */
 
+    //TODO
     @Override
     public List<PointCh> points() {
         List<PointCh> pointChList = new ArrayList<>();
@@ -115,6 +118,7 @@ public final class MultiRoute implements Route {
      * long de l'itinéraire.
      */
 
+   //TODO
     @Override
     public PointCh pointAt(double position) {
         double actualPosition = 0, previousPosition = 0;
@@ -134,6 +138,7 @@ public final class MultiRoute implements Route {
      * cette position n'a pas de profil.
      */
 
+    //TODO
     @Override
     public double elevationAt(double position) {
         double actualPosition = 0, previousPosition = 0;
@@ -152,6 +157,7 @@ public final class MultiRoute implements Route {
      * trouvant le plus proche de la position donnée.
      */
 
+    //TODO
     @Override
     public int nodeClosestTo(double position) {
         double nextPosition = 0, previousPosition =0;
@@ -170,6 +176,7 @@ public final class MultiRoute implements Route {
      * point de référence donné.
      */
 
+    //TODO
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint routePointTemp, routePoint = RoutePoint.NONE;
@@ -183,21 +190,15 @@ public final class MultiRoute implements Route {
         return routePoint;
     }
 
-    //Utile pour comparer des objets de type MultiRoute dans les tests,
-    //qui sans cette méthode, comparent les références des objets, et pas
-    //leurs contenus.
 
-    //checker l'imuablilitlé
+    //TODO checker l'imuablilitlé
+
+    //Pour comparer des Multiroutes dans les tests
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MultiRoute that = (MultiRoute) o;
         return Objects.equals(segments, that.segments);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(segments);
     }
 }

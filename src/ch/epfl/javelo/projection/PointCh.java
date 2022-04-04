@@ -29,23 +29,21 @@ public record PointCh(double e, double n) {
     }
 
     /**
-     *
      * @param that Deuxième point avec lequel il faut calculer la distance au carré depuis l'instance courante (this).
      * @return La distance au carré entre les deux points.
      */
 
     public double squaredDistanceTo(PointCh that) {
-        return squaredNorm(that.e - this.e,that.n - this.n);
+        return squaredNorm(that.e - this.e, that.n - this.n);
     }
 
     /**
-     *
      * @param that Deuxième point avec lequel il faut calculer la distance depuis l'instance courante (this).
      * @return La distance entre les deux points.
      */
 
     public double distanceTo(PointCh that) {
-        return norm(that.e - this.e,that.n - this.n);
+        return norm(that.e - this.e, that.n - this.n);
     }
 
     /**
@@ -64,17 +62,13 @@ public record PointCh(double e, double n) {
         return Ch1903.lat(e, n);
     }
 
+
+    //Pour comparer des PointCh dans les tests
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PointCh pointCh = (PointCh) o;
         return Double.compare(pointCh.e, e) == 0 && Double.compare(pointCh.n, n) == 0;
-    }
-
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(e, n);
     }
 }

@@ -30,7 +30,7 @@ public final class Graph {
 
 
     /**
-     * Divers attributs représentants les nœuds, les secteurs, les arêtes, et les
+     * Divers attributs représentants les nœuds, les secteurs, les arêtes et les
      * ensembles d'attributs du graphe.
      */
 
@@ -60,6 +60,7 @@ public final class Graph {
 
 
     public static Graph loadFrom(Path basePath) throws IOException {
+        //Chargement des différents attributs du graph
         //Nodes
         Path nodesPath = basePath.resolve("nodes.bin");
         IntBuffer nodeBuffer = mappedBuffer(nodesPath).asIntBuffer();
@@ -86,7 +87,6 @@ public final class Graph {
         for (int i = 0; i < attributeBuffer.capacity(); i++) {
             attributeSets.add(new AttributeSet(attributeBuffer.get(i)));
         }
-
         return new Graph(nodes, sectors, edges, attributeSets);
     }
 
@@ -101,8 +101,7 @@ public final class Graph {
 
     private static ByteBuffer mappedBuffer(Path basePath) throws IOException{
         try (FileChannel channel = FileChannel.open(basePath)) {
-            return channel
-                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            return channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         }
     }
 
@@ -151,6 +150,7 @@ public final class Graph {
      * correspond à ces critères.
      */
 
+    //TODO
     public int nodeClosestTo(PointCh point, double searchDistance) {
         List<GraphSectors.Sector> sectorList = sectors.sectorsInArea(point, searchDistance);
         double min = Double.POSITIVE_INFINITY;
