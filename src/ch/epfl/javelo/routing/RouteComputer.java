@@ -109,25 +109,27 @@ public class RouteComputer {
                 previousNodeIds[targetNodeId] = actualNodeId;
 
                 //Vérification si nœud en exploration == endNode
-                if (actualNodeId == endNodeId) {
+                if (targetNodeId == endNodeId) {
+                    System.out.println("lol");
                     //initialisation de la liste d'arête utile à la création de la route à retourner
                     List<Edge> edgeList = new LinkedList<>();
 
                     //Construction de l'itinéraire dans l'ordre inverse.
                     //Condition d'arrêt : le noeud précédent == startNode
-                    while (previousNodeIds[i] != startNodeId) {
+                    while (targetNodeId != startNodeId) {
                         //Récupération de l'index de l'arête sortante du nœud précédant allant jusqu'au nœud actuel.
                         int index = 0;
-                        while (graph.nodeOutEdgeId(previousNodeIds[targetNodeId], index) != previousNodeIds[i]) {
+                        while (graph.edgeTargetNodeId(graph.nodeOutEdgeId(actualNodeId, index)) != targetNodeId) {
                             ++index;
                         }
                         //Ajout de l'arête à la liste
                         edgeList.add(Edge.of(graph, graph.nodeOutEdgeId(
-                                previousNodeIds[targetNodeId], index), previousNodeIds[targetNodeId], targetNodeId));
-
+                                actualNodeId, index), actualNodeId, targetNodeId));
+                        //Actualisation de targetNodeId et actualNodeId.
+                        targetNodeId = actualNodeId;
+                        actualNodeId = previousNodeIds[actualNodeId];
                     }
-                    //Inversion de l'ordre des éléments de la liste puis retour de la route construite à l'aide
-                    //De la liste.
+                    //Inversion de l'ordre des éléments de la liste puis retour de la route construite.
                     Collections.reverse(edgeList);
                     return new SingleRoute(edgeList);
                 }
@@ -135,7 +137,7 @@ public class RouteComputer {
                 //Ajout dans le tableau de distance, la distance du chemin terrestre (incluant CostFunction)
                 float distance = (float) graph.edgeLength(actualEdgeId);
                 distance *= (float) costFunction.costFactor(actualNodeId, actualEdgeId);
-                //Condition
+                //Condition nous permettant de ne pas ajouter les noeuds dont l'itinéraire est "inatteignable"
                 if (distance == Float.POSITIVE_INFINITY) continue;
                 distance += lengthTraveled[actualNodeId];
                 lengthTraveled[targetNodeId] = distance;
