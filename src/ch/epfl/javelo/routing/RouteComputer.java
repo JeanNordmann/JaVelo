@@ -92,8 +92,11 @@ public class RouteComputer {
 
         //Définition en dehors du while pour éviter de les redéfinir à chaque appelle.
         WeightedNode actualWeightedNode;
-        int actualNodeId, actualEdgeId, targetNodeId, index;
+        int actualNodeId, actualEdgeId, targetNodeId;
+        int u = 0;
         while (!weightedNodeQueue.isEmpty()) {
+            ++u;
+            if (u == weightedNodeList.size()) return null;
             //Remove le noeud dont la distance parcourue + distance à vol d'oiseau est la plus petite,
             actualWeightedNode = weightedNodeQueue.remove();
             actualNodeId = actualWeightedNode.nodeId;
