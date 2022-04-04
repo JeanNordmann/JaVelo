@@ -28,8 +28,8 @@ public final class MultiRoute implements Route {
      * être d'autres MultiRoute ou des SingleRoute, c'est pourquoi nous
      * ne pouvons pas être plus précis que la classe Route.
      */
-
-    private final List<Route> segments;
+//todo remettre en privé
+    public final List<Route> segments;
 
     /**
      * @param segments Segments donnés.
@@ -89,7 +89,7 @@ public final class MultiRoute implements Route {
         for (Route segment : segments) {
             edgeList.addAll(segment.edges());
         }
-        return edgeList;
+        return List.copyOf(edgeList);
     }
 
     /**
@@ -100,12 +100,13 @@ public final class MultiRoute implements Route {
     @Override
     public List<PointCh> points() {
         List<PointCh> pointChList = new ArrayList<>();
+
         for (Route segment : segments) {
             pointChList.addAll(segment.points());
             pointChList.remove(pointChList.size() - 1);
         }
         pointChList.add(segments.get(segments.size() - 1).pointAt(segments.get(segments.size() - 1).length()));
-        return pointChList;
+        return List.copyOf(pointChList);
     }
 
    /**
@@ -186,6 +187,7 @@ public final class MultiRoute implements Route {
     //qui sans cette méthode, comparent les références des objets, et pas
     //leurs contenus.
 
+    //checker l'imuablilitlé
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

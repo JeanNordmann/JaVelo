@@ -72,6 +72,7 @@ public record PointCh(double e, double n) {
         return Double.compare(pointCh.e, e) == 0 && Double.compare(pointCh.n, n) == 0;
     }
 
+
     @Override
     public int hashCode() {
         return Objects.hash(e, n);

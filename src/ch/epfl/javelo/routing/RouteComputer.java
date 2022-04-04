@@ -4,6 +4,8 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
+
+import java.io.File;
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
 
@@ -74,6 +76,8 @@ public class RouteComputer {
         //nœud.
         Queue<WeightedNode> weightedNodePriorityQueue = new PriorityQueue<>();
         weightedNodePriorityQueue.add(weightedNodeList.get(startNodeId));
+        List<Integer> listeIndiceNoeud = new ArrayList<>();
+
 
         // Définini ici et pas dans le while pour pouvoir y accéder dans la condition d'arrêt.
         int targetNodeId =-1;
@@ -100,6 +104,8 @@ public class RouteComputer {
                         (float) graph.nodePoint(endNodeId).distanceTo(graph.nodePoint(targetNodeId));
                 weightedNodeList.set(targetNodeId, new WeightedNode(targetNodeId, distance, actualNodeIndex, distanceAndFlyDistance));
                 weightedNodePriorityQueue.add(weightedNodeList.get(targetNodeId));
+                listeIndiceNoeud.add(targetNodeId);
+                if (listeIndiceNoeud.size() == weightedNodeList.size()) return null;
                 //Si on a atteint le dernier node.
                 if (targetNodeId == endNodeId) break;
             }
@@ -108,7 +114,7 @@ public class RouteComputer {
         //Construction de la liste d'index du chemin trouvé.
         List<Edge> wayEdgeList = new LinkedList<>();
 
-        int edgeIndex = -1, edgeId, previousNodeIndex = endNodeId;
+        int edgeIndex = 0, edgeId, previousNodeIndex = endNodeId;
         WeightedNode actualWeightedNodeFrom;
 
         //Initialisation des attributs de Edge, ainsi qu'elle-même.
@@ -149,6 +155,8 @@ public class RouteComputer {
 
             previousNodeIndex = actualWeightedNodeFrom.previousNode;
         } while (toNodeId != startNodeId);
+        //TODO trop getto a enlever
+
 
         return new SingleRoute(wayEdgeList);
     }
