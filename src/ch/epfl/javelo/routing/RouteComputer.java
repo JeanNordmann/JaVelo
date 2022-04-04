@@ -102,13 +102,14 @@ public class RouteComputer {
                 distance += actualWeightedNodeFrom.distance;
                 float distanceAndFlyDistance = distance +
                         (float) graph.nodePoint(endNodeId).distanceTo(graph.nodePoint(targetNodeId));
-                weightedNodeList.set(targetNodeId, new WeightedNode(targetNodeId, distance, actualNodeIndex, distanceAndFlyDistance));
+                weightedNodeList.set(targetNodeId, new WeightedNode(targetNodeId, distance,actualNodeIndex, distanceAndFlyDistance));
                 weightedNodePriorityQueue.add(weightedNodeList.get(targetNodeId));
                 listeIndiceNoeud.add(targetNodeId);
                 if (listeIndiceNoeud.size() == weightedNodeList.size()) return null;
                 //Si on a atteint le dernier node.
                 if (targetNodeId == endNodeId) break;
             }
+
             } while (targetNodeId != endNodeId);
 
         //Construction de la liste d'index du chemin trouvé.
@@ -131,7 +132,7 @@ public class RouteComputer {
             // ce n'était pas optimisé car on stockait cette info alors qu'elle est "retrouvable" avec "previousNode"
             // et de plus, elle n'est utile que pour les noeuds de l'itinéraire le plus court.
 
-            fromNodeId = actualWeightedNodeFrom.previousNode;
+            fromNodeId =actualWeightedNodeFrom.previousNode  ;
             toNodeId = previousNodeIndex;
             int maxEdgeOutFromNodeID = graph.nodeOutDegree(fromNodeId);
             for (int i = 0; i < maxEdgeOutFromNodeID; i++) {
@@ -153,7 +154,7 @@ public class RouteComputer {
             //Ajout des Edge à l'index 0, car on le construit dans le chemin inverse.
             wayEdgeList.add(0, edge);
 
-            previousNodeIndex = actualWeightedNodeFrom.previousNode;
+            previousNodeIndex = actualWeightedNodeFrom.previousNode ;
         } while (toNodeId != startNodeId);
         //TODO trop getto a enlever
 
