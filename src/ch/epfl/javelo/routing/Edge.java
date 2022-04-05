@@ -67,6 +67,8 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
         return profile.applyAsDouble(position);
     }
 
+
+    //Méthode pour comparer des objets dans nos tests.
     @Override
     public boolean equals(Object o) {
 

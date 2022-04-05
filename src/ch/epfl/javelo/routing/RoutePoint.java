@@ -22,11 +22,11 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
     public static final RoutePoint NONE = new RoutePoint(null, Double.NaN, POSITIVE_INFINITY);
 
     /**
-     *
      * @param positionDifference différence de position
      * @return un point identique au récepteur (this) mais dont la position est décalée de la différence donnée,
      * qui peut être positive ou négative.
      */
+
     public RoutePoint withPositionShiftedBy(double positionDifference){
         return new RoutePoint(this.point, position + positionDifference, distanceToReference);
     }
@@ -36,6 +36,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * @param that RoutePoint avec le quel on veut comparer
      * @return this si sa distance à la référence est inférieure ou égale à celle de that, et that sinon
      */
+
     public RoutePoint min(RoutePoint that){
         return this.distanceToReference <= that.distanceToReference() ? this : that;
     }

@@ -100,12 +100,15 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
     public float[] profileSamples(int edgeId) {
         if (!hasProfile(edgeId)) return new float[]{};
+        //Calcule le nombre d'échantillons en fonction de la formule donnée.
         int numberSamples = 1 + Math2.ceilDiv((int)(scalb(length(edgeId),4)) , Q28_4.ofInt(2));
         float[] toReturn = new float[numberSamples];
         int firstAltiId = Bits.extractUnsigned(profileIds.get(edgeId), 0, 30);
+        //Récupère le type de profil (les deux bits de poids fort).
         byte profilType = (byte) Bits.extractUnsigned(profileIds.get(edgeId), 30,2);
-        switch (profilType) {
 
+        //Traite les différents cas.
+        switch (profilType) {
             case (byte) 1 :
                 for (int i = 0; i < numberSamples; i++) {
                     toReturn[i] = asFloat16(Short.toUnsignedInt(elevations.get(firstAltiId + i)));
@@ -115,50 +118,51 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 int shortsToRead2 = numberSamples / 2;
                 toReturn[0] = asFloat16(elevations.get(firstAltiId));
                 for (int i = 1; i <= shortsToRead2 ; i++) {
-
+                    //Première altitude.
                     int extractShort =  Short.toUnsignedInt(elevations.get(firstAltiId + i));
 
                     float firstShift = asFloat16(Bits.extractSigned(extractShort, 8, 8));
-                    toReturn[2 * i - 1] = toReturn[2 * (i-1)] + firstShift;
+                    toReturn[2*i - 1] = toReturn[2 * (i-1)] + firstShift;
 
-                    // pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles.
-                    if (numberSamples - 1 < 2 * i) break;
+                    //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles.
+                    if (numberSamples - 1 < 2*i) break;
 
+                    //Remplit les valeurs en fonction de la précédente, et du shift.
                     float secondShift = asFloat16(Bits.extractSigned(extractShort, 0, 8));
-                    toReturn[2 * i] = toReturn[2 * i - 1] + secondShift;
+                    toReturn[2 * i] = toReturn[2*i - 1] + secondShift;
                 } break;
 
             case (byte) 3 :
-                //shortsToRead4 = nbr de shorts à lire après le premier short, sachant qu'un short contient 4 nibble.
+                //Nombre de shorts à lire après le premier short, sachant qu'un short contient 4 nibble.
                 int shortsToRead4 = (numberSamples + 2) / 4;
                 toReturn[0] = asFloat16(elevations.get(firstAltiId));
                 for (int i = 1; i <= shortsToRead4 ; i++) {
-
                     int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
 
                     float firstShift = asFloat8(Bits.extractSigned(extractShort, 12, 4));
-                    toReturn[4 * i - 3] = toReturn[4 * (i-1) ] + firstShift;
+                    toReturn[4*i - 3] = toReturn[4*i - 4] + firstShift;
 
-                    // pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
+                    //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
                     if (numberSamples + 1 < 4 * i) break;
 
                     float secondShift = asFloat8(Bits.extractSigned(extractShort, 8, 4));
                     toReturn[4 * i - 2] = toReturn[4 * i - 3] + secondShift;
 
-                    // pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
+                    //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
                     if (numberSamples < 4 * i) break;
 
                     float thirdShift = asFloat8(Bits.extractSigned(extractShort, 4, 4));
                     toReturn[4 * i - 1] = toReturn[4 * i - 2] + thirdShift;
 
-                    // pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
+                    //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
                     if (numberSamples - 1 < 4 * i) break;
 
+                    //Ajoute les valeurs en fonction du shift et de la valeur précédente.
                     float fourthShift = asFloat8(Bits.extractSigned(extractShort, 0, 4));
                     toReturn[4 * i] = toReturn[4 * i - 1] + fourthShift;
                 }
         }
-
+        //Inverse le tableau si l'arête est inversée.
         if (isInverted(edgeId)) {
             float[] inverted = new float[numberSamples];
             for (int i = 0; i < numberSamples; i++) {

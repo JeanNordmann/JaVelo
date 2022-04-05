@@ -33,7 +33,7 @@ public final class MultiRoute implements Route {
     /**
      * @param segments Segments donnés.
      * Constructeur qui instancie un itinéraire multiple composé des
-     * segments donnés, ou lève une IllegalArgumentException si la liste
+     * segments donnés ou lève une IllegalArgumentException si la liste
      * des segments est vide.
      */
 
@@ -93,7 +93,7 @@ public final class MultiRoute implements Route {
         for (Route segment : segments) {
             edgeList.addAll(segment.edges());
         }
-        //Renvoie une copie de la edgeList pour protéger l'immuabilité.
+        //Renvoie une copie de la liste d'arêtes pour protéger l'immuabilité.
         return List.copyOf(edgeList);
     }
 
@@ -105,11 +105,13 @@ public final class MultiRoute implements Route {
     @Override
     public List<PointCh> points() {
         List<PointCh> pointChList = new ArrayList<>();
-
+        //On ajoute tous les points d'un segment, et on supprime à chaque fois les derniers, pour
+        //éviter les doublons.
         for (Route segment : segments) {
             pointChList.addAll(segment.points());
             pointChList.remove(pointChList.size() - 1);
         }
+        //On rajoute le dernier point de l'itinéraire.
         pointChList.add(segments.get(segments.size() - 1).pointAt(segments.get(segments.size() - 1).length()));
         return List.copyOf(pointChList);
     }
@@ -124,6 +126,9 @@ public final class MultiRoute implements Route {
     public PointCh pointAt(double position) {
         double actualPosition = 0, previousPosition = 0;
         position = Math2.clamp(0, position, this.length());
+        //Méthode utilisant le même principe d'appel récursif à elle-même, tout comme
+        //d'autres méthodes de la classe (appel à elle-même jusqu'à l'appeler sur
+        //uniquement des SingleRoute).
         for (Route segment : segments) {
             actualPosition += segment.length();
             if (position <= actualPosition) return segment.pointAt(position - previousPosition);
@@ -143,6 +148,9 @@ public final class MultiRoute implements Route {
     public double elevationAt(double position) {
         double actualPosition = 0, previousPosition = 0;
         position = Math2.clamp(0, position, this.length());
+        //Méthode utilisant le même principe d'appel récursif à elle-même, tout comme
+        //d'autres méthodes de la classe (appel à elle-même jusqu'à l'appeler sur
+        //uniquement des SingleRoute).
         for (Route segment : segments) {
             actualPosition += segment.length();
             if (position <= actualPosition) return segment.elevationAt(position - previousPosition);
@@ -157,11 +165,13 @@ public final class MultiRoute implements Route {
      * trouvant le plus proche de la position donnée.
      */
 
-    //TODO
     @Override
     public int nodeClosestTo(double position) {
         double nextPosition = 0, previousPosition =0;
         double clampedPosition = Math2.clamp(0, position, this.length());
+        //Méthode utilisant le même principe d'appel récursif à elle-même, tout comme
+        //d'autres méthodes de la classe (appel à elle-même jusqu'à l'appeler sur
+        //uniquement des SingleRoute).
         for (Route segment : segments) {
             nextPosition += segment.length();
         if (clampedPosition - nextPosition <= 0)
@@ -177,11 +187,13 @@ public final class MultiRoute implements Route {
      * point de référence donné.
      */
 
-    //TODO
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint routePointTemp, routePoint = RoutePoint.NONE;
         double actualPosition = 0;
+        //Méthode utilisant le même principe d'appel récursif à elle-même, tout comme
+        //d'autres méthodes de la classe (appel à elle-même jusqu'à l'appeler sur
+        //uniquement des SingleRoute, ainsi que la méthode min de RoutePoint).
         for (Route segment : segments) {
             routePointTemp = segment.pointClosestTo(point);
             routePoint = routePoint.min(routePointTemp.point(), actualPosition + routePointTemp.position(),
@@ -191,7 +203,8 @@ public final class MultiRoute implements Route {
         return routePoint;
     }
 
-    //Pour comparer des Multiroutes dans les tests
+    //Pour comparer des MultiRoute dans nos tests.
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

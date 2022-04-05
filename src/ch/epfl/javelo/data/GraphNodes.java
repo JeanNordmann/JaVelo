@@ -72,7 +72,7 @@ public record GraphNodes(IntBuffer buffer) {
     }
 
     /**
-     * @param nodeId Noeud dont on souhaite l'identité de la edgeIndex-ième arête.
+     * @param nodeId Nœud dont on souhaite l'identité de la edgeIndex-ième arête.
      * @param edgeIndex Index de l'arête vis-à-vis de la première arête du nœud.
      * @return L'identité de la edgeIndex-ième arête sortant du nœud d'identité nodeId.
      */

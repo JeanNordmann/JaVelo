@@ -111,13 +111,17 @@ public final class Functions {
 
         @Override
         public double applyAsDouble(double x) {
+            //Prend la première ou dernière valeur, en fonction des bornes.
             if(x >= xMax) return samples[samples.length-1];
             if(x <= 0) return samples[0];
 
+            //Calcule l'espacement entre les points, ainsi que les bornes
+            //d'interpolation.
             double spaceBetween2Points = xMax / (samples.length - 1);
             int firstPoint = (int)Math.floor(x/spaceBetween2Points);
             int secondPoint = (int)Math.ceil(x/spaceBetween2Points);
 
+            //Cas particulier ou les points sont égaux.
             if (firstPoint == secondPoint) return samples[firstPoint];
 
             return Math2.interpolate(samples[firstPoint], samples[secondPoint], x/spaceBetween2Points - firstPoint);

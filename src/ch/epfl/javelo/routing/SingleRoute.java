@@ -41,11 +41,11 @@ public final class SingleRoute implements Route {
      * @param edges Liste d'arêtes donnée.
      */
 
-    //TODO
     public SingleRoute(List<Edge> edges) {
         Preconditions.checkArgument(!edges.isEmpty());
         //Car Edge n'est pas immuable.
         this.edges = List.copyOf(edges);
+        //Initialise le tableau de positions depuis le début de l'itinéraire.
         positionsTab = new double[edges.size() + 1];
         positionsTab[0] = 0;
         for (int i = 1; i <= edges.size(); i++) {
@@ -94,7 +94,6 @@ public final class SingleRoute implements Route {
      * extrémités des arêtes de l'itinéraire.
      */
 
-    //TODO
     @Override
     public List<PointCh> points() {
         List<PointCh> pointChList = new ArrayList<>();
@@ -113,7 +112,6 @@ public final class SingleRoute implements Route {
      * donnée le long de l'itinéraire.
      */
 
-    //TODO
     @Override
     public PointCh pointAt(double position) {
         int index, absoluteResult;
@@ -139,7 +137,7 @@ public final class SingleRoute implements Route {
      * cette position n'a pas de profil.
      */
 
-    //TODO
+
     @Override
     public double elevationAt(double position) {
         int index, absoluteResult;
@@ -170,17 +168,21 @@ public final class SingleRoute implements Route {
      * et se trouvant le plus proche de la position donnée.
      */
 
-    //TODO
     public int nodeClosestTo(double position) {
         double clampedPosition = Math2.clamp(0, position, length());
         int index = Arrays.binarySearch(positionsTab, clampedPosition);
 
+        //Cas où la recherche dichotomique tombe sur la fin de l'itinéraire simple.
         if (index == edges.size()) return edges.get(index - 1).toNodeId();
+        //Cas où la recherche dichotomique tombe sur le début d'une arête, donc le nœud
+        //de départ.
         if (index >= 0) return edges.get(index).fromNodeId();
 
         double fstNodePos = positionsTab[-index - 2];
         double sndNodePos = positionsTab[-index - 1];
 
+        //Retourne de quel nœud la position donnée est la plus proche, si elle est entre deux
+        //nœuds.
         return (clampedPosition - fstNodePos) <= ((sndNodePos - fstNodePos) / 2.0) ?
                 edges.get(-index - 2).fromNodeId() : edges.get(-index - 2).toNodeId();
     }
@@ -191,11 +193,10 @@ public final class SingleRoute implements Route {
      * proche du point de référence donné.
      */
 
-    //TODO
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-        RoutePoint routePointTemp, routePoint = RoutePoint.NONE ;
-        double position, clampedPosition, previousLengths =0;
+        RoutePoint routePointTemp, routePoint = RoutePoint.NONE;
+        double position, clampedPosition, previousLengths = 0;
         for (Edge edge : edges) {
             //Calcul de la distance avec chaque arête.
             position = edge.positionClosestTo(point);
@@ -211,7 +212,7 @@ public final class SingleRoute implements Route {
     }
 
 
-    //Pour comparer des SingleRoute dans les tests
+    //Pour comparer des SingleRoute dans les tests.
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

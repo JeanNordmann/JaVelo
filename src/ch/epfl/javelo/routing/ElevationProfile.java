@@ -111,7 +111,7 @@ public final class ElevationProfile {
         return Functions.sampled(elevationSamples, length).applyAsDouble(position);
     }
 
-    //Pour comparer des elevationProfile dans les tests
+    //Pour comparer des elevationProfile dans les tests.
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

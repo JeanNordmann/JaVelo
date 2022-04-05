@@ -62,6 +62,10 @@ public final class ElevationProfileComputer {
                 float interpolationLimit = 0.f;
                 int endIndex = 0;
                 for (int j = i + 1; j < nbrEchantillons; j++) {
+                    //Pour la première valeur à partir de la i-ème qui n'est pas un NaN
+                    //On interpole toutes les valeurs entre deux valeurs "sûres", et
+                    //non entre une valeur sûre et une valeur déjà interpolée, donc
+                    //potentiellement approximative.
                     if(!Float.isNaN(floatsProfile[j])) {
                         interpolationLimit = floatsProfile[j];
                         endIndex = j - i + 1;
@@ -77,6 +81,4 @@ public final class ElevationProfileComputer {
         }
     return new ElevationProfile(route.length(), floatsProfile);
     }
-
-
 }

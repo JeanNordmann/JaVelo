@@ -60,8 +60,8 @@ public record GraphSectors(ByteBuffer buffer) {
                 //Calcul du secteur dans le buffer
                 int sectorIndexOfFirstByte = OFFSET_BYTES * (int) (i + 128 * j);
                 int startNode = buffer.getInt(sectorIndexOfFirstByte);
-                int endNode = startNode + Short.toUnsignedInt(buffer.getShort(sectorIndexOfFirstByte + Integer.BYTES));
-
+                int endNode = startNode + Short.toUnsignedInt(
+                        buffer.getShort(sectorIndexOfFirstByte + Integer.BYTES));
                 sectorList.add(new Sector(startNode, endNode));
             }
         }

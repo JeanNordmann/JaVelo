@@ -149,16 +149,16 @@ public final class Graph {
      * correspond à ces critères.
      */
 
-    //TODO
     public int nodeClosestTo(PointCh point, double searchDistance) {
         List<GraphSectors.Sector> sectorList = sectors.sectorsInArea(point, searchDistance);
         double min = Double.POSITIVE_INFINITY;
         int nodeId = -1;
+        //Itère sur tous les secteurs du Graph.
         for (GraphSectors.Sector sector : sectorList) {
             int startNode = sector.startNodeId();
             int endNode = sector.endNodeId();
             for (int j = startNode; j < endNode; j++) {
-
+                //Compare les distances au carré au lieu des distances pour gagner de l'efficacité.
                 double squaredDistance = point.squaredDistanceTo(new PointCh(nodes.nodeE(j), nodes.nodeN(j)));
                 if (squaredDistance < min && squaredDistance <= searchDistance*searchDistance) {
                     min = squaredDistance;
