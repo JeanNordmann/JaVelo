@@ -28,7 +28,7 @@ public final class MultiRoute implements Route {
      * être d'autres MultiRoute ou des SingleRoute, c'est pourquoi nous
      * ne pouvons pas être plus précis que la classe Route.
      */
-//todo remettre en privé
+
     public final List<Route> segments;
 
     /**
@@ -49,15 +49,18 @@ public final class MultiRoute implements Route {
      * position donnée.
      */
 
-    //TODO
     @Override
     public int indexOfSegmentAt(double position) {
         double actualPosition = 0, previousPosition = 0;
         int index = 0;
         position = Math2.clamp(0, position, this.length());
+
+        //On itère sur tous les segments de la route (soit des SingleRoute, soit des MultiRoute).
         for (Route segment : segments) {
+            //Le but est de repérer sur quelle portion de SingleRoute le paramètre position est situé.
             actualPosition += segment.length();
             if (position <= actualPosition) {
+                //Il s'agit d'un appel récursif jusqu'à obtenir le bon segment.
                 index += segment.indexOfSegmentAt(position - previousPosition);
                 return index;
             }
@@ -84,13 +87,14 @@ public final class MultiRoute implements Route {
      * @return La totalité des arêtes de l'itinéraire.
      */
 
-    //TODO
+
     @Override
     public List<Edge> edges() {
         List<Edge> edgeList = new ArrayList<>();
         for (Route segment : segments) {
             edgeList.addAll(segment.edges());
         }
+        //Renvoie une copie de la edgeList pour protéger l'immuabilité.
         return List.copyOf(edgeList);
     }
 

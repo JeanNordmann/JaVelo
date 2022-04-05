@@ -2,6 +2,8 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
+
+import java.util.Objects;
 import java.util.function.DoubleUnaryOperator;
 import ch.epfl.javelo.data.Graph;
 
@@ -64,5 +66,19 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
 
     public double elevationAt(double position) {
         return profile.applyAsDouble(position);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Edge edge = (Edge) o;
+        return fromNodeId == edge.fromNodeId && toNodeId == edge.toNodeId && Double.compare(edge.length, length) == 0 && Objects.equals(fromPoint, edge.fromPoint) && Objects.equals(toPoint, edge.toPoint) && Objects.equals(profile, edge.profile);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fromNodeId, toNodeId, fromPoint, toPoint, length, profile);
     }
 }
