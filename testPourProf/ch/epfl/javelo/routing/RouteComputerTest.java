@@ -93,11 +93,4 @@ class RouteComputerTest {
         assertEquals(expected20kE, actualPointAt20kE, 1);
         assertEquals(expected20kN, actualPointAt20kN, 1);
     }
-
-     @Test
-    void testPourquoi() {
-         var rc = newLausanneRouteComputer();
-         var route = rc.bestRouteBetween(210641, 43713);
-         //if
-     }
 }

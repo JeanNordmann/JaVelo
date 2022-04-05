@@ -21,7 +21,7 @@ class RouteComputerTest {
     void routeComputerWorksWithKnownTest() throws IOException {
         Graph g = Graph.loadFrom(Path.of("lausanne"));
         CostFunction cf = new CityBikeCF(g);
-        RouteComputer rc = new RouteComputer(g, cf);
+        RouteComputerMARDIMATIN rc = new RouteComputerMARDIMATIN(g, cf);
         Route r = rc.bestRouteBetween(159049, 117669);
         // System.out.println(r.length());
         File f = KmlPrinter.write("javelo-known.kml", r);
@@ -181,7 +181,7 @@ class RouteComputerTest {
 
     private Route calculateRouteFromGraph(Graph g, int startId, int endId) {
         CostFunction cf = new CityBikeCF(g);
-        RouteComputer rc = new RouteComputer(g, cf);
+        RouteComputerMARDIMATIN rc = new RouteComputerMARDIMATIN(g, cf);
 
         return rc.bestRouteBetween(startId, endId);
     }
@@ -204,7 +204,7 @@ class RouteComputerTest {
     void testAlgorithmLength() throws IOException {
         Graph g = loadCHWest();
         CostFunction cf = new CityBikeCF(g);
-        RouteComputer rc = new RouteComputer(g, cf);
+        RouteComputerMARDIMATIN rc = new RouteComputerMARDIMATIN(g, cf);
 
         long t0 = System.nanoTime();
         Route r = rc.bestRouteBetween(2046055, 2694240);
