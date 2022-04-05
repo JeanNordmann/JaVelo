@@ -3,7 +3,6 @@ package ch.epfl.javelo.data;
 import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Q28_4;
-
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -99,7 +98,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * donnée, qui est vide si l'arête ne possède pas de profil.
      */
 
-    //TODO
     public float[] profileSamples(int edgeId) {
         if (!hasProfile(edgeId)) return new float[]{};
         int numberSamples = 1 + Math2.ceilDiv((int)(scalb(length(edgeId),4)) , Q28_4.ofInt(2));

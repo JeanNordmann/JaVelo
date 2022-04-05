@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
-
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.Functions;
 

@@ -1,4 +1,5 @@
 package ch.epfl.javelo;
+
 /**
  * 2.3.4
  * Q28_4
@@ -36,13 +37,4 @@ public final class Q28_4 {
         return Math.scalb((double)q28_4,-4);
     }
 
-    /**
-     *
-     * @param q28_4 Nombre de type float donné
-     * @return La valeur de type float correspondant à la valeur Q28.4 donnée
-     */
-
-    public static float asFloat(int q28_4) {
-        return Math.scalb((float)q28_4,-4);
-    }
 }

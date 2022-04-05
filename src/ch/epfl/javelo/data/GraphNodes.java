@@ -1,7 +1,6 @@
 package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Q28_4;
-
 import java.nio.*;
 import java.util.Objects;
 

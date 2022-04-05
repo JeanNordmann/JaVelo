@@ -1,7 +1,6 @@
 package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.projection.PointCh;
-
 import java.util.List;
 
 /**
@@ -16,7 +15,6 @@ import java.util.List;
  */
 
 public interface Route {
-//TODO coisir rtc2
     /**
      * @param position Position donnée.
      * @return Retourne l'index du segment à la position donnée (en mètres).

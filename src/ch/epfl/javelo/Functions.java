@@ -1,7 +1,6 @@
 package ch.epfl.javelo;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.DoubleUnaryOperator;
 
 /**
@@ -109,7 +108,7 @@ public final class Functions {
          * @return L'interpolation linéaire voulue, en fonction des points échantillonnés, répartis
          * régulièrement entre 0 et xMax.
          */
-//TODO
+
         @Override
         public double applyAsDouble(double x) {
             if(x >= xMax) return samples[samples.length-1];

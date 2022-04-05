@@ -2,7 +2,6 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
-
 import java.util.Objects;
 import java.util.function.DoubleUnaryOperator;
 import ch.epfl.javelo.data.Graph;

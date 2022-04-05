@@ -2,7 +2,6 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.data.AttributeSet;
 import ch.epfl.javelo.data.Graph;
-
 import java.util.Optional;
 
 import static ch.epfl.javelo.data.Attribute.*;

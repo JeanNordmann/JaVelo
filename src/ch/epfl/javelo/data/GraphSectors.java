@@ -3,7 +3,6 @@ package ch.epfl.javelo.data;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.SwissBounds;
 import ch.epfl.javelo.projection.PointCh;
@@ -46,18 +45,19 @@ public record GraphSectors(ByteBuffer buffer) {
      * au point donné et de côté égal au double (!) de la distance donnée.
      */
 
-//TODO
-public List<Sector> sectorsInArea(PointCh center, double distance) {
 
+    public List<Sector> sectorsInArea(PointCh center, double distance) {
+        //Calcul et clamp de la zone de recherche
         int xmin = Math2.clamp(0, (int)((center.e() - distance - SwissBounds.MIN_E) / SECTOR_WIDTH),127);
         int xmax = Math2.clamp(0, (int)((center.e() + distance - SwissBounds.MIN_E) / SECTOR_WIDTH),127);
         int ymin = Math2.clamp(0, (int)((center.n() - distance - SwissBounds.MIN_N) / SECTOR_HEIGHT),127);
         int ymax = Math2.clamp(0, (int)((center.n() + distance - SwissBounds.MIN_N) / SECTOR_HEIGHT),127);
 
+        //ajout des secteurs
         List<Sector> sectorList = new ArrayList<>();
             for (double j = ymin; j <= ymax ; j++) {
                 for (double i = xmin ; i <= xmax ; i++) {
-
+                //Calcul du secteur dans le buffer
                 int sectorIndexOfFirstByte = OFFSET_BYTES * (int) (i + 128 * j);
                 int startNode = buffer.getInt(sectorIndexOfFirstByte);
                 int endNode = startNode + Short.toUnsignedInt(buffer.getShort(sectorIndexOfFirstByte + Integer.BYTES));

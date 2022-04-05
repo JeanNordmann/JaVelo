@@ -3,7 +3,6 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +28,7 @@ public final class MultiRoute implements Route {
      * ne pouvons pas être plus précis que la classe Route.
      */
 
-    public final List<Route> segments;
+    private final List<Route> segments;
 
     /**
      * @param segments Segments donnés.
@@ -103,7 +102,6 @@ public final class MultiRoute implements Route {
      * extrémités des arêtes de l'itinéraire, sans doublons.
      */
 
-    //TODO
     @Override
     public List<PointCh> points() {
         List<PointCh> pointChList = new ArrayList<>();
@@ -122,7 +120,6 @@ public final class MultiRoute implements Route {
      * long de l'itinéraire.
      */
 
-   //TODO
     @Override
     public PointCh pointAt(double position) {
         double actualPosition = 0, previousPosition = 0;
@@ -142,7 +139,6 @@ public final class MultiRoute implements Route {
      * cette position n'a pas de profil.
      */
 
-    //TODO
     @Override
     public double elevationAt(double position) {
         double actualPosition = 0, previousPosition = 0;

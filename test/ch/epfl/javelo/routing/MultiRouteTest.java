@@ -332,8 +332,7 @@ public class MultiRouteTest {
         System.out.println("("+ (x.e()-SwissBounds.MIN_E) + ","+(x.n()-SwissBounds.MIN_N)+")");
 
     }
-//TODO
-/*    @Test
+    @Test
     void testMultipleTimes(){
         for(int i = 0 ; i < 10 ; i++ ){
             elevationAtWorks();
@@ -342,34 +341,10 @@ public class MultiRouteTest {
             pointClosestToWorks();
             pointsWorks();
         }
-    }*/
-
-    private Route groupInRoutes(MultiRoute multiRoute) {
-        Route currentRoute = null ;
-        var rnd = newRandom();
-        List<Route> routes =  new ArrayList();
-        List<Route> routeOfRoutes = new ArrayList<>();
-
-        // ***********************************************************************************
-        // IMPORTANT : Lisez moi !
-        // Pour que les tests fonctionnent, il faut que ce programme ait
-        // accès au tableau de segments de MultiRoute.
-        //
-        // Veuillez donc changer temporairement l'accès de la liste de vos segments à publique,
-        // en indiquant que votre code doit être rechangé avec un TODO.
-
-        for(int i = 0 ; i <  multiRoute.segments.size(); i++ ){
-            double des = rnd.nextDouble(1);
-            if( des > 0.5 ){
-                routeOfRoutes.add(new MultiRoute(routes));
-                routes = new ArrayList<>();
-            }
-            routes.add(multiRoute.segments.get(i));
-        }
-
-        routeOfRoutes.add(new MultiRoute(routes));
-        return new MultiRoute((routeOfRoutes));
     }
+
+
+
 
     @Test
     void pointsWorks(){
