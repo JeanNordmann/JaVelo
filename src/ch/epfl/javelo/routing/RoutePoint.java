@@ -61,7 +61,9 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RoutePoint that = (RoutePoint) o;
-        return Double.compare(that.position, position) == 0 && Double.compare(that.distanceToReference, distanceToReference) == 0 && Objects.equals(point, that.point);
+        return Double.compare(that.position, position) == 0
+                && Double.compare(that.distanceToReference, distanceToReference) == 0
+                && Objects.equals(point, that.point);
     }
 
 }

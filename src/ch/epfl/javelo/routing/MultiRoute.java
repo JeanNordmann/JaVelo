@@ -164,7 +164,8 @@ public final class MultiRoute implements Route {
         double clampedPosition = Math2.clamp(0, position, this.length());
         for (Route segment : segments) {
             nextPosition += segment.length();
-        if (clampedPosition - nextPosition <= 0) return segment.nodeClosestTo(clampedPosition - previousPosition);
+        if (clampedPosition - nextPosition <= 0)
+            return segment.nodeClosestTo(clampedPosition - previousPosition);
             previousPosition += segment.length();
         }
         return 0;

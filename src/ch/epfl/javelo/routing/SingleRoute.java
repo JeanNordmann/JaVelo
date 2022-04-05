@@ -44,6 +44,7 @@ public final class SingleRoute implements Route {
     //TODO
     public SingleRoute(List<Edge> edges) {
         Preconditions.checkArgument(!edges.isEmpty());
+        //Car Edge n'est pas immuable.
         this.edges = List.copyOf(edges);
         positionsTab = new double[edges.size() + 1];
         positionsTab[0] = 0;
@@ -98,8 +99,10 @@ public final class SingleRoute implements Route {
     public List<PointCh> points() {
         List<PointCh> pointChList = new ArrayList<>();
         for (Edge edge : edges) {
+            //Ajout pour chaque arête du point à la distance 0 => point de départ de l'arête.
             pointChList.add(edge.pointAt(0));
         }
+        //Ajout du dernier point
         pointChList.add(edges.get(edges.size() - 1).pointAt(edges.get(edges.size() - 1).length()));
         return pointChList;
     }
@@ -115,12 +118,14 @@ public final class SingleRoute implements Route {
     public PointCh pointAt(double position) {
         int index, absoluteResult;
         index = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
+        //Cas où on tombe pile sur un point avec la recherche dichotomique.
         if (index >= 0) {
             if (index == edges.size()) {
                 return edges.get(edges.size() - 1).pointAt(edges.get(edges.size() - 1).length());
             } else {
                 return edges.get(index).pointAt(0);
             }
+            //Cas où on est entre 2 points => index négatif
         } else {
             absoluteResult = Math.abs(index + 2);
             return edges.get(absoluteResult).pointAt(position - positionsTab[absoluteResult]);
@@ -139,17 +144,20 @@ public final class SingleRoute implements Route {
     public double elevationAt(double position) {
         int index, absoluteResult;
         index = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
+        //Cas particulier, elevationAt au point de départ.
         if(index == 0) {
             return edges.get(index).elevationAt(0);
         }
-
+            //Cas où on tombe pile sur un point avec la recherche dichotomique.
         if (index > 0) {
             if (index == edges.size()) {
                 return edges.get(edges.size() - 1).elevationAt(edges.get(edges.size() - 1).length());
             } else {
-                if (Float.isNaN((float)edges.get(index).elevationAt(0))) return edges.get(index - 1).elevationAt(edges.get(index - 1).length());
+                if (Float.isNaN((float)edges.get(index).elevationAt(0)))
+                    return edges.get(index - 1).elevationAt(edges.get(index - 1).length());
                 return edges.get(index).elevationAt(0);
             }
+            //Cas où on est entre 2 points => index négatif.
         } else {
             absoluteResult = Math.abs(index + 2);
             return edges.get(absoluteResult).elevationAt(position - positionsTab[absoluteResult]);
@@ -189,10 +197,13 @@ public final class SingleRoute implements Route {
         RoutePoint routePointTemp, routePoint = RoutePoint.NONE ;
         double position, clampedPosition, previousLengths =0;
         for (Edge edge : edges) {
+            //Calcul de la distance avec chaque arête.
             position = edge.positionClosestTo(point);
             clampedPosition = Math2.clamp(0, position, edge.length());
             PointCh pointCh = new PointCh(edge.pointAt(clampedPosition).e(), edge.pointAt(clampedPosition).n());
-            routePointTemp = new RoutePoint(pointCh, clampedPosition + previousLengths , pointCh.distanceTo(point));
+            routePointTemp = new RoutePoint(pointCh, clampedPosition
+                    + previousLengths, pointCh.distanceTo(point));
+            //Utilisation de la méthode min qui nous permet de garder dans "routePoint" le RoutePoint le plus proche.
             routePoint = routePoint.min(routePointTemp);
             previousLengths += edge.length();
         }

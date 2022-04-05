@@ -29,7 +29,8 @@ public final class Ch1903 {
     public static double e(double lon, double lat) {
         double lambda = Math.pow(10, -4)*(3600*Math.toDegrees(lon) - 26782.5);
         double phi = Math.pow(10, -4)*(3600*Math.toDegrees(lat) - 169028.66);
-        return 2600072.37 + 211455.93*lambda - 10938.51*lambda*phi - 0.36*lambda*Math.pow(phi, 2) - 44.54*Math.pow(lambda, 3);
+        return 2600072.37 + 211455.93*lambda - 10938.51*lambda*phi
+                - 0.36*lambda*Math.pow(phi, 2) - 44.54*Math.pow(lambda, 3);
     }
 
     /**
@@ -42,8 +43,8 @@ public final class Ch1903 {
     public static double n(double lon, double lat) {
         double lambda = Math.pow(10, -4)*(3600*Math.toDegrees(lon) - 26782.5);
         double phi = Math.pow(10, -4)*(3600*Math.toDegrees(lat) - 169028.66);
-        return 1200147.07 + 308807.95*phi + 3745.25*Math.pow(lambda, 2) + 76.63*Math.pow(phi, 2) - 194.56*Math.pow(lambda, 2)*phi
-                + 119.79*Math.pow(phi, 3);
+        return 1200147.07 + 308807.95*phi + 3745.25*Math.pow(lambda, 2) + 76.63*Math.pow(phi, 2)
+                - 194.56*Math.pow(lambda, 2)*phi + 119.79*Math.pow(phi, 3);
     }
 
     /**
@@ -70,8 +71,8 @@ public final class Ch1903 {
     public static double lat(double e, double n) {
         double x = Math.pow(10, -6)*(e - 2600000);
         double y = Math.pow(10, -6)*(n - 1200000);
-        double phi = 16.9023892 + 3.238272*y - 0.270978*Math.pow(x, 2) - 0.002528*Math.pow(y, 2) - 0.0447*Math.pow(x, 2)*y
-                - 0.0140*Math.pow(y, 3);
+        double phi = 16.9023892 + 3.238272*y - 0.270978*Math.pow(x, 2) - 0.002528*Math.pow(y, 2)
+                - 0.0447*Math.pow(x, 2)*y - 0.0140*Math.pow(y, 3);
         return Math.toRadians(phi*100.0/36.0);
     }
 

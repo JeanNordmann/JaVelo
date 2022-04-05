@@ -73,7 +73,9 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Edge edge = (Edge) o;
-        return fromNodeId == edge.fromNodeId && toNodeId == edge.toNodeId && Double.compare(edge.length, length) == 0 && Objects.equals(fromPoint, edge.fromPoint) && Objects.equals(toPoint, edge.toPoint) && Objects.equals(profile, edge.profile);
+        return fromNodeId == edge.fromNodeId && toNodeId == edge.toNodeId
+                && Double.compare(edge.length, length) == 0 && Objects.equals(fromPoint, edge.fromPoint)
+                && Objects.equals(toPoint, edge.toPoint) && Objects.equals(profile, edge.profile);
     }
 
     @Override
