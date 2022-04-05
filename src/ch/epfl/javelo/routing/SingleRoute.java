@@ -74,6 +74,9 @@ public final class SingleRoute implements Route {
     public double length() {
         double totalLength = 0;
         for (Edge edge : edges) {
+            if(totalLength > 37900) {
+                System.out.println("je suis le caca");
+            }
             totalLength += edge.length();
         }
         return totalLength;

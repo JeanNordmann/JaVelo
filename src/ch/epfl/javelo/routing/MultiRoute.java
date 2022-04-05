@@ -190,9 +190,6 @@ public final class MultiRoute implements Route {
         return routePoint;
     }
 
-
-    //TODO checker l'imuablilitlé
-
     //Pour comparer des Multiroutes dans les tests
     @Override
     public boolean equals(Object o) {
