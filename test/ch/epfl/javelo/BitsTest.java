@@ -30,7 +30,6 @@ public class BitsTest {
     }
 
 
-
     @Test
     void extractUnsignedDoesThrowIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> {

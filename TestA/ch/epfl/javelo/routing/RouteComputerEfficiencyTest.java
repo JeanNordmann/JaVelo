@@ -1,11 +1,9 @@
+/*
 package ch.epfl.javelo.routing;
 
-import ch.epfl.javelo.KmlPrinter;
-import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.data.G<<raph;
 import org.junit.jupiter.api.Test;
-import ch.epfl.javelo.KmlPrinter;
 import ch.epfl.javelo.Math2;
-import ch.epfl.javelo.TestManager;
 import ch.epfl.javelo.data.Graph;
 import org.junit.jupiter.api.Test;
 
@@ -64,8 +62,11 @@ public class RouteComputerEfficiencyTest {
             actual.close();
 
         }
-        /*System.out.printf("Résultat Final : " + nbrTest + "calculé en %d ms\n",
+        */
+/*System.out.printf("Résultat Final : " + nbrTest + "calculé en %d ms\n",
                 (System.nanoTime() - t0) / 1_000_000);
-        KmlPrinter.write("javelo.kml", r);*/
+        KmlPrinter.write("javelo.kml", r);*//*
+
     }
 }
+*/

@@ -21,7 +21,6 @@ class GraphSectorsTest {
     // N middle : (1296000 - 1075000)/2 = 110_500
 
 
-
     // Functions to test : sectorsInArea()
 
     static byte[] sectorByteArrayConstructor(int firstNodeId, int numberOfNodes) {
