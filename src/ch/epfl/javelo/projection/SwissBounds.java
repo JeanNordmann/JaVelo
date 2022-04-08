@@ -4,7 +4,7 @@ package ch.epfl.javelo.projection;
  * 1.3.4
  * SwissBounds
  *
- * Définit des constantes et méthodes liées aux limites de la Suisse
+ * Définit des constantes et méthodes liées aux limites de la Suisse.
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
@@ -30,7 +30,8 @@ public final class SwissBounds {
     public static final double HEIGHT = MAX_N - MIN_N;
 
     /**
-     *
+     * Retourne vrai si et seulement si les coordonnées E et N données sont dans les
+     * limites de la Suisse.
      * @param e Coordonnée E dans le système suisse
      * @param n Coordonnée N dans le système suisse
      * @return si les coordonnées sont bien dans les bordures suisses ou non.

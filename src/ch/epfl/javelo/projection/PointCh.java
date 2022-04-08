@@ -14,6 +14,11 @@ import static ch.epfl.javelo.Math2.squaredNorm;
  * @author Maxime Ducourau (329544)
  */
 
+/**
+ * @param e Coordonnée Est du point.
+ * @param n Coordonnée Nord du point.
+ */
+
 public record PointCh(double e, double n) {
 
     /**
@@ -26,6 +31,7 @@ public record PointCh(double e, double n) {
     }
 
     /**
+     * Retourne le carré de la distance en mètres séparant le récepteur (this) de l'argument that.
      * @param that Deuxième point avec lequel il faut calculer la distance au carré depuis l'instance courante (this).
      * @return La distance au carré entre les deux points.
      */
@@ -35,6 +41,7 @@ public record PointCh(double e, double n) {
     }
 
     /**
+     * Retourne la distance en mètres séparant le récepteur (this) de l'argument that.
      * @param that Deuxième point avec lequel il faut calculer la distance depuis l'instance courante (this).
      * @return La distance entre les deux points.
      */
@@ -44,6 +51,7 @@ public record PointCh(double e, double n) {
     }
 
     /**
+     * Retourne la longitude du point dans le système WGS84, en radians.
      * @return La longitude du point, dans le système WGS84, en radians.
      */
 
@@ -51,7 +59,7 @@ public record PointCh(double e, double n) {
         return Ch1903.lon(e, n);
     }
 
-    /**
+    /** Retourne la latitude du point, dans le système WGS84, en radians.
      * @return La latitude du point, dans le système WGS84, en radians.
      */
 

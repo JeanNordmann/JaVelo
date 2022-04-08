@@ -19,11 +19,10 @@ public final class Functions {
      * Constructeur privé vide, car la classe n'est pas instantiable.
      */
 
-    private Functions() {
-    }
+    private Functions() {}
 
     /**
-     *
+     * Retourne une fonction constante, dont la valeur est toujours y.
      * @param y Valeur constante désirée.
      * @return Une fonction constante, dont la valeur est toujours y.
      */
@@ -51,6 +50,7 @@ public final class Functions {
      */
 
     private static final class Constant implements DoubleUnaryOperator {
+
         /**
          * Attribut contenant la valeur de la constante de la fonction.
          */
@@ -62,7 +62,7 @@ public final class Functions {
         }
 
         /**
-         *
+         * Retourne la valeur constante y correspondant à l'abscisse x de la fonction.
          * @param x Valeur en abscisse de laquelle on souhaite obtenir l'ordonnée.
          * @return La valeur y correspondant à l'abscisse x de la fonction, dans ce cas une constante.
          */
@@ -83,7 +83,7 @@ public final class Functions {
     }
 
     /**
-     * Classe privée Sampled imbriquée dans la classe Functions
+     * Classe privée Sampled imbriquée dans la classe Functions.
      */
 
     private static final class Sampled implements DoubleUnaryOperator {
@@ -96,6 +96,12 @@ public final class Functions {
         private final float[] samples;
         private final double xMax;
 
+        /**
+         * Constructeur initialisant ses attributs (tableau d'échantillons et valeur maximale de la plage).
+         * @param samples Tableau d'échantillons.
+         * @param xMax Valeur maximale de la plage.
+         */
+
         public Sampled(float[] samples, double xMax) {
             Preconditions.checkArgument(samples.length >= 2 && xMax > 0);
             this.samples = samples;
@@ -103,7 +109,8 @@ public final class Functions {
         }
 
         /**
-         *
+         * Retourne l'interpolation linéaire voulue, en fonction des points échantillonnés, répartis
+         * régulièrement entre 0 et xMax.
          * @param x Valeur en abscisse de laquelle on souhaite l'interpolation linéaire.
          * @return L'interpolation linéaire voulue, en fonction des points échantillonnés, répartis
          * régulièrement entre 0 et xMax.

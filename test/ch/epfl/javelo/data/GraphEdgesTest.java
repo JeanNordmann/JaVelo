@@ -182,7 +182,7 @@ class GraphEdgesTest {
         assertTrue(edges.isInverted(1));
         assertEquals(5, edges.targetNodeId(1));
         assertEquals(7.5, edges.length(1) , TestManager.DOUBLE_DELTA);
-        assertEquals((double)(0xFF), edges.elevationGain(1));
+        assertEquals(0xFF, edges.elevationGain(1));
         assertTrue(edges.hasProfile(1));
 //        printArray(edges.profileSamples(1));
         assertArrayEquals(new float[]{  9.6875f, 9.6875f, 9.6875f,8.1875f,5.125f}, edges.profileSamples(1));

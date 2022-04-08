@@ -155,8 +155,8 @@ class GraphNodesTest {
         // modify for more…
         private static final int NUMBER_OF_NODES = 100;
 
-        private RandomNode[] nodes = new RandomNode[NUMBER_OF_NODES];
-        private GraphNodes graphNodes;
+        private final RandomNode[] nodes = new RandomNode[NUMBER_OF_NODES];
+        private final GraphNodes graphNodes;
 
         public RandomGraphNodes() {
             // generate random nodes

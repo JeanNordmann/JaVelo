@@ -55,17 +55,17 @@ class SingleRouteTest {
     // EDGE
     @Test
     void edgesWorks(){
-        PointCh points[] = {TestManager.offSetBy(50 , 50 ) ,TestManager.offSetBy(20 , 20 ) ,
+        PointCh[] points = {TestManager.offSetBy(50 , 50 ) ,TestManager.offSetBy(20 , 20 ) ,
                 TestManager.offSetBy(20 , 10 ) , TestManager.offSetBy(4 , 98 ) ,
                 TestManager.offSetBy(100 , 80 ) , TestManager.offSetBy(3 , 1 ) } ;
         List<Edge> edges = new ArrayList<>();
 
-        double lengths [] = {  5800, 2300, 1100, 2200 , 1700  };
+        double[] lengths = {  5800, 2300, 1100, 2200 , 1700  };
         for(int i = 0 ; i < points.length-1 ; i++ ){
             edges.add(
                     new Edge(i ,i+1 , points[i] , points[i+1] ,lengths[i] , null  )
             );
-        };
+        }
         SingleRoute route = new SingleRoute(edges);
         assertEquals( edges , route.edges() ) ;
     }
@@ -95,8 +95,8 @@ class SingleRouteTest {
         List<PointCh> points = new ArrayList<PointCh>(Collections.singleton(TestManager.offSetBy(50000, 50000)));
         List<Edge> edges = new ArrayList<>();
 
-        double lengths [] = {  580, 230, 100, 220 , 170  };
-        double angles [] = { 30 , 50 , -20 ,10  , 90  };
+        double[] lengths = {  580, 230, 100, 220 , 170  };
+        double[] angles = { 30 , 50 , -20 ,10  , 90  };
         for(int i = 0 ; i < lengths.length ; i++ ){
             points.add( pointAtAngleFromPoint(points.get(i) , angles[i] , lengths[i]) );
         }
@@ -118,7 +118,7 @@ class SingleRouteTest {
 
             PointCh p = points.get(i);
             PointCh np = points.get(i+1);
-            double positions[] = { L , L + lengths[i]*0.33333 , L + lengths[i]*0.499999999999999 , L + lengths[i]*0.7 ,
+            double[] positions = { L , L + lengths[i]*0.33333 , L + lengths[i]*0.499999999999999 , L + lengths[i]*0.7 ,
                     next };
             for(int j = 0 ; j < positions.length; j++ ){
                 double d = positions[j] - L ;
@@ -154,12 +154,12 @@ class SingleRouteTest {
 
     @Test
     void nodeClosestToWorks(){
-        PointCh points[] = {TestManager.offSetBy(50 , 50 ) ,TestManager.offSetBy(20 , 20 ) ,
+        PointCh[] points = {TestManager.offSetBy(50 , 50 ) ,TestManager.offSetBy(20 , 20 ) ,
                 TestManager.offSetBy(20 , 10 ) , TestManager.offSetBy(4 , 98 ) ,
                 TestManager.offSetBy(100 , 80 ) , TestManager.offSetBy(3 , 1 ) } ;
         List<Edge> edges = new ArrayList<>();
 
-        double lengths [] = {  5800, 2300, 1100, 2200 , 1700  };
+        double[] lengths = {  5800, 2300, 1100, 2200 , 1700  };
 
         for(int i = 0 ; i < points.length-1 ; i++ ){
             edges.add(
@@ -206,8 +206,8 @@ class SingleRouteTest {
         DoubleUnaryOperator sqrt = (x)->(Math.sqrt(x));
         DoubleUnaryOperator cbrt = (x)->(Math.cbrt(x));
         DoubleUnaryOperator linear = (x)->(0.7*x+ 9);
-        double lengths [] = {  5800, 2300, 1100, 2200 , 1700  };
-        DoubleUnaryOperator operators[] = { sqr , Functions.constant(6) ,  cbrt ,  sqrt ,
+        double[] lengths = {  5800, 2300, 1100, 2200 , 1700  };
+        DoubleUnaryOperator[] operators = { sqr , Functions.constant(6) ,  cbrt ,  sqrt ,
          linear };
 
         List<Edge> edges = new ArrayList<>();
@@ -239,7 +239,7 @@ class SingleRouteTest {
     @Test
     void pointClosestTo() {
 
-        PointCh points [] = { TestManager.offSetBy(1 , 1 ) ,TestManager.offSetBy(4 , 3 ) ,
+        PointCh[] points = { TestManager.offSetBy(1 , 1 ) ,TestManager.offSetBy(4 , 3 ) ,
         TestManager.offSetBy(2 , 5 ) , TestManager.offSetBy(8,8) , TestManager.offSetBy(8.5, 5.8 ) ,
         TestManager.offSetBy( 7 , 3 ) , TestManager.offSetBy(3,10) , TestManager.offSetBy(10,10 ) };
 
@@ -281,7 +281,7 @@ class SingleRouteTest {
                 , route.pointClosestTo(TestManager.offSetBy(2,10)));
 
 
-        PointCh A[] =  { TestManager.offSetBy(1.1 ,  1.1 ) ,TestManager.offSetBy(4 , 3.2 ) ,
+        PointCh[] A =  { TestManager.offSetBy(1.1 ,  1.1 ) ,TestManager.offSetBy(4 , 3.2 ) ,
                 TestManager.offSetBy(2.3 , 5.1 ) , TestManager.offSetBy(9 , 7  ) , TestManager.offSetBy(8.6, 5.6 ) ,
                 TestManager.offSetBy( 4 , 9 ) , TestManager.offSetBy(3.2,10.2)  };
         double L = 0 ;
