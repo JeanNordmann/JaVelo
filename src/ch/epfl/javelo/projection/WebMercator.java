@@ -23,6 +23,7 @@ public final class WebMercator {
     }
 
     /**
+     * Retourne la coordonnée x de la projection d'un point se trouvant à la longitude lon, donnée en radians.
      * @param lon Longitude en radians.
      * @return la coordonnée x de la projection d'un point se trouvant à la longitude lon, donnée en radians.
      */
@@ -31,6 +32,7 @@ public final class WebMercator {
     }
 
     /**
+     * Retourne la coordonnée y de la projection d'un point se trouvant à la latitude lat, donnée en radians.
      * @param lat Latitude en radians.
      * @return la coordonnée y de la projection d'un point se trouvant à la latitude lat, donnée en radians.
      */
@@ -40,6 +42,7 @@ public final class WebMercator {
     }
 
     /**
+     * Retourne la longitude, en radians, d'un point dont la projection se trouve à la coordonnée x donnée.
      * @param x Coordonnée x du point.
      * @return la longitude, en radians, d'un point dont la projection se trouve à la coordonnée x donnée.
      */
@@ -48,6 +51,7 @@ public final class WebMercator {
     }
 
     /**
+     * Retourne la latitude, en radians, d'un point dont la projection se trouve à la coordonnée y donnée.
      * @param y Coordonnée y du point.
      * @return la latitude, en radians, d'un point dont la projection se trouve à la coordonnée y donnée.
      */

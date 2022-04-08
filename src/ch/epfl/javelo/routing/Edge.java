@@ -38,6 +38,8 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
     }
 
     /**
+     * Retourne la position le long de l'arête, en mètres, qui se trouve la plus proche du
+     * point donné.
      * @param point Point donné.
      * @return Retourne la position le long de l'arête, en mètres, qui se trouve la plus
      * proche du point donné.
@@ -48,6 +50,8 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
     }
 
     /**
+     * Retourne le point se trouvant à la position donnée sur l'arête, exprimée
+     * en mètres.
      * @param position Position donnée sur l'arête.
      * @return Retourne le point se trouvant à la position donnée sur l'arête,
      * exprimée en mètres.
@@ -60,6 +64,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
     }
 
     /**
+     * Retourne l'altitude, en mètres, à la position donnée sur l'arête.
      * @param position Position donnée sur l'arête.
      * @return Retourne l'altitude, en mètres, à la position donnée sur l'arête.
      */

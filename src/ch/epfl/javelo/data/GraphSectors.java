@@ -37,10 +37,11 @@ public record GraphSectors(ByteBuffer buffer) {
      * de départ et celui de fin.
      */
 
-    public record Sector(int startNodeId, int endNodeId) {
-    }
+    public record Sector(int startNodeId, int endNodeId) {}
 
     /**
+     * Retourne la liste de tous les secteurs ayant une intersection avec le carré centré au point
+     * donné et de côté égal au double (!) de la distance donnée.
      * @param center   Point donné devenant le centre du carré.
      * @param distance Distance depuis le point prise en compte pour l'intersection.
      * @return La liste de tous les secteurs ayant une intersection avec le carré centré

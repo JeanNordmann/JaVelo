@@ -23,7 +23,8 @@ public class RouteComputer {
     private final CostFunction costFunction;
 
     /**
-     * @param graph        Le graph donné.
+     * Constructeur initialisant une RouteComputer.
+     * @param graph Le graph donné.
      * @param costFunction La fonction de coût donnée.
      */
 
@@ -33,8 +34,12 @@ public class RouteComputer {
     }
 
     /**
+     * Retourne l'itinéraire de coût total minimal allant du nœud d'identité startNodeId au nœud d'identité endNodeId
+     * dans le graphe passé au constructeur, ou null si aucun itinéraire n'existe. Si le nœud de départ et d'arrivée
+     * sont identiques, lèves IllegalArgumentException. Si plusieurs itinéraires de coût total minimal existent,
+     * bestRouteBetween retourne n'importe lequel d'entre eux.
      * @param startNodeId Nœud de départ
-     * @param endNodeId   Nœud de fin
+     * @param endNodeId Nœud de fin
      * @return L'itinéraire de coût total minimal allant du nœud d'identité startNodeId au nœud d'identité endNodeId
      * dans le graphe passé au constructeur, ou null si aucun itinéraire n'existe.
      * Si le nœud de départ et d'arrivée sont identiques, lève IllegalArgumentException.

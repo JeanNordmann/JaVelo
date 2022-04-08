@@ -37,6 +37,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     private static final int OFFSET_CASE_3 = 4;
 
     /**
+     * Retourne si l'arête d'identité donnée va dans le sens inverse de la
+     * voie OSM dont elle provient.
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne si l'arête d'identité donnée va dans le sens inverse
      * de la voie OSM dont elle provient.
@@ -50,8 +52,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
+     * Retourne l'identité du nœud destination de l'arête d'identité donnée.
      * @param edgeId Identité de l'arête donnée.
-     * @return Retourne l'identité du noeud destination de l'arête d'identité donnée.
+     * @return Retourne l'identité du nœud destination de l'arête d'identité donnée.
      */
 
     public int targetNodeId(int edgeId) {
@@ -61,6 +64,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
+     * Retourne la longueur en mètres de l'arête d'identité donnée.
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne la longueur en mètres de l'arête d'identité donnée.
      */
@@ -71,6 +75,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
+     * Retourne le dénivelé positif, en mètres, de l'arête d'identité donnée.
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne le dénivelé positif, en mètres, de l'arête d'identité donnée.
      */
@@ -81,6 +86,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
+     * Retourne si l'arête donnée possède un profil.
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne si l'arête donnée possède un profil.
      */
@@ -91,6 +97,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
+     * Retourne le tableau des échantillons du profil de l'arête d'identité donnée,
+     * qui est vide si l'arête ne possède pas de profil.
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne le tableau des échantillons du profil de l'arête d'identité
      * donnée, qui est vide si l'arête ne possède pas de profil.
@@ -174,6 +182,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
+     * Méthode privée retournant la valeur de type float correspondant à la valeur
+     * Q12.4 donnée.
      * @param q12_4 Nombre de type short donné
      * @return La valeur de type float correspondant à la valeur Q12.4 donnée
      */
@@ -183,8 +193,10 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
+     * Méthode privée retournant la valeur de type float correspondant à la valeur
+     * Q8.4 donnée.
      * @param q4_4 Nombre de type float donné
-     * @return La valeur de type float correspondant à la valeur Q12.4 donnée
+     * @return La valeur de type float correspondant à la valeur Q8.4 donnée
      */
 
     private static float asFloat8(int q4_4) {
@@ -192,6 +204,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
+     * Retourne l'identité de l'ensemble d'attributs attaché à l'arête d'identité donnée.
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne l'identité de l'ensemble d'attributs attaché à l'arête
      * d'identité donnée.

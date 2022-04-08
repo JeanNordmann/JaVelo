@@ -22,8 +22,10 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
     public static final RoutePoint NONE = new RoutePoint(null, Double.NaN, POSITIVE_INFINITY);
 
     /**
-     * @param positionDifference différence de position
-     * @return un point identique au récepteur (this) mais dont la position est décalée de la différence donnée,
+     * Retourne un point identique au récepteur (this) mais dont la position est décalée de la différence donnée,
+     * qui peut être positive ou négative.
+     * @param positionDifference Différence de position.
+     * @return Un point identique au récepteur (this) mais dont la position est décalée de la différence donnée,
      * qui peut être positive ou négative.
      */
 
@@ -32,8 +34,9 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
     }
 
     /**
-     * @param that RoutePoint avec le quel on veut comparer
-     * @return this si sa distance à la référence est inférieure ou égale à celle de that, et that sinon
+     * Retourne this si sa distance à la référence est inférieure ou égale à celle de that, et that sinon.
+     * @param that RoutePoint avec le quel on veut comparer.
+     * @return this si sa distance à la référence est inférieure ou égale à celle de that, et that sinon.
      */
 
     public RoutePoint min(RoutePoint that) {
@@ -41,8 +44,11 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
     }
 
     /**
-     * @param thatPoint               pointCh à comparer
-     * @param thatPosition            position
+     * Retourne this si sa distance à la référence est inférieure ou égale à thatDistanceToReference,
+     * et une nouvelle instance de RoutePoint dont les attributs sont les arguments passés à min
+     * sinon.
+     * @param thatPoint pointCh à comparer
+     * @param thatPosition position
      * @param thatDistanceToReference distance de reference
      * @return this si sa distance à la référence est inférieure ou égale à thatDistanceToReference,
      * et une nouvelle instance de RoutePoint dont les attributs sont les arguments passés à min sinon.

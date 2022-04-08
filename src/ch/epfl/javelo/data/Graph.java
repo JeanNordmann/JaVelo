@@ -68,6 +68,8 @@ public final class Graph {
 
 
     /**
+     * Retourne le graphe Javelo obtenu à partir des fichiers se trouvant dans le répertoire, ou
+     * bien lance une exception en cas d'erreur d'entrée ou de sortie.
      * @param basePath Chemin d'accès donné.
      * @return Le graphe Javelo obtenu à partir des fichiers se trouvant dans le répertoire.
      * @throws IOException En cas d'erreur d'entrée/sortie.
@@ -106,6 +108,7 @@ public final class Graph {
     }
 
     /**
+     * Retourne le nombre total de nœuds dans le graphe.
      * @return Le nombre total de nœuds dans le graphe.
      */
 
@@ -114,6 +117,7 @@ public final class Graph {
     }
 
     /**
+     * Retourne la position géographique du nœud donné.
      * @param nodeId Identité du nœud donné.
      * @return La position géographique du nœud donné.
      */
@@ -123,6 +127,7 @@ public final class Graph {
     }
 
     /**
+     * Retourne le nombre d'arêtes sortant du nœud d'identité donné.
      * @param nodeId Identité du nœud donné.
      * @return Retourne le nombre d'arêtes sortant du nœud d'identité donné.
      */
@@ -132,9 +137,11 @@ public final class Graph {
     }
 
     /**
+     * Retourne l'identité de edgeIndex-ième arête sortant du nœud d'identité
+     * donné.
      * @param nodeId    Identité du nœud donné.
      * @param edgeIndex Index de l'arête vis-à-vis de la première arête du nœud.
-     * @return Retourne l'identité de la edgeIndex-ième arête soratnt du nœud
+     * @return Retourne l'identité de la edgeIndex-ième arête sortant du nœud
      * d'identité donné.
      */
 
@@ -143,6 +150,9 @@ public final class Graph {
     }
 
     /**
+     * Retourne l'identité du nœud se trouvant le plus proche du point donné, à
+     * la distance maximale donnée (en mètres), ou -1 si aucun nœud ne correspond à
+     * ces critères.
      * @param point          Point donné.
      * @param searchDistance Distance maximale de recherche donnée.
      * @return Retourne l'identité du nœud se trouvant le plus proche du point
@@ -171,6 +181,7 @@ public final class Graph {
     }
 
     /**
+     * Retourne l'identité du nœud destination de l'arête d'identité donnée.
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne l'identité du nœud destination de l'arête d'identité donnée.
      */
@@ -180,6 +191,8 @@ public final class Graph {
     }
 
     /**
+     * Retourne vrai si et seulement si l'arête d'identité donnée va dans le sens
+     * contraire de la voie OSM dont elle provient.
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne vrai si et seulement si l'arête d'identité donnée va dans le
      * sens contraire de la voie OSM dont elle provient.
@@ -190,6 +203,7 @@ public final class Graph {
     }
 
     /**
+     * Retourne l'ensemble des attributs OSM attachés à l'arête d'identité donnée.
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne l'ensemble des attributs OSM attachés à l'arête d'identité donnée.
      */
@@ -199,6 +213,7 @@ public final class Graph {
     }
 
     /**
+     * Retourne la longueur de l'arête d'identité donnée.
      * @param edgeId Identité de l'arête donnée.
      * @return La longueur de l'arête d'identité donnée.
      */
@@ -208,6 +223,7 @@ public final class Graph {
     }
 
     /**
+     * Retourne le dénivelé positif total de l'arête donnée.
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne le dénivelé positif total de l'arête donnée.
      */
@@ -217,6 +233,9 @@ public final class Graph {
     }
 
     /**
+     * Retourne le profil en long de l'arête d'identité donnée, sous la forme d'une
+     * fonction ; si l'arête ne possède pas de profil, alors cette fonction doit
+     * retourner Double.NaN pour n'importe quel argument.
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne le profil en long de l'arête d'identité donnée, sous la forme
      * d'une fonction ; si l'arête ne possède pas de profil, alors cette fonction doit

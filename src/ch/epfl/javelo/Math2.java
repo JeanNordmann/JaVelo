@@ -19,9 +19,9 @@ public final class Math2 {
 
     /**
      * Retourne la partie entière supérieure d'une division
-     * @param x dividende non nul
-     * @param y diviseur positif et non nul
-     * @return la partie entière supérieure d'une division
+     * @param x dividende non nul.
+     * @param y diviseur positif et non nul.
+     * @return la partie entière supérieure d'une division.
      */
 
     public static int ceilDiv(int x, int y) {
@@ -30,12 +30,12 @@ public final class Math2 {
     }
 
     /**
-     * méthode permettant à l'aide des coordonnées des points (0,y0) et (1,y1) et de la coordonnée x
+     * Méthode permettant à l'aide des coordonnées des points (0,y0) et (1,y1) et de la coordonnée x
      * d'un point de connaitre la coordonnée y de celui-ci.
-     * @param y0 premier point de la droite
-     * @param y1 second point de la droite
-     * @param x coordonné x du point dont on aimerait connaitre la coordonnée y
-     * @return l'interprétation linéaire entre deux points y0 et y1
+     * @param y0 premier point de la droite.
+     * @param y1 second point de la droite.
+     * @param x coordonné x du point dont on aimerait connaitre la coordonnée y.
+     * @return l'interprétation linéaire entre deux points y0 et y1.
      */
 
     public static double interpolate(double y0, double y1, double x) {
@@ -43,16 +43,16 @@ public final class Math2 {
     }
 
     /**
-     * méthode permettant de retourner l'entier le plus proche d'un intervalle
-     * @param min borne inférieure
-     * @param v variable entière
-     * @param max borne supérieure
+     * Méthode permettant de retourner l'entier le plus proche d'un intervalle
+     * @param min borne inférieure.
+     * @param v variable entière.
+     * @param max borne supérieure.
      * @return la valeur la plus proche de v dans l'intervalle => v si c'est dans
-     * l'intervalle, sinon le max ou le min
+     * l'intervalle, sinon le max ou le min.
      */
 
     public static int clamp(int min, int v, int max){
-        Preconditions.checkArgument(max>=min);
+        Preconditions.checkArgument(max >= min);
         if (min < v & v < max) return v;
         if (min >= v) {
             return min;
@@ -60,12 +60,12 @@ public final class Math2 {
     }
 
     /**
-     * méthode permettant de retourner le rationnel le plus proche d'un intervalle
-     * @param min borne inférieure
-     * @param v variable rationnel
-     * @param max borne supérieure
+     * Méthode permettant de retourner le rationnel le plus proche d'un intervalle.
+     * @param min borne inférieure.
+     * @param v variable rationnel.
+     * @param max borne supérieure.
      * @return la valeur la plus proche de v dans l'intervalle => v si c'est dans
-     * l'intervalle, sinon le max ou le min
+     * l'intervalle, sinon le max ou le min.
      */
 
     public static double clamp(double min, double v, double max) {
@@ -75,8 +75,8 @@ public final class Math2 {
     }
 
     /**
-     * fonction arcsin hyperbolique inverse
-     * @param x paramètre
+     * Fonction arcsin hyperbolique inverse.
+     * @param x Valeur donnée.
      * @return arcsin hyperbolique inverse de X
      */
 
@@ -85,7 +85,7 @@ public final class Math2 {
     }
 
     /**
-     * méthode retournant le produit vectoriel de V1 ^ V2 vecteurs 2d
+     * Méthode retournant le produit vectoriel de V1 ^ V2 vecteurs 2d
      * @param uX coordonnée X de V1
      * @param uY coordonnée Y de V1
      * @param vX coordonnée X de V2
@@ -98,10 +98,10 @@ public final class Math2 {
     }
 
     /**
-     * méthode retournant la norme au carré d'un vecteur 2d
+     * Méthode retournant la norme au carré d'un vecteur 2d
      * @param uX coordonnée X
      * @param uY coordonnée Y
-     * @return norme au carré
+     * @return Norme au carré.
      */
 
     public static double squaredNorm(double uX, double uY) {
@@ -109,10 +109,10 @@ public final class Math2 {
     }
 
     /**
-     * méthode retournant la norme d'un vecteur 2d
-     * @param uX coordonnée X
-     * @param uY coordonnée Y
-     * @return norme
+     * méthode retournant la norme d'un vecteur 2d.
+     * @param uX coordonnée X.
+     * @param uY coordonnée Y.
+     * @return La norme.
      */
 
     public static double norm(double uX, double uY) {
@@ -128,7 +128,7 @@ public final class Math2 {
      * @param bY coordonnée Y de B
      * @param pX coordonnée X de P
      * @param pY coordonnée Y de P
-     * @return longueur/norme de la projection
+     * @return Longueur/norme de la projection.
      */
 
     public static double projectionLength(double aX, double aY,

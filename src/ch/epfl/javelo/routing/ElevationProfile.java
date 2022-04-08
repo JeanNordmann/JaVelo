@@ -19,13 +19,18 @@ import java.util.DoubleSummaryStatistics;
  */
 
 public final class ElevationProfile {
+
+    /**
+     * Attributs représentant la longueur du profil et les échantillons d'élévation.
+     */
+
     private final double length;
     private final float[] elevationSamples;
 
     /**
      * Constructeur public.
      *
-     * @param length           Longueur du profil en mètres.
+     * @param length Longueur du profil en mètres.
      * @param elevationSamples Tableau de float avec les différentes altitudes à équidistance horizontale.
      */
 
@@ -36,6 +41,7 @@ public final class ElevationProfile {
     }
 
     /**
+     * Retourne la longueur du profil, en mètres.
      * @return La longueur du profil, en mètres.
      */
 
@@ -44,6 +50,7 @@ public final class ElevationProfile {
     }
 
     /**
+     * Retourne l'altitude minimum du profil, en mètres.
      * @return L'altitude minimum du profil, en mètres.
      */
 
@@ -54,6 +61,7 @@ public final class ElevationProfile {
     }
 
     /**
+     * Retourne l'altitude maximum du profil, en mètres.
      * @return L'altitude maximum du profil, en mètres.
      */
 
@@ -64,6 +72,7 @@ public final class ElevationProfile {
     }
 
     /**
+     * Retourne le dénivelé positif total du profil, en mètres.
      * @return Le dénivelé positif total du profil, en mètres.
      */
 
@@ -80,6 +89,7 @@ public final class ElevationProfile {
     }
 
     /**
+     * Retourne le dénivelé négatif total du profil, en mètres. La valeur est toujours positive.
      * @return Le dénivelé négatif total du profil, en mètres. (valeur toujours positive)
      */
 

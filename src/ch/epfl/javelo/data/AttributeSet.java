@@ -31,9 +31,9 @@ public record AttributeSet(long bits) {
     }
 
     /**
-     *
+     * Retourne l'ensemble contenant uniquement les attributs donnés en argument.
      * @param attributes Attributs dont on veut créer un ensemble
-     * @return L'ensemble contenant uniquement les attributs donnés en argument
+     * @return L'ensemble contenant uniquement les attributs donnés en argument.
      */
 
     public static AttributeSet of(Attribute... attributes) {
@@ -46,7 +46,8 @@ public record AttributeSet(long bits) {
     }
 
     /**
-     *
+     * Retourne vrai si et seulement si l'ensemble récepteur (this) contient
+     * l'attribut donné.
      * @param attribute Attribut que l'on vérifie.
      * @return Vrai ssi l'ensemble récepteur (this) contient l'attribut donné.
     */
@@ -57,7 +58,8 @@ public record AttributeSet(long bits) {
     }
 
     /**
-     *
+     * Retourne vrai si et seulement si l'intersection de l'ensemble récepteur (this) avec
+     * celui passé en argument (that) n'est pas vide.
      * @param that Deuxième ensemble passé en paramètre.
      * @return vrai ssi l'intersection de l'ensemble récepteur (this) avec celui
      * passé en argument (that) n'est pas vide.
@@ -68,6 +70,8 @@ public record AttributeSet(long bits) {
     }
 
     /**
+     * Retourne une châine composée de la représentation textuelle des éléments de l'ensemble entourés
+     * d'accolades et séparés par des virgules.
      * @return Une chaîne composée de la représentation textuelle des éléments de l'ensemble entourés
      * d'accolades et séparés par des virgules.
      */

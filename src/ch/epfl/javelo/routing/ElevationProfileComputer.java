@@ -25,7 +25,11 @@ public final class ElevationProfileComputer {
     }
 
     /**
-     * @param route         L'itinéraire route de type Route.
+     * Retourne le profil en long de l'itinéraire route, en garantissant que l'espacement
+     * entre les échantillons du profil est d'au maximum maxStepLength mètres; lève
+     * IllegalArgumentException si cet espacement n'est pas strictement n'est pas strictement
+     * positif.
+     * @param route L'itinéraire route de type Route.
      * @param maxStepLength L'espace maximum entre les échantillons du profil.
      * @return le profil en long de l'itinéraire route, en garantissant que l'espacement entre les
      * échantillons du profil est d'au maximum maxStepLength mètres; lève IllegalArgumentException

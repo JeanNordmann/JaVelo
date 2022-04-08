@@ -19,7 +19,7 @@ public final class Bits {
     private Bits() {}
 
     /**
-     * Méthode qui extrait du vecteur de 32 bits value la plage de length bits commençant au bit d'index start,
+     * Méthode qui extrait du vecteur de 32 bits donné la plage de length bits commençant au bit d'index start,
      * qu'elle interprète comme une VALEUR SIGNEE en complément à deux, ou lève une exception si la plage
      * est invalide.
      * @param value Vecteur de 32 bits initial
@@ -36,7 +36,7 @@ public final class Bits {
     }
 
     /**
-     * Méthode qui extrait du vecteur de 32 bits value la plage de length bits commençant au bit d'index start,
+     * Méthode qui extrait du vecteur de 32 bits donné la plage de length bits commençant au bit d'index start,
      * qu'elle interprète comme une VALEUR NON-SIGNEE en complément à deux, ou lève une exception si la plage
      * est invalide.
      * @param value Vecteur de 32 bits initial

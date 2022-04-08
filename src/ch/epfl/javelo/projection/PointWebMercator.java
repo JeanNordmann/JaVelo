@@ -15,7 +15,7 @@ import ch.epfl.javelo.Preconditions;
 public record PointWebMercator(double x, double y) {
 
     /**
-     * Constructeur
+     * Constructeur vérifiant si les valeurs passées sont bien comprises entre 0 et 1.
      */
 
     public PointWebMercator {
@@ -23,7 +23,7 @@ public record PointWebMercator(double x, double y) {
     }
 
     /**
-     *
+     * Retourne le point dont les coordonnées sont x et y au niveau de zoom zoomLevel.
      * @param zoomLevel niveaux de zoom de 0 à 19
      * @param x coordonnée x
      * @param y coordonnée y
@@ -36,26 +36,28 @@ public record PointWebMercator(double x, double y) {
     }
 
     /**
-     *
+     * Retourne le point Web Mercartor correspondant au point du système de coordonnées suisse donné.
      * @param pointCh point dans le système de coordonnées suisse
      * @return le point Web Mercator correspondant au point du système de coordonnées suisse donné.
      */
+
     public static PointWebMercator ofPointCh(PointCh pointCh) {
         return new PointWebMercator(WebMercator.x(pointCh.lon()), WebMercator.y(pointCh.lat()));
     }
 
     /**
-     *
+     * Retourne la coordonnée x au niveau de zoom donné.
      * @param zoomLevel niveaux de zoom de 0 à 19
      * @return la coordonnée x au niveau de zoom donné
      */
+
     public double xAtZoomLevel(int zoomLevel) {
         Preconditions.checkArgument(0 <= zoomLevel && zoomLevel <= 20);
         return Math.scalb(x, 8 + zoomLevel);
     }
 
     /**
-     *
+     * Retourne la coordonnée y au niveau de zoom donné.
      * @param zoomLevel niveaux de zoom de 0 à 19
      * @return la coordonnée y au niveau de zoom donné
      */
@@ -65,7 +67,7 @@ public record PointWebMercator(double x, double y) {
     }
 
     /**
-     *
+     * Retourne la longitude du point, en radians.
      * @return la longitude du point, en radians
      */
     public double lon() {
@@ -73,15 +75,16 @@ public record PointWebMercator(double x, double y) {
     }
 
     /**
-     *
-     * @return  la latitude du point, en radians
+     * Retourne la latitude du point, en radians.
+     * @return La latitude du point, en radians
      */
     public double lat() {
         return WebMercator.lat(y);
     }
 
     /**
-     *
+     * Retourne le point de coordonnées suisses se trouvant à la même position que le récepteur (this)
+     * ou null si ce point n'est pas dans les limites de la Suisse définies par SwissBounds.
      * @return le point de coordonnées suisses se trouvant à la même position que le récepteur (this)
      * ou null si ce point n'est pas dans les limites de la Suisse définies par SwissBounds.
      */

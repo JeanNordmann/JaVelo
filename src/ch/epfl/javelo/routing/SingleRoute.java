@@ -56,6 +56,8 @@ public final class SingleRoute implements Route {
     }
 
     /**
+     * Retourne l'index de l'itinéraire contenant la position donnée,
+     * qui vaut toujours 0 dans le cas d'un itinéraire simple.
      * @param position Position donnée.
      * @return L'index de l'itinéraire contenant la position
      * donnée, qui vaut toujours 0 dans le cas d'un itinéraire
@@ -68,6 +70,7 @@ public final class SingleRoute implements Route {
     }
 
     /**
+     * Calcule la longueur de l'itinéraire, en mètres.
      * @return La longueur de l'itinéraire, en mètres.
      */
 
@@ -81,6 +84,9 @@ public final class SingleRoute implements Route {
     }
 
     /**
+     * Retourne la totalité des arêtes de l'itinéraire, et pour
+     * protéger l'immuabilité de la classe, on renvoie une
+     * copie du tableau.
      * @return La totalité des arêtes de l'itinéraire,
      * et pour protéger l'immuabilité de la classe, on
      * renvoie une copie du tableau.
@@ -92,7 +98,9 @@ public final class SingleRoute implements Route {
     }
 
     /**
-     * @return Retourne la totalité des points situés aux
+     * Retourne la totalité des points situés aux
+     * extrémités des arêtes de l'itinéraire.
+     * @return La totalité des points situés aux
      * extrémités des arêtes de l'itinéraire.
      */
 
@@ -109,8 +117,10 @@ public final class SingleRoute implements Route {
     }
 
     /**
+     * Retourne le point se trouvant à la position donnée le
+     * long de l'itinéraire.
      * @param position Position donnée.
-     * @return Retourne le point se trouvant à la position
+     * @return Le point se trouvant à la position
      * donnée le long de l'itinéraire.
      */
 
@@ -125,7 +135,7 @@ public final class SingleRoute implements Route {
             } else {
                 return edges.get(index).pointAt(0);
             }
-            //Cas où on est entre 2 points => index négatif
+            //Cas où on est entre 2 points (l'index est négatif).
         } else {
             absoluteResult = Math.abs(index + 2);
             return edges.get(absoluteResult).pointAt(position - positionsTab[absoluteResult]);
@@ -133,8 +143,11 @@ public final class SingleRoute implements Route {
     }
 
     /**
+     * Retourne l'altitude à la position donnée le long de l'itinéraire,
+     * qui peut valoir NaN si l'arête contenant cette position n'a pas
+     * de profil.
      * @param position Position donnée.
-     * @return Retourne l'altitude à la position donnée le long
+     * @return L'altitude à la position donnée le long
      * de l'itinéraire, qui peut valoir NaN si l'arête contenant
      * cette position n'a pas de profil.
      */
@@ -165,8 +178,10 @@ public final class SingleRoute implements Route {
     }
 
     /**
+     * Retourne l'identité du nœud appartenant à l'itinéraire, et
+     * se trouvant le plus proche de la position donnée.
      * @param position Position donnée.
-     * @return Retourne l'identité du nœud appartenant à l'itinéraire,
+     * @return L'identité du nœud appartenant à l'itinéraire,
      * et se trouvant le plus proche de la position donnée.
      */
 
@@ -190,8 +205,10 @@ public final class SingleRoute implements Route {
     }
 
     /**
+     * Retourne le point de l'itinéraire se trouvant le plus proche du
+     * point de référence donné.
      * @param point Point de référence donné.
-     * @return Retourne le point de l'itinéraire se trouvant le plus
+     * @return Le point de l'itinéraire se trouvant le plus
      * proche du point de référence donné.
      */
 

@@ -30,7 +30,7 @@ public final class SwissBounds {
     public static final double HEIGHT = MAX_N - MIN_N;
 
     /**
-     *
+     * Retourne si les coordonnées sont bien dans les bordures suisses ou non.
      * @param e Coordonnée E dans le système suisse
      * @param n Coordonnée N dans le système suisse
      * @return si les coordonnées sont bien dans les bordures suisses ou non.

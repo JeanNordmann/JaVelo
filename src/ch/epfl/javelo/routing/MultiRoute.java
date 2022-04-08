@@ -44,6 +44,8 @@ public final class MultiRoute implements Route {
     }
 
     /**
+     * Retourne l'index du segment de l'itinéraire contenant la position
+     * donnée.
      * @param position Position donnée.
      * @return Retourne l'index du segment de l'itinéraire contenant la
      * position donnée.
@@ -71,6 +73,7 @@ public final class MultiRoute implements Route {
     }
 
     /**
+     * Retourne la longueur de l'itinéraire en mètres.
      * @return La longueur de l'itinéraire en mètres.
      */
 
@@ -84,6 +87,7 @@ public final class MultiRoute implements Route {
     }
 
     /**
+     * Retourne la totalité des arêtes de l'itinéraire.
      * @return La totalité des arêtes de l'itinéraire.
      */
 
@@ -99,6 +103,8 @@ public final class MultiRoute implements Route {
     }
 
     /**
+     * Retourne la totalité des points situés aux extrémités
+     * des arêtes de l'itinéraire, sans doublons.
      * @return Retourne la totalité des points situés aux
      * extrémités des arêtes de l'itinéraire, sans doublons.
      */
@@ -118,6 +124,8 @@ public final class MultiRoute implements Route {
     }
 
     /**
+     * Retourne le point se trouvant à la position donnée le long
+     * de l'itinéraire.
      * @param position Position donnée.
      * @return Retourne le point se trouvant à la position donnée le
      * long de l'itinéraire.
@@ -139,6 +147,9 @@ public final class MultiRoute implements Route {
     }
 
     /**
+     * Retourne l'altitude à la position donnée le long de
+     * l'itinéraire, qui peut valoir NaN si l'arête contenant cette
+     * position n'a pas de profil.
      * @param position Position donnée.
      * @return Retourne l'altitude à la position donnée le long
      * de l'itinéraire, qui peut valoir NaN si l'arête contenant
@@ -161,6 +172,8 @@ public final class MultiRoute implements Route {
     }
 
     /**
+     * Retourne l'identité du nœud appartenant à l'itinéraire et se trouvant
+     * le plus proche de la position donnée.
      * @param position Position donnée.
      * @return Retourne l'identité du nœud appartenant à l'itinéraire et se
      * trouvant le plus proche de la position donnée.
@@ -183,6 +196,8 @@ public final class MultiRoute implements Route {
     }
 
     /**
+     * Retourne le point de l'itinéraire se trouvant le plus proche du point
+     * de référence donné.
      * @param point Point de référence donné.
      * @return Retourne le point de l'itinéraire se trouvant le plus proche du
      * point de référence donné.
