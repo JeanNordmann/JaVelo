@@ -15,11 +15,6 @@ import static ch.epfl.javelo.Math2.squaredNorm;
  * @author Maxime Ducourau (329544)
  */
 
-/**
- * @param e Coordonnée Est du point.
- * @param n Coordonnée Nord du point.
- */
-
 public record PointCh(double e, double n) {
 
     /**
