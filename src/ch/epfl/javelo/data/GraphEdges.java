@@ -3,6 +3,7 @@ package ch.epfl.javelo.data;
 import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Q28_4;
+
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -12,13 +13,11 @@ import static java.lang.Math.scalb;
 /**
  * 3.3.4
  * GraphEdges
- *
+ * <p>
  * Enregistrement représentant le tableau de toutes les arêtes du graphe JaVelo.
- *
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
- *
  */
 
 
@@ -34,6 +33,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     private static final int OFFSET_ASCENDING_ELEVATION = OFFSET_EDGE_LENGTH + Short.BYTES;
     private static final int OFFSET_ID_OSM_ATTRIBUTE = OFFSET_ASCENDING_ELEVATION + Short.BYTES;
     private static final int EDGE_INTS = OFFSET_ID_OSM_ATTRIBUTE + Short.BYTES;
+    private static final int OFFSET_CASE_2 = 2;
+    private static final int OFFSET_CASE_3 = 4;
 
     /**
      * @param edgeId Identité de l'arête donnée.
@@ -44,8 +45,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     public boolean isInverted(int edgeId) {
         byte isInvertedBit = (byte) Bits.extractUnsigned(
                 edgesBuffer.getInt(edgeId * EDGE_INTS + OFFSET_WAY_AND_ID),
-                31,1);
-        return 1 == isInvertedBit ;
+                31, 1);
+        return 1 == isInvertedBit;
     }
 
     /**
@@ -60,7 +61,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     *
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne la longueur en mètres de l'arête d'identité donnée.
      */
@@ -71,25 +71,23 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     *
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne le dénivelé positif, en mètres, de l'arête d'identité donnée.
      */
 
-    public double elevationGain(int edgeId)  {
+    public double elevationGain(int edgeId) {
         return Q28_4.asDouble(Bits.extractUnsigned(edgesBuffer.getShort
                 (edgeId * EDGE_INTS + OFFSET_ASCENDING_ELEVATION), 0, 16));
     }
 
     /**
-     *
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne si l'arête donnée possède un profil.
      */
 
     public boolean hasProfile(int edgeId) {
-        int profilByte = Bits.extractUnsigned(profileIds.get(edgeId), 30,2);
-        return profilByte !=0;
+        int profilByte = Bits.extractUnsigned(profileIds.get(edgeId), 30, 2);
+        return profilByte != 0;
     }
 
     /**
@@ -101,65 +99,67 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     public float[] profileSamples(int edgeId) {
         if (!hasProfile(edgeId)) return new float[]{};
         //Calcule le nombre d'échantillons en fonction de la formule donnée.
-        int numberSamples = 1 + Math2.ceilDiv((int)(scalb(length(edgeId),4)) , Q28_4.ofInt(2));
+        int numberSamples = 1 + Math2.ceilDiv((int) (scalb(length(edgeId), 4)), Q28_4.ofInt(2));
         float[] toReturn = new float[numberSamples];
         int firstAltiId = Bits.extractUnsigned(profileIds.get(edgeId), 0, 30);
         //Récupère le type de profil (les deux bits de poids fort).
-        byte profilType = (byte) Bits.extractUnsigned(profileIds.get(edgeId), 30,2);
+        byte profilType = (byte) Bits.extractUnsigned(profileIds.get(edgeId), 30, 2);
 
         //Traite les différents cas.
         switch (profilType) {
-            case (byte) 1 :
+            case (byte) 1:
                 for (int i = 0; i < numberSamples; i++) {
                     toReturn[i] = asFloat16(Short.toUnsignedInt(elevations.get(firstAltiId + i)));
-                } break;
+                }
+                break;
 
-            case (byte) 2 :
-                int shortsToRead2 = numberSamples / 2;
+            case (byte) 2:
+                int shortsToRead2 = numberSamples / OFFSET_CASE_2;
                 toReturn[0] = asFloat16(elevations.get(firstAltiId));
-                for (int i = 1; i <= shortsToRead2 ; i++) {
+                for (int i = 1; i <= shortsToRead2; i++) {
                     //Première altitude.
-                    int extractShort =  Short.toUnsignedInt(elevations.get(firstAltiId + i));
+                    int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
 
                     float firstShift = asFloat16(Bits.extractSigned(extractShort, 8, 8));
-                    toReturn[2*i - 1] = toReturn[2 * (i-1)] + firstShift;
+                    toReturn[OFFSET_CASE_2 * i - 1] = toReturn[OFFSET_CASE_2 * (i - 1)] + firstShift;
 
                     //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles.
-                    if (numberSamples - 1 < 2*i) break;
+                    if (numberSamples - 1 < OFFSET_CASE_2 * i) break;
 
                     //Remplit les valeurs en fonction de la précédente, et du shift.
                     float secondShift = asFloat16(Bits.extractSigned(extractShort, 0, 8));
-                    toReturn[2 * i] = toReturn[2*i - 1] + secondShift;
-                } break;
+                    toReturn[OFFSET_CASE_2 * i] = toReturn[OFFSET_CASE_2 * i - 1] + secondShift;
+                }
+                break;
 
-            case (byte) 3 :
+            case (byte) 3:
                 //Nombre de shorts à lire après le premier short, sachant qu'un short contient 4 nibble.
-                int shortsToRead4 = (numberSamples + 2) / 4;
+                int shortsToRead4 = (numberSamples + 2) / OFFSET_CASE_3;
                 toReturn[0] = asFloat16(elevations.get(firstAltiId));
-                for (int i = 1; i <= shortsToRead4 ; i++) {
+                for (int i = 1; i <= shortsToRead4; i++) {
                     int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
 
                     float firstShift = asFloat8(Bits.extractSigned(extractShort, 12, 4));
-                    toReturn[4*i - 3] = toReturn[4*i - 4] + firstShift;
+                    toReturn[OFFSET_CASE_3 * i - 3] = toReturn[OFFSET_CASE_3 * i - 4] + firstShift;
 
                     //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
-                    if (numberSamples + 1 < 4 * i) break;
+                    if (numberSamples + 1 < OFFSET_CASE_3 * i) break;
 
                     float secondShift = asFloat8(Bits.extractSigned(extractShort, 8, 4));
-                    toReturn[4 * i - 2] = toReturn[4 * i - 3] + secondShift;
+                    toReturn[OFFSET_CASE_3 * i - 2] = toReturn[OFFSET_CASE_3 * i - 3] + secondShift;
 
                     //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
-                    if (numberSamples < 4 * i) break;
+                    if (numberSamples < OFFSET_CASE_3 * i) break;
 
                     float thirdShift = asFloat8(Bits.extractSigned(extractShort, 4, 4));
-                    toReturn[4 * i - 1] = toReturn[4 * i - 2] + thirdShift;
+                    toReturn[OFFSET_CASE_3 * i - 1] = toReturn[OFFSET_CASE_3 * i - 2] + thirdShift;
 
                     //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
-                    if (numberSamples - 1 < 4 * i) break;
+                    if (numberSamples - 1 < OFFSET_CASE_3 * i) break;
 
                     //Ajoute les valeurs en fonction du shift et de la valeur précédente.
                     float fourthShift = asFloat8(Bits.extractSigned(extractShort, 0, 4));
-                    toReturn[4 * i] = toReturn[4 * i - 1] + fourthShift;
+                    toReturn[OFFSET_CASE_3 * i] = toReturn[OFFSET_CASE_3 * i - 1] + fourthShift;
                 }
         }
         //Inverse le tableau si l'arête est inversée.
@@ -174,16 +174,15 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     * 
      * @param q12_4 Nombre de type short donné
      * @return La valeur de type float correspondant à la valeur Q12.4 donnée
      */
-    
+
     private static float asFloat16(int q12_4) {
         return scalb((float) q12_4, -4);
     }
+
     /**
-     *
      * @param q4_4 Nombre de type float donné
      * @return La valeur de type float correspondant à la valeur Q12.4 donnée
      */
@@ -193,7 +192,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     *
      * @param edgeId Identité de l'arête donnée.
      * @return Retourne l'identité de l'ensemble d'attributs attaché à l'arête
      * d'identité donnée.

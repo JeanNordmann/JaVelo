@@ -3,7 +3,7 @@ package ch.epfl.javelo.routing;
 /**
  * 6.3.2
  * CostFunction
- *
+ * <p>
  * Interface représentant une fonction de coût.
  *
  * @author Jean Nordmann (344692)

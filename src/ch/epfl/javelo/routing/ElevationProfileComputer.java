@@ -2,12 +2,13 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
+
 import java.util.Arrays;
 
 /**
  * 5.3.1
  * ElevationProfileComputer
- *
+ * <p>
  * Classe représentant un calculateur de profil en long.
  *
  * @author Jean Nordmann (344692)
@@ -20,11 +21,11 @@ public final class ElevationProfileComputer {
      * Constructeur privé car cette classe n'est pas censée être instantiable.
      */
 
-    private ElevationProfileComputer() {}
+    private ElevationProfileComputer() {
+    }
 
     /**
-     *
-     * @param route L'itinéraire route de type Route.
+     * @param route         L'itinéraire route de type Route.
      * @param maxStepLength L'espace maximum entre les échantillons du profil.
      * @return le profil en long de l'itinéraire route, en garantissant que l'espacement entre les
      * échantillons du profil est d'au maximum maxStepLength mètres; lève IllegalArgumentException
@@ -33,19 +34,19 @@ public final class ElevationProfileComputer {
 
     public static ElevationProfile elevationProfile(Route route, double maxStepLength) {
         Preconditions.checkArgument(maxStepLength > 0);
-        int nbrEchantillons = (int) Math.ceil(route.length()/maxStepLength) + 1;
-        maxStepLength = route.length()/(nbrEchantillons-1.0);
+        int nbrEchantillons = (int) Math.ceil(route.length() / maxStepLength) + 1;
+        maxStepLength = route.length() / (nbrEchantillons - 1.0);
         float[] floatsProfile = new float[nbrEchantillons];
         for (int i = 0; i < nbrEchantillons; i++) {
             floatsProfile[i] = (float) route.elevationAt(maxStepLength * i);
         }
         //Remplir les trous du début du tableau.
         for (int i = 0; i < nbrEchantillons; i++) {
-            if(!Float.isNaN(floatsProfile[i])) {
+            if (!Float.isNaN(floatsProfile[i])) {
                 Arrays.fill(floatsProfile, 0, i, floatsProfile[i]);
                 break;
             }
-            if (i == nbrEchantillons - 1)  Arrays.fill(floatsProfile, 0, i + 1 , 0);
+            if (i == nbrEchantillons - 1) Arrays.fill(floatsProfile, 0, i + 1, 0);
         }
 
         //Remplir les trous de la fin du tableau.
@@ -58,7 +59,7 @@ public final class ElevationProfileComputer {
 
         //Remplir les trous intermédiaires.
         for (int i = 1; i < nbrEchantillons; i++) {
-            if(Float.isNaN(floatsProfile[i])) {
+            if (Float.isNaN(floatsProfile[i])) {
                 float interpolationLimit = 0.f;
                 int endIndex = 0;
                 for (int j = i + 1; j < nbrEchantillons; j++) {
@@ -66,7 +67,7 @@ public final class ElevationProfileComputer {
                     //On interpole toutes les valeurs entre deux valeurs "sûres", et
                     //non entre une valeur sûre et une valeur déjà interpolée, donc
                     //potentiellement approximative.
-                    if(!Float.isNaN(floatsProfile[j])) {
+                    if (!Float.isNaN(floatsProfile[j])) {
                         interpolationLimit = floatsProfile[j];
                         endIndex = j - i + 1;
                         break;
@@ -79,6 +80,6 @@ public final class ElevationProfileComputer {
                 i = endIndex;
             }
         }
-    return new ElevationProfile(route.length(), floatsProfile);
+        return new ElevationProfile(route.length(), floatsProfile);
     }
 }

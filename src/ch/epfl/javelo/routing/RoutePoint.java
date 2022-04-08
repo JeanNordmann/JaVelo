@@ -9,7 +9,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
 /**
  * 4.3.5
  * ElevationProfile
- *
+ * <p>
  * Enregistrement offrant une gestion du profil des arêtes avec un tableau de float et la longueur du segment.
  *
  * @author Jean Nordmann (344692)
@@ -27,30 +27,28 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * qui peut être positive ou négative.
      */
 
-    public RoutePoint withPositionShiftedBy(double positionDifference){
+    public RoutePoint withPositionShiftedBy(double positionDifference) {
         return new RoutePoint(this.point, position + positionDifference, distanceToReference);
     }
 
     /**
-     *
      * @param that RoutePoint avec le quel on veut comparer
      * @return this si sa distance à la référence est inférieure ou égale à celle de that, et that sinon
      */
 
-    public RoutePoint min(RoutePoint that){
+    public RoutePoint min(RoutePoint that) {
         return this.distanceToReference <= that.distanceToReference() ? this : that;
     }
 
     /**
-     *
-     * @param thatPoint pointCh à comparer
-     * @param thatPosition position
+     * @param thatPoint               pointCh à comparer
+     * @param thatPosition            position
      * @param thatDistanceToReference distance de reference
      * @return this si sa distance à la référence est inférieure ou égale à thatDistanceToReference,
      * et une nouvelle instance de RoutePoint dont les attributs sont les arguments passés à min sinon.
      */
 
-    public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference){
+    public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference) {
         return this.distanceToReference <= thatDistanceToReference ? this :
                 new RoutePoint(thatPoint, thatPosition, thatDistanceToReference);
     }

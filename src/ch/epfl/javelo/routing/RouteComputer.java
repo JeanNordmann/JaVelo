@@ -3,13 +3,14 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
+
 import java.util.*;
 
 
 /**
  * 6.3.4
  * RouteComputer
- *
+ * <p>
  * La classe RouteComputer représente un planificateur d'itinéraire.
  *
  * @author Jean Nordmann (344692)
@@ -22,8 +23,7 @@ public class RouteComputer {
     private final CostFunction costFunction;
 
     /**
-     *
-     * @param graph Le graph donné.
+     * @param graph        Le graph donné.
      * @param costFunction La fonction de coût donnée.
      */
 
@@ -94,7 +94,7 @@ public class RouteComputer {
             actNodeId = actualWeightNode.nodeId;
 
             //Condition permettant de passer tous les nœuds déjà explorés.
-            if(actualWeightNode.distance == Float.NEGATIVE_INFINITY) continue;
+            if (actualWeightNode.distance == Float.NEGATIVE_INFINITY) continue;
 
             //Vérification si le nœud en exploration actuellement est endNode.
             //Si oui, on commence à construire l'itinéraire.
@@ -124,6 +124,8 @@ public class RouteComputer {
                 Collections.reverse(edgeList);
                 return new SingleRoute(edgeList);
             }
+
+
             //Début de la partie qui recherche l'itinéraire le plus court.
 
             //Ajout des tous les nœuds connectés au nœud en exploration

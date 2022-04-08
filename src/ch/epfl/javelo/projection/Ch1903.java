@@ -20,25 +20,23 @@ public final class Ch1903 {
     private Ch1903() {}
 
     /**
-     * Retourne la coordonnée Est du point donné dans le système suisse à partir des coordonnées
-     * dans le système WGS84.
-     * @param lon longitude du point.
-     * @param lat latitude du point.
+     *
+     * @param lon longitude
+     * @param lat latitude
      * @return La coordonnée Est du point de longitude lon et latitude lat dans le système WGS84.
      */
 
     public static double e(double lon, double lat) {
-        double lambda = Math.pow(10, -4) * (3600*Math.toDegrees(lon) - 26782.5);
-        double phi = Math.pow(10, -4) * (3600*Math.toDegrees(lat) - 169028.66);
+        double lambda = Math.pow(10, -4)*(3600*Math.toDegrees(lon) - 26782.5);
+        double phi = Math.pow(10, -4)*(3600*Math.toDegrees(lat) - 169028.66);
         return 2600072.37 + 211455.93*lambda - 10938.51*lambda*phi
                 - 0.36*lambda*Math.pow(phi, 2) - 44.54*Math.pow(lambda, 3);
     }
 
     /**
-     * Retourne la coordonnée Nord du point donné dans le système suisse à partir des coordonnées
-     * dans le système WGS84.
-     * @param lon longitude du point.
-     * @param lat latitude du point.
+     *
+     * @param lon longitude
+     * @param lat latitude
      * @return La coordonnée Nord du point de longitude lon et latitude lat dans le système WGS84.
      */
 
@@ -50,24 +48,24 @@ public final class Ch1903 {
     }
 
     /**
-     * Retourne la longitude dans le système WGS84 du point dont les coordonnées sont E et N dans le système suisse.
+     *
      * @param e Coordonnée E dans le système suisse
      * @param n Coordonnée N dans le système suisse
      * @return La longitude dans le système WGS84 du point dont les coordonnées sont e et n dans le système suisse.
      */
 
     public static double lon(double e, double n) {
-        double x = Math.pow(10, -6) * (e - 2600000);
-        double y = Math.pow(10, -6) * (n - 1200000);
+        double x = Math.pow(10, -6)*(e - 2600000);
+        double y = Math.pow(10, -6)*(n - 1200000);
         double lambda = 2.6779094 + 4.728982*x + 0.791484*x*y +0.1306*x*Math.pow(y, 2) - 0.0436*Math.pow(x, 3);
         return Math.toRadians(lambda*100.0/36.0);
     }
 
     /**
-     * Retourne la latitude dans le système WGS84 du point dont les coordonnées sont E et N dans le système suisse.
+     *
      * @param e Coordonnée E dans le système suisse
      * @param n Coordonnée N dans le système suisse
-     * @return La latitude dans le système WGS84 du point dont les coordonnées sont E et N dans le système suisse.
+     * @return La latitude dans le système WGS84 du point dont les coordonnées sont e et n dans le système suisse.
      */
 
     public static double lat(double e, double n) {

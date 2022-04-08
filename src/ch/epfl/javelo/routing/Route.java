@@ -1,12 +1,13 @@
 package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.projection.PointCh;
+
 import java.util.List;
 
 /**
  * 4.3.6
  * Route
- *
+ * <p>
  * Interface route représentant un itinéraire. Implémentée par deux classes
  * écrites ultérieurement.
  *

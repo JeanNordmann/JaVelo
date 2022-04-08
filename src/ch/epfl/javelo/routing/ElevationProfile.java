@@ -3,6 +3,7 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
+
 import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
 
@@ -10,7 +11,7 @@ import java.util.DoubleSummaryStatistics;
 /**
  * 4.3.3
  * ElevationProfile
- *
+ * <p>
  * Classe représentant le profil en long d'un itinéraire simple ou multiple.
  *
  * @author Jean Nordmann (344692)
@@ -23,7 +24,8 @@ public final class ElevationProfile {
 
     /**
      * Constructeur public.
-     * @param length Longueur du profil en mètres.
+     *
+     * @param length           Longueur du profil en mètres.
      * @param elevationSamples Tableau de float avec les différentes altitudes à équidistance horizontale.
      */
 
@@ -34,7 +36,6 @@ public final class ElevationProfile {
     }
 
     /**
-     *
      * @return La longueur du profil, en mètres.
      */
 
@@ -43,7 +44,6 @@ public final class ElevationProfile {
     }
 
     /**
-     *
      * @return L'altitude minimum du profil, en mètres.
      */
 
@@ -54,7 +54,6 @@ public final class ElevationProfile {
     }
 
     /**
-     *
      * @return L'altitude maximum du profil, en mètres.
      */
 
@@ -65,7 +64,6 @@ public final class ElevationProfile {
     }
 
     /**
-     *
      * @return Le dénivelé positif total du profil, en mètres.
      */
 
@@ -82,7 +80,6 @@ public final class ElevationProfile {
     }
 
     /**
-     *
      * @return Le dénivelé négatif total du profil, en mètres. (valeur toujours positive)
      */
 
@@ -100,6 +97,7 @@ public final class ElevationProfile {
 
     /**
      * Permet de savoir l'altitude d'un point dont on connait l'abscisse X.
+     *
      * @param position Position x dont on aimerait connaître l'altitude.
      * @return L'altitude du profil à la position donnée, qui n'est pas forcément comprise entre 0 et la
      * longueur du profil. Le premier échantillon est retourné lorsque la position est négative,

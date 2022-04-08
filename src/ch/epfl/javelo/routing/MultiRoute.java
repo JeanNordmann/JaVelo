@@ -3,6 +3,7 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -10,7 +11,7 @@ import java.util.Objects;
 /**
  * 6.3.1
  * MultiRoute
- *
+ * <p>
  * Classe publique et immuable, représentant un itinéraire multiple,
  * c'est-à-dire composé d'une séquence d'itinéraires contigus nommés
  * segments. Elle implémente l'interface Route et possède un unique
@@ -32,9 +33,9 @@ public final class MultiRoute implements Route {
 
     /**
      * @param segments Segments donnés.
-     * Constructeur qui instancie un itinéraire multiple composé des
-     * segments donnés ou lève une IllegalArgumentException si la liste
-     * des segments est vide.
+     *                 Constructeur qui instancie un itinéraire multiple composé des
+     *                 segments donnés ou lève une IllegalArgumentException si la liste
+     *                 des segments est vide.
      */
 
     public MultiRoute(List<Route> segments) {
@@ -116,7 +117,7 @@ public final class MultiRoute implements Route {
         return List.copyOf(pointChList);
     }
 
-   /**
+    /**
      * @param position Position donnée.
      * @return Retourne le point se trouvant à la position donnée le
      * long de l'itinéraire.
@@ -167,15 +168,15 @@ public final class MultiRoute implements Route {
 
     @Override
     public int nodeClosestTo(double position) {
-        double nextPosition = 0, previousPosition =0;
+        double nextPosition = 0, previousPosition = 0;
         double clampedPosition = Math2.clamp(0, position, this.length());
         //Méthode utilisant le même principe d'appel récursif à elle-même, tout comme
         //d'autres méthodes de la classe (appel à elle-même jusqu'à l'appeler sur
         //uniquement des SingleRoute).
         for (Route segment : segments) {
             nextPosition += segment.length();
-        if (clampedPosition - nextPosition <= 0)
-            return segment.nodeClosestTo(clampedPosition - previousPosition);
+            if (clampedPosition - nextPosition <= 0)
+                return segment.nodeClosestTo(clampedPosition - previousPosition);
             previousPosition += segment.length();
         }
         return 0;

@@ -3,6 +3,7 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Objects;
 /**
  * 5.3.2
  * SingleRoute
- *
+ * <p>
  * Classe publique et immuable, représentant un itinéraire
  * simple, c'est-à-dire reliant un point de départ à un
  * d'arrivée, sans point de passage intermédiaire.
@@ -38,6 +39,7 @@ public final class SingleRoute implements Route {
     /**
      * Constructeur public, initialisant une SingleRoute,
      * donc sa liste d'arêtes, et son tableau de positions.
+     *
      * @param edges Liste d'arêtes donnée.
      */
 
@@ -143,15 +145,15 @@ public final class SingleRoute implements Route {
         int index, absoluteResult;
         index = Arrays.binarySearch(positionsTab, Math2.clamp(0, position, length()));
         //Cas particulier, elevationAt au point de départ.
-        if(index == 0) {
+        if (index == 0) {
             return edges.get(index).elevationAt(0);
         }
-            //Cas où on tombe pile sur un point avec la recherche dichotomique.
+        //Cas où on tombe pile sur un point avec la recherche dichotomique.
         if (index > 0) {
             if (index == edges.size()) {
                 return edges.get(edges.size() - 1).elevationAt(edges.get(edges.size() - 1).length());
             } else {
-                if (Float.isNaN((float)edges.get(index).elevationAt(0)))
+                if (Float.isNaN((float) edges.get(index).elevationAt(0)))
                     return edges.get(index - 1).elevationAt(edges.get(index - 1).length());
                 return edges.get(index).elevationAt(0);
             }

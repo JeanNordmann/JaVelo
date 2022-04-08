@@ -3,9 +3,9 @@ package ch.epfl.javelo;
 
 /**
  * 1.3.2
- * Preconditions
+ * Precondition
  *
- * Classe utile pour lancer des IllegalArgumentException.
+ * Class utile pour la gestion des IllegalArgumentException
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
@@ -20,10 +20,12 @@ public final class Preconditions {
     private Preconditions() {}
 
     /**
-     * Lève une IllegalArgumentException si shouldBeTrue est faux.
+     * Lève une IllegalArgumentException si shouldBeTrue est faux
      *
-     * @param shouldBeTrue Booléen à vérifier.
-     * @throws IllegalArgumentException si le booléen est faux.
+     * @param shouldBeTrue
+     * si faux => throw exception
+     * @throws IllegalArgumentException
+     * si shouldBeTrue == false
      */
 
     public static void checkArgument(boolean shouldBeTrue) throws IllegalArgumentException {

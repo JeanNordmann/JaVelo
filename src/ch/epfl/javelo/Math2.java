@@ -18,10 +18,10 @@ public final class Math2 {
     private Math2() {}
 
     /**
-     * Retourne la partie entière supérieure d'une division.
+     * Retourne la partie entière supérieure d'une division
      * @param x dividende non nul
      * @param y diviseur positif et non nul
-     * @return la partie entière supérieure d'une division.
+     * @return la partie entière supérieure d'une division
      */
 
     public static int ceilDiv(int x, int y) {
@@ -30,8 +30,8 @@ public final class Math2 {
     }
 
     /**
-     * Méthode permettant à l'aide des coordonnées des points (0,y0) et (1,y1) et de la coordonnée x
-     * d'un point de connaître la coordonnée y de celui-ci.
+     * méthode permettant à l'aide des coordonnées des points (0,y0) et (1,y1) et de la coordonnée x
+     * d'un point de connaitre la coordonnée y de celui-ci.
      * @param y0 premier point de la droite
      * @param y1 second point de la droite
      * @param x coordonné x du point dont on aimerait connaitre la coordonnée y
@@ -43,7 +43,7 @@ public final class Math2 {
     }
 
     /**
-     * Méthode permettant de retourner l'entier le plus proche d'un intervalle
+     * méthode permettant de retourner l'entier le plus proche d'un intervalle
      * @param min borne inférieure
      * @param v variable entière
      * @param max borne supérieure
@@ -60,9 +60,9 @@ public final class Math2 {
     }
 
     /**
-     * Méthode permettant de retourner le rationnel le plus proche d'un intervalle.
+     * méthode permettant de retourner le rationnel le plus proche d'un intervalle
      * @param min borne inférieure
-     * @param v variable rationnelle
+     * @param v variable rationnel
      * @param max borne supérieure
      * @return la valeur la plus proche de v dans l'intervalle => v si c'est dans
      * l'intervalle, sinon le max ou le min
@@ -75,7 +75,7 @@ public final class Math2 {
     }
 
     /**
-     * Fonction arcsin hyperbolique inverse.
+     * fonction arcsin hyperbolique inverse
      * @param x paramètre
      * @return arcsin hyperbolique inverse de X
      */
@@ -98,7 +98,7 @@ public final class Math2 {
     }
 
     /**
-     * Méthode retournant la norme au carré d'un vecteur 2d
+     * méthode retournant la norme au carré d'un vecteur 2d
      * @param uX coordonnée X
      * @param uY coordonnée Y
      * @return norme au carré
@@ -109,7 +109,7 @@ public final class Math2 {
     }
 
     /**
-     * Méthode retournant la norme d'un vecteur 2d
+     * méthode retournant la norme d'un vecteur 2d
      * @param uX coordonnée X
      * @param uY coordonnée Y
      * @return norme

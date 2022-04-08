@@ -1,5 +1,8 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Functions;
+import ch.epfl.javelo.projection.PointCh;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -10,14 +13,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
-import ch.epfl.javelo.projection.PointCh;
-import ch.epfl.javelo.Functions;
 
 
 /**
  * 4.3.2
  * Graph
- *
+ * <p>
  * Classe offrant une méthode statique permettant de charger le graphe depuis
  * un répertoire.
  *
@@ -49,9 +50,24 @@ public final class Graph {
         this.attributeSets = List.copyOf(attributeSets);
     }
 
+    /**
+     * Méthode privée pour éviter la répétition de code.
+     * Elle permet de lire un fichier bin et de le retourner en ByteBuffer.
+     * ATTENTION à ensuite "recast" en Buffer du type voulu (int/short...)
+     *
+     * @param basePath Chemin d'accès donné.
+     * @return Retourne le fichier bin lu en ByteBuffer.
+     * @throws IOException En cas d'erreur d'entrée/sortie.
+     */
+
+    private static ByteBuffer mappedBuffer(Path basePath) throws IOException {
+        try (FileChannel channel = FileChannel.open(basePath)) {
+            return channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+        }
+    }
+
 
     /**
-     *
      * @param basePath Chemin d'accès donné.
      * @return Le graphe Javelo obtenu à partir des fichiers se trouvant dans le répertoire.
      * @throws IOException En cas d'erreur d'entrée/sortie.
@@ -90,24 +106,9 @@ public final class Graph {
     }
 
     /**
-     * Méthode privée pour éviter la répétition de code.
-     * Elle permet de lire un fichier bin et de le retourner en ByteBuffer.
-     * ATTENTION à ensuite "recast" en Buffer du type voulu (int/short...)
-     * @param basePath Chemin d'accès donné.
-     * @return Retourne le fichier bin lu en ByteBuffer.
-     * @throws IOException En cas d'erreur d'entrée/sortie.
-     */
-
-    private static ByteBuffer mappedBuffer(Path basePath) throws IOException{
-        try (FileChannel channel = FileChannel.open(basePath)) {
-            return channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-        }
-    }
-
-    /** 
      * @return Le nombre total de nœuds dans le graphe.
      */
-    
+
     public int nodeCount() {
         return nodes.count();
     }
@@ -116,7 +117,7 @@ public final class Graph {
      * @param nodeId Identité du nœud donné.
      * @return La position géographique du nœud donné.
      */
-    
+
     public PointCh nodePoint(int nodeId) {
         return new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
     }
@@ -127,11 +128,11 @@ public final class Graph {
      */
 
     public int nodeOutDegree(int nodeId) {
-       return nodes.outDegree(nodeId);
+        return nodes.outDegree(nodeId);
     }
 
     /**
-     * @param nodeId Identité du nœud donné.
+     * @param nodeId    Identité du nœud donné.
      * @param edgeIndex Index de l'arête vis-à-vis de la première arête du nœud.
      * @return Retourne l'identité de la edgeIndex-ième arête soratnt du nœud
      * d'identité donné.
@@ -142,7 +143,7 @@ public final class Graph {
     }
 
     /**
-     * @param point Point donné.
+     * @param point          Point donné.
      * @param searchDistance Distance maximale de recherche donnée.
      * @return Retourne l'identité du nœud se trouvant le plus proche du point
      * donné, à la distance maximale donnée (en mètres), ou -1 si aucun nœud ne
@@ -160,7 +161,7 @@ public final class Graph {
             for (int j = startNode; j < endNode; j++) {
                 //Compare les distances au carré au lieu des distances pour gagner de l'efficacité.
                 double squaredDistance = point.squaredDistanceTo(new PointCh(nodes.nodeE(j), nodes.nodeN(j)));
-                if (squaredDistance < min && squaredDistance <= searchDistance*searchDistance) {
+                if (squaredDistance < min && squaredDistance <= searchDistance * searchDistance) {
                     min = squaredDistance;
                     nodeId = j;
                 }
@@ -223,7 +224,10 @@ public final class Graph {
      */
 
     public DoubleUnaryOperator edgeProfile(int edgeId) {
-        if (edges.hasProfile(edgeId)) { return Functions.sampled(edges.profileSamples(edgeId), edgeLength(edgeId)); }
-        else { return Functions.constant(Double.NaN);}
+        if (edges.hasProfile(edgeId)) {
+            return Functions.sampled(edges.profileSamples(edgeId), edgeLength(edgeId));
+        } else {
+            return Functions.constant(Double.NaN);
+        }
     }
 }

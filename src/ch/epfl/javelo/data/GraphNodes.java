@@ -21,10 +21,6 @@ import static ch.epfl.javelo.Bits.extractUnsigned;
  *
  */
 
-/**
- * Enregistrement prenant un buffer d'entiers en paramètres à la construction.
- */
-
 public record GraphNodes(IntBuffer buffer) {
 
     /**
@@ -37,7 +33,6 @@ public record GraphNodes(IntBuffer buffer) {
     private static final int NODE_INTS = OFFSET_OUT_EDGES + 1;
 
     /**
-     * Retourne le nombre total de nœuds présents dans le Buffer.
      * @return Le nombre total de nœuds présents dans le Buffer.
      */
 
@@ -46,7 +41,7 @@ public record GraphNodes(IntBuffer buffer) {
     }
 
     /**
-     * Retourne la coordonnée E du nœud d'identité donné.
+     *
      * @param nodeId Identité du nœud dont on souhaite connaître la coordonnée E.
      * @return La coordonnée E du nœud d'identité donné.
      */
@@ -56,7 +51,7 @@ public record GraphNodes(IntBuffer buffer) {
     }
 
     /**
-     * Retourne la coordonnée N du nœud d'identité donnée.
+     *
      * @param nodeId Identité du nœud dont on souhaite connaître la coordonnée N.
      * @return La coordonnée N du nœud d'identité donnée.
      */
@@ -66,7 +61,7 @@ public record GraphNodes(IntBuffer buffer) {
     }
 
     /**
-     * Retourne le nombre d'arêtes sortant du nœud d'identité donné.
+     *
      * @param nodeId Nœud dont on souhaite le nombre d'arêtes sortant de celui-ci.
      * @return Le nombre d'arêtes sortant du nœud d'identité donné.
      */
@@ -77,7 +72,6 @@ public record GraphNodes(IntBuffer buffer) {
     }
 
     /**
-     * Retourne l'identité de la edgeIndex-ième arête sortant du nœud d'identité nodeId.
      * @param nodeId Nœud dont on souhaite l'identité de la edgeIndex-ième arête.
      * @param edgeIndex Index de l'arête vis-à-vis de la première arête du nœud.
      * @return L'identité de la edgeIndex-ième arête sortant du nœud d'identité nodeId.
