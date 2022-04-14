@@ -13,6 +13,17 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * 7.3.5
+ * GpxGenerator
+ * <p>
+ * Class permettant d'écrire dans un fichier un itinéraire au format GPX à partir d'une Route, et de son profil, qu'on
+ * obtient facilement via : ElevationProfileComputer.elevationProfile(route, ...)
+ *
+ * @author Jean Nordmann (344692)
+ * @author Maxime Ducourau (329544)
+ */
+
 public class GpxGenerator {
 
     private GpxGenerator() {}

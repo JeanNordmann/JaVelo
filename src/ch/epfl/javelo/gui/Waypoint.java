@@ -1,7 +1,15 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.projection.PointCh;
-
+/**
+ * 7.3.4
+ * Waypoint
+ * <p>
+ *
+ * @author Jean Nordmann (344692)
+ * @author Maxime Ducourau (329544)
+ */
+//TODO
 /**
  * Record nous permettant de représenter un point de passage. Ses deux attributs sont :
  *
