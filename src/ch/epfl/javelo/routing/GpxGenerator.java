@@ -17,6 +17,12 @@ public class GpxGenerator {
 
     private GpxGenerator() {}
 
+    /**
+     * Méthode permettant de créer un Document au format GPX à partir d'un itinéraire.
+     * @param route Route de l'itinéraire.
+     * @param elevationProfile Profile altimétrique de l'itinéraire.
+     * @return Un Document contenant l'itinéraire au format GPX.
+     */
     public static Document createGpx(Route route, ElevationProfile elevationProfile) {
         // Création du document qu'on va rendre
         Document doc = newDocument();
@@ -70,6 +76,13 @@ public class GpxGenerator {
         return doc;
     }
 
+    /**
+     * Méthode permettant d'écrire un itinéraire à partir d'une route et de son profile dans un fichier GPX.
+     * @param name Nom du fichier dans le quel on écrit notre document.
+     * @param route Route de notre itinéraire.
+     * @param elevationProfilef Profil altimétrique de notre itinéraire.
+     * @throws IOException Exception liée à une erreur dûe au FileWriter.
+     */
     public static void writeGpx(String name, Route route, ElevationProfile elevationProfilef) throws IOException {
         // Création du document et du fichier dans lequel on veut écrire.
         Document doc = createGpx(route, elevationProfilef);
@@ -88,6 +101,10 @@ public class GpxGenerator {
         }
     }
 
+    /**
+     * Méthode privée permettant la création d'un Document.
+     * @return Le Document en question.
+     */
     private static Document newDocument() {
         try {
             return DocumentBuilderFactory

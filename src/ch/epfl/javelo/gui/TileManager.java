@@ -29,9 +29,9 @@ public final class TileManager {
 
     public static final int MEMORY_CACHE_SIZE = 100;
 
-    private Path path;
-    private String name;
-    private LinkedHashMap<TileId, Image> memoryCache;
+    private final Path path;
+    private final String name;
+    private final LinkedHashMap<TileId, Image> memoryCache;
 
     /**
      * Record contenant une unique méthode statique nous permettant de vérifier si la tuile OSM est valide.

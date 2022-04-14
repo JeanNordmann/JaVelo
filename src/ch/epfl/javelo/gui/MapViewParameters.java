@@ -5,13 +5,12 @@ import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.geometry.Point2D;
 
 public record MapViewParameters (int zoomLevel, double x, double y){
-    //Coordonnées x et y du coin en haut à gauche de la tuile de carte affichée.
-    //Exprimé dans le système de coordonnées Web Mercator
+    //Coordonnées x et y du coin en haut à gauche de la tuile de carte.
 
     /**
      * Constructeur compact lançant une exception si les arguments donnés à la
      * construction ne sont pas valides.
-     * @param zoomLevel Niveau de zoom compris entre 0 et 20 (inclus).
+     * @param zoomLevel Niveau de zoom plus grand ou égale à 0.
      * @param x Coordonnée X donnée.
      * @param y Coordonnée Y donnée.
      */
@@ -23,7 +22,6 @@ public record MapViewParameters (int zoomLevel, double x, double y){
 
     /**
      * Méthode retournant les coordonnées du coin haut-gauche sous la forme d'un objet de type Point2D.
-     *
      * @return Un Point2D contenant les coordonnées du point en haut à gauche.
      */
     public Point2D topLeft() {
@@ -50,7 +48,7 @@ public record MapViewParameters (int zoomLevel, double x, double y){
      *
      * @param relativeX Coordonnée X relative.
      * @param relativeY Coordonnée Y relative.
-     * @return Un PointWebMercator aux coordonnées relatives (à la tuile) voulues dans les coordonnées globales.
+     * @return Un PointWebMercator aux coordonnées voulues dans les coordonnées globales au format PointWebMercator.
      */
     public PointWebMercator pointAt(double relativeX, double relativeY) {
         return PointWebMercator.of(zoomLevel, x +  relativeX, y +  relativeY );
@@ -61,7 +59,7 @@ public record MapViewParameters (int zoomLevel, double x, double y){
      * exprimée par rapport au coin haut-gauche de la portion de carte affichée à l'écran.
      * → conversion : PointWebMercator → Coordonnées relatives X.
      * @param pointWebMercator PointWebMercator dont on aimerait connaitre la coordonnée x relative.
-     * @return La position x correspondante exprimée par rapport au coin haut-gauche.
+     * @return La position x correspondante exprimée par rapport au coin haut-gauche de la carte affichée.
      */
     public double viewX(PointWebMercator pointWebMercator) {
         return  pointWebMercator.xAtZoomLevel(zoomLevel) - this.x;
@@ -73,7 +71,7 @@ public record MapViewParameters (int zoomLevel, double x, double y){
      * → conversion : PointWebMercator → Coordonnées relatives Y.
      *
      * @param pointWebMercator PointWebMercator dont on aimerait connaitre la coordonnée y relative.
-     * @return La position y correspondante exprimée par rapport au coin haut-gauche.
+     * @return La position y correspondante exprimée par rapport au coin haut-gauche de la carte affichée.
      */
     public double viewY(PointWebMercator pointWebMercator) {
         return  pointWebMercator.yAtZoomLevel(zoomLevel) - this.y;
