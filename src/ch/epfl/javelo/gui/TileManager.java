@@ -106,7 +106,6 @@ public final class TileManager {
                 addMRUAndRemoveLRU(tileId, image);
                 return image;
             }
-
         }
     }
 

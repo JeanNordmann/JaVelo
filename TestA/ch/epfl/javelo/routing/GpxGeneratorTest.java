@@ -11,6 +11,7 @@ public class GpxGeneratorTest {
         CostFunction cf = new CityBikeCF(g);
         RouteComputer rc = new RouteComputer(g, cf);
         Route r = rc.bestRouteBetween(159049, 117669);
-        GpxGenerator.writeGpx("JEAN_LE_BG", r, null);
+        ElevationProfile elevationProfile = ElevationProfileComputer.elevationProfile(r, 2);
+        GpxGenerator.writeGpx("JEAN_LE_BG.gpx", r, elevationProfile);
     }
 }

@@ -6,9 +6,11 @@ import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.List;
 
 public class GpxGenerator {
@@ -16,8 +18,10 @@ public class GpxGenerator {
     private GpxGenerator() {}
 
     public static Document createGpx(Route route, ElevationProfile elevationProfile) {
-        Document doc = newDocument(); // voir plus bas
+        // Création du document qu'on va rendre
+        Document doc = newDocument();
 
+        // Ajout des MetaDatas.
         Element root = doc
                 .createElementNS("http://www.topografix.com/GPX/1/1",
                         "gpx");
@@ -38,44 +42,50 @@ public class GpxGenerator {
         metadata.appendChild(name);
         name.setTextContent("Route JaVelo");
 
+        // Ajout des points.
         Element rte = doc.createElement("rte");
         root.appendChild(rte);
 
         List<PointCh> pointChList = route.points();
+        // Position actuelle, utile pour le Elevation At.
+        double actualPos = 0;
+        // Iterator sur la liste des edges permettant d'incrémenter la position actuelle.
+        Iterator<Edge> edgeIterator = route.edges().iterator();
 
         for (PointCh pointCh : pointChList) {
+            // Ajout des coordonnées.
             Element rtept = doc.createElement("rtept");
-            rtept.setAttribute("lat", Double.toString(pointCh.lat()));
-            rtept.setAttribute("lon", Double.toString(pointCh.lon()));
+            rtept.setAttribute("lat", Double.toString(Math.toDegrees(pointCh.lat())));
+            rtept.setAttribute("lon", Double.toString(Math.toDegrees(pointCh.lon())));
+            rte.appendChild(rtept);
+            // Ajout de l'altitude.
             Element ele = doc.createElement("ele");
             rtept.appendChild(ele);
-            ele.setTextContent(Double.toString(elevationProfile.elevationAt(route.pointClosestTo(pointCh).position())));
+            ele.setTextContent(Double.toString(elevationProfile.elevationAt(actualPos)));
+            // Condition nous permettant de ne pas ajouter la dernière longueur d'arête.
+            if(edgeIterator.hasNext()) {
+               actualPos += edgeIterator.next().length();
+           }
         }
         return doc;
     }
 
     public static void writeGpx(String name, Route route, ElevationProfile elevationProfilef) throws IOException {
-        //Document doc = createGpx(route, elevationProfilef);
+        // Création du document et du fichier dans lequel on veut écrire.
+        Document doc = createGpx(route, elevationProfilef);
+        Writer w = new FileWriter(name);
 
-        Path path = Path.of(name);
-        //étape 1 : transformer le doc Writer
-        //étape 2 : écrir le Writer dans le fichier
-        File file = new File(name);
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))){
-
-            bufferedWriter.write("JE suis TOTO");
-            bufferedWriter.newLine();
-            bufferedWriter.write("LE DOCUMENT est écrit lolllllll");
+        try {
+            // Creation du Transformer qui adapte le document GPX en Writer qui est ensuite écrit dans le fichier
+            Transformer transformer = TransformerFactory
+                    .newDefaultInstance()
+                    .newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.transform(new DOMSource(doc),
+                    new StreamResult(w));
+        } catch (TransformerException e) {
+            throw new Error(e); // Ne dois jamais arriver.
         }
-/*
-        try (OutputStream outputStream = new FileOutputStream(name)){
-            Writer writer2 = new FileWriter(name);
-            Writer writer3 = new BufferedWriter(Files.newBufferedWriter(path));
-            Writer writer = new OutputStreamWriter(outputStream, name);
-            writer3.write(doc.toString());
-        }
-*/
-
     }
 
     private static Document newDocument() {

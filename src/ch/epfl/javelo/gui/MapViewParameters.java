@@ -53,7 +53,6 @@ public record MapViewParameters (int zoomLevel, double x, double y){
      * @return Un PointWebMercator aux coordonnées relatives (à la tuile) voulues dans les coordonnées globales.
      */
     public PointWebMercator pointAt(double relativeX, double relativeY) {
-        Preconditions.checkArgument(0 <= relativeX && relativeX <= 1 && 0 <= relativeY && relativeY <= 1);
         return PointWebMercator.of(zoomLevel, x +  relativeX, y +  relativeY );
     }
 
@@ -65,7 +64,7 @@ public record MapViewParameters (int zoomLevel, double x, double y){
      * @return La position x correspondante exprimée par rapport au coin haut-gauche.
      */
     public double viewX(PointWebMercator pointWebMercator) {
-        return  pointWebMercator.xAtZoomLevel(zoomLevel) - x;
+        return  pointWebMercator.xAtZoomLevel(zoomLevel) - this.x;
     }
 
     /**
@@ -77,7 +76,7 @@ public record MapViewParameters (int zoomLevel, double x, double y){
      * @return La position y correspondante exprimée par rapport au coin haut-gauche.
      */
     public double viewY(PointWebMercator pointWebMercator) {
-        return  pointWebMercator.yAtZoomLevel(zoomLevel) - y;
+        return  pointWebMercator.yAtZoomLevel(zoomLevel) - this.y;
     }
 
 }
