@@ -85,11 +85,10 @@ public final class TileManager {
 
     public Image imageForTileAt(TileId tileId) throws IOException {
         if (memoryCache.containsKey(tileId)) return memoryCache.get(tileId);
-        String stringPath = pathOfTileId(tileId);
-        Path filePath = Path.of(stringPath);
-        Path directoryPath = Path.of(directoryOfTileId(tileId));
+        Path directoryPath = pathOfTileId(tileId);
+        Path filePath = directoryPath.resolve(Integer.toString(tileId.yTile));
         if (Files.exists(filePath)) {
-            try(InputStream inputStream = new FileInputStream(stringPath)) {
+            try(InputStream inputStream = new FileInputStream(path.toFile())) {
                 Image image = new Image(inputStream);
                 addMRUAndRemoveLRU(tileId, image);
                 return image;
@@ -100,7 +99,7 @@ public final class TileManager {
             c.setRequestProperty("User-Agent", "JaVelo");
             Files.createDirectories(directoryPath);
             try(InputStream i = c.getInputStream();
-                OutputStream outputStream = new FileOutputStream(stringPath)) {
+                OutputStream outputStream = new FileOutputStream(filePath.toFile())) {
                 Image image = new Image(i);
                 i.transferTo(outputStream);
                 addMRUAndRemoveLRU(tileId, image);
@@ -133,12 +132,10 @@ public final class TileManager {
         return s.toString();
     }
 
-    private String pathOfTileId(TileId tileId) {
-        StringBuilder s = new StringBuilder();
-        s.append(path.toString());
-        s.append('/').append("diskMemory");
-        s.append(suffixOfTileId(tileId));
-        return s.toString();
+    private Path pathOfTileId(TileId tileId) {
+        Integer zoomLevel = tileId.zoomLevel;
+        Integer xTile = tileId.xTile;
+        return Path.of(".").resolve(zoomLevel.toString()).resolve(xTile.toString());
     }
 
     private String linkOfTileId(TileId tileId) {
