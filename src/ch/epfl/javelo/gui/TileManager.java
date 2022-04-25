@@ -97,8 +97,11 @@ public final class TileManager {
 
         // Cas où l'image est dans le diskMemory
         if (Files.exists(filePath)) {
-            try(InputStream inputStream = new FileInputStream(path.toFile())) {
+            //Bloc Try-with-resource pour fermer le flot à la sortie.
+            try(InputStream inputStream = new FileInputStream(filePath.toFile())) {
                 Image image = new Image(inputStream);
+                //Méthode privée gérant le cache-mémoire et supprimant le Least Recently Used,
+                //pour le remplacer par le Most Recently Used (l'image actuelle).
                 addMRUAndRemoveLRU(tileId, image);
                 return image;
             }
@@ -108,10 +111,13 @@ public final class TileManager {
             URLConnection c = u.openConnection();
             c.setRequestProperty("User-Agent", "JaVelo");
             Files.createDirectories(directoryPath);
+            //De nouveau, un bloc try-with-resource est utilisé pour fermer les flots.
+            //Crée un flot de sortie écrivant dans le fichier désiré.
             try(InputStream i = c.getInputStream();
                 OutputStream outputStream = new FileOutputStream(filePath.toFile())) {
-                Image image = new Image(i);
+                //Transfère les données du flot d'entrée, vers le flot de sortie.
                 i.transferTo(outputStream);
+                Image image = new Image(i);
                 addMRUAndRemoveLRU(tileId, image);
                 return image;
             }
@@ -127,26 +133,23 @@ public final class TileManager {
 
     private void addMRUAndRemoveLRU(TileId tileId, Image image) {
         memoryCache.put(tileId, image);
-        if (memoryCache.entrySet().size() > MEMORY_CACHE_SIZE) {
-            Iterator<Map.Entry<TileId, Image>> it = memoryCache.entrySet().iterator();
-            it.next();
-            it.remove();
-        }
+         if (memoryCache.entrySet().size() > MEMORY_CACHE_SIZE) {
+                    Iterator<Map.Entry<TileId, Image>> it = memoryCache.entrySet().iterator();
+                    it.next();
+                    it.remove();
+         }
     }
 
-    private String directoryOfTileId(TileId tileId) {
-        StringBuilder s = new StringBuilder();
-        s.append(path.toString());
-        s.append('/').append("diskMemory").append('/').append(tileId.zoomLevel).append('/').append(tileId.xTile).append('/');
-        return s.toString();
-    }
+    /**
+     * Méthode utile pour ajouter le suffixe à une tuile donnée, notamment pour avoir plus facilement l'URL où
+     * il faut chercher pour une tuile donnée.
+     * @param tileId Identité de la tuile donnée.
+     * @return Le suffixe propre à chaque tuile, sous forme de chaîne de caractère.
+     */
 
     private String suffixOfTileId(TileId tileId) {
-
-        StringBuilder s = new StringBuilder();
-        s.append('/').append(tileId.zoomLevel).append('/').append(tileId.xTile).append('/')
-                .append(tileId.yTile).append(".png");
-        return s.toString();
+        return "/" + tileId.zoomLevel + '/' + tileId.xTile + '/' +
+                tileId.yTile + ".png";
     }
 
     /**
@@ -156,9 +159,8 @@ public final class TileManager {
      */
 
     private Path pathOfTileId(TileId tileId) {
-        Integer zoomLevel = tileId.zoomLevel;
-        Integer xTile = tileId.xTile;
-        return Path.of(".").resolve(zoomLevel.toString()).resolve(xTile.toString());
+        return Path.of(path.toString()).resolve(Integer.toString(tileId.zoomLevel)).
+                resolve(Integer.toString(tileId.xTile));
     }
 
     /**
@@ -170,10 +172,6 @@ public final class TileManager {
      */
 
     private String linkOfTileId(TileId tileId) {
-        StringBuilder s = new StringBuilder();
-        s.append("https://tile.openstreetmap.org");
-        s.append(suffixOfTileId(tileId));
-        return s.toString();
+         return name + suffixOfTileId(tileId);
     }
-
 }
