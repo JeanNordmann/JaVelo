@@ -14,7 +14,7 @@ public final class TestTileManager extends Application {
     public void start(Stage primaryStage) throws Exception {
         TileManager tm = new TileManager(
                 Path.of("./diskMemory"), "tile.openstreetmap.org");
-        for (int i = 185420; i < 185426; i++) {
+        for (int i = 185420; i < 185436; i++) {
             Image tileImage = tm.imageForTileAt(
                     new TileManager.TileId(19, 271725, i));
         }
