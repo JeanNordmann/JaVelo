@@ -4,13 +4,11 @@ import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.geometry.Point2D;
 
-//TODO
 /**
- * 7.3.5
- * GpxGenerator
+ * 7.3.3
+ * MapViewParameters
  * <p>
- * Class permettant d'écrire dans un fichier un itinéraire au format GPX à partir d'une Route, et de son profil, qu'on
- * obtient facilement via : ElevationProfileComputer.elevationProfile(route, ...)
+ * Enregistrement représente les paramètres du fond de carte présenté dans l'interface graphique.
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
@@ -28,7 +26,6 @@ public record MapViewParameters (int zoomLevel, double x, double y){
      */
 
     public MapViewParameters {
-        // les coordonnées sont casts en int car isValid est initialement conçue pour check les tuiles.
         Preconditions.checkArgument((x >= 0) && (y >= 0) && (zoomLevel >= 0));
     }
 

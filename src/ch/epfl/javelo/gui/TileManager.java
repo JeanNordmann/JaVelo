@@ -7,7 +7,6 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,6 +28,7 @@ public final class TileManager {
 
     public static final int MEMORY_CACHE_SIZE = 100;
 
+
     private final Path path;
     private final String name;
     private final LinkedHashMap<TileId, Image> memoryCache;
@@ -38,7 +38,6 @@ public final class TileManager {
      */
 
     public record TileId(int zoomLevel, int xTile, int yTile) {
-        //TODO privé ou public ?
         private static final int MIN_ZOOM_LEVEL = 0;
         private static final int MAX_ZOOM_LEVEL = 20;
         private static final int MIN_COORDINATE = 0;
@@ -83,10 +82,20 @@ public final class TileManager {
         this.memoryCache = new LinkedHashMap<>(MEMORY_CACHE_SIZE, 0.75f, true);
     }
 
+    /**
+     * Retourne l'image associée à la tuile donnée en paramètre de la méthode.
+     * @param tileId Identité de la tuile.
+     * @return Retourne l'image associée à la tuile donnée.
+     * @throws IOException en cas de flot corrompu, ou si une erreur liée aux flots se produit.
+     */
+
     public Image imageForTileAt(TileId tileId) throws IOException {
+        //Cas où l'image est dans le cache mémoire.
         if (memoryCache.containsKey(tileId)) return memoryCache.get(tileId);
         Path directoryPath = pathOfTileId(tileId);
-        Path filePath = directoryPath.resolve(Integer.toString(tileId.yTile));
+        Path filePath = directoryPath.resolve(tileId.yTile + ".png");
+
+        // Cas où l'image est dans le diskMemory
         if (Files.exists(filePath)) {
             try(InputStream inputStream = new FileInputStream(path.toFile())) {
                 Image image = new Image(inputStream);
@@ -94,6 +103,7 @@ public final class TileManager {
                 return image;
             }
         } else {
+            //Cas où l'image doit être récupérée sur le serveur.
             URL u = new URL(linkOfTileId(tileId));
             URLConnection c = u.openConnection();
             c.setRequestProperty("User-Agent", "JaVelo");
@@ -107,6 +117,13 @@ public final class TileManager {
             }
         }
     }
+
+    /**
+     * Ajoute la TileId et l'image données au cache-mémoire, tout en supprimant la paire least recently used
+     * (LRU).
+     * @param tileId Identité de la tuile donnée.
+     * @param image Image donnée.
+     */
 
     private void addMRUAndRemoveLRU(TileId tileId, Image image) {
         memoryCache.put(tileId, image);
@@ -132,11 +149,25 @@ public final class TileManager {
         return s.toString();
     }
 
+    /**
+     * Retourne le chemin sous forme de Path, du fichier correspondant à une tuile. (Utile pour créer ce fichier).
+     * @param tileId Identité de la tuile donnée.
+     * @return Retourne le chemin sous forme de Path, du fichier correspondant à une tuile.
+     */
+
     private Path pathOfTileId(TileId tileId) {
         Integer zoomLevel = tileId.zoomLevel;
         Integer xTile = tileId.xTile;
         return Path.of(".").resolve(zoomLevel.toString()).resolve(xTile.toString());
     }
+
+    /**
+     * Retourne le lien sous forme de String correspondant à la tuile, avec le serveur donné à la
+     * construction du TileManager.
+     * @param tileId Identité de la tuile donnée.
+     * @return Retourne le lien sous forme de String correspondant à la tuile, avec le serveur donné à la
+     * construction du TileManager.
+     */
 
     private String linkOfTileId(TileId tileId) {
         StringBuilder s = new StringBuilder();
