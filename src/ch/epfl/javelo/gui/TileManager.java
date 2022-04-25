@@ -172,6 +172,6 @@ public final class TileManager {
      */
 
     private String linkOfTileId(TileId tileId) {
-         return name + suffixOfTileId(tileId);
+         return "https://" + name + suffixOfTileId(tileId);
     }
 }
