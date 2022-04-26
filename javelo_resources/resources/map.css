@@ -1,0 +1,44 @@
+#route {
+    -fx-stroke: hsb(0, 100%, 100%, 0.6);
+    -fx-stroke-line-join: round;
+    -fx-stroke-width: 4;
+}
+
+#highlight {
+    -fx-fill: white;
+    -fx-stroke: red;
+    -fx-stroke-width: 2;
+}
+
+.pin {
+    -fx-opacity: 0.8;
+}
+
+.pin:hover {
+    -fx-opacity: 1.0;
+}
+
+.pin.first .pin_outside {
+    -fx-fill: hsb(110, 50%, 80%);
+}
+
+.pin.middle .pin_outside {
+    -fx-fill: hsb(200, 50%, 80%);
+}
+
+.pin.last .pin_outside {
+    -fx-fill: hsb(0, 50%, 80%);
+}
+
+.pin_outside {
+    -fx-stroke: rgb(0, 0, 0, 0.5);
+    -fx-stroke-width: 1;
+}
+
+.pin:hover .pin_outside {
+    -fx-stroke-width: 3;
+}
+
+.pin_inside {
+    -fx-fill: white;
+}
