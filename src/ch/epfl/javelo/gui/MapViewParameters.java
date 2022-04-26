@@ -50,7 +50,7 @@ public record MapViewParameters (int zoomLevel, double x, double y){
     }
 
     /**
-     * Méthode Prenant en arguments les coordonnées x et y d'un point, exprimées par rapport
+     * Méthode prenant en arguments les coordonnées x et y d'un point, exprimées par rapport
      * au coin haut-gauche de la portion de carte affichée à l'écran, puis retourne ce point
      * sous la forme d'une instance de PointWebMercator dans les coordonnées globales.
      * → conversion : Coordonnées relatives → PointWebMercator.
