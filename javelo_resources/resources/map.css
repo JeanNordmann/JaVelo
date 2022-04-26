@@ -1,5 +1,5 @@
 #route {
-    -fx-stroke: hsb(0, 100%, 100%, 0.6);
+    -fx-stroke: hsba(0, 100%, 100%, 0.6);
     -fx-stroke-line-join: round;
     -fx-stroke-width: 4;
 }
