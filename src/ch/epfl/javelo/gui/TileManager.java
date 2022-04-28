@@ -159,7 +159,7 @@ public final class TileManager {
      */
 
     private Path pathOfTileId(TileId tileId) {
-        return Path.of(path.toString()).resolve(Integer.toString(tileId.zoomLevel)).
+        return Path.of(path.toString()).resolve("diskMemory").resolve(Integer.toString(tileId.zoomLevel)).
                 resolve(Integer.toString(tileId.xTile));
     }
 

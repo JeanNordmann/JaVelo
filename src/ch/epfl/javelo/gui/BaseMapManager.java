@@ -43,8 +43,8 @@ public final class BaseMapManager {
         this.tileManager = tileManager;
         this.waypointsManager = waypointsManager;
         this.mapViewParameters = mapViewParameters;
-        canvas = new Canvas();
-        pane = new Pane(canvas);
+        this.canvas = new Canvas();
+        this.pane = new Pane(canvas);
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
@@ -69,14 +69,25 @@ public final class BaseMapManager {
 
     private void drawMap() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        int zoomLevel = mapViewParameters.get().zoomLevel();
-        double mvpX = mapViewParameters.get().x();
-        double mvpY = mapViewParameters.get().y();
-        int numberXofSectors = Math2.ceilDiv((int) canvas.getWidth(), 1 << zoomLevel);
-        int numberYofSectors = Math2.ceilDiv((int) canvas.getHeight(), 1 << zoomLevel);
+        MapViewParameters actualMVP = mapViewParameters.get();
+        //Coordonnées du point en haut à gauche de la fenêtre.
+        Point2D topLeft = actualMVP.topLeft();
+        //Coordonnées du point en bas à droite de la fenêtre.
+        Point2D bottomRight = topLeft.add(canvas.getWidth(), canvas.getHeight());
+        int zoomLevel = actualMVP.zoomLevel();
+        //Coordonnées des tuiles minimales et maximales à draw (le rectangle de tuiles depuis la tuile
+        //de coordonnée (xMin, yMin) à la tuile (xMax, yMax).
+        int xMin = (int) topLeft.getX() / TILE_SIZE;
+        int xMax = (int) bottomRight.getX() / TILE_SIZE;
+        int yMin = (int) topLeft.getY() / TILE_SIZE;
+        int yMax = (int) bottomRight.getY() / TILE_SIZE;
 
-        for (double x = mvpX; x <= mvpX + numberXofSectors; x++) {
-            for (double y = mvpY; y <= mvpY + numberYofSectors; y++) {
+        //Position Y de destination du coin haut-gauche de la tuile à dessiner sur le canevas.
+        int destinationY = (int) -topLeft.getY() % TILE_SIZE;
+        for (int y = yMin; y <= yMax; y++) {
+            //Position X de destination du coin haut-gauche de la tuile à dessiner sur le canevas.
+            int destinationX = (int) -topLeft.getX() % TILE_SIZE;
+            for (int x = xMin; x <= xMax; x++) {
                 try {
                     //Dessine la tuile actuelle, au niveau de zoom demandé, et à partir du pixel
                     //du bord du canevas, ce qui permet d'avoir des bouts de tuile, et non seulement
@@ -99,6 +110,7 @@ public final class BaseMapManager {
         if (!redrawNeeded) return;
         redrawNeeded = false;
         drawMap();
+        redrawOnNextPulse();
     }
 
     /**
