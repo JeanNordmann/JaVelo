@@ -1,19 +1,13 @@
 package ch.epfl.javelo.gui;
 
-import ch.epfl.javelo.Math2;
-import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 
-import java.awt.*;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * 8.3.2
@@ -27,14 +21,25 @@ import java.util.Map;
 
 public final class BaseMapManager {
 
-    private TileManager tileManager;
-    private WaypointsManager waypointsManager;
-    private ObjectProperty<MapViewParameters> mapViewParameters;
-    private Pane pane;
-    private javafx.scene.canvas.Canvas canvas;
+    private static final int TILE_SIZE = 256;
+
+    private final TileManager tileManager;
+    private final WaypointsManager waypointsManager;
+    private final ObjectProperty<MapViewParameters> mapViewParameters;
+    private final Pane pane;
+    private final Canvas canvas;
     private boolean redrawNeeded;
 
-    public BaseMapManager(TileManager tileManager, WaypointsManager waypointsManager, ObjectProperty<MapViewParameters> mapViewParameters) throws IOException {
+    /**
+     * Constructeur public du BaseMapManager gérant l'interaction avec le fond de carte.
+     *
+     * @param tileManager       Gestionnaire de tuile : nous permet de récupérer les tuiles.
+     * @param waypointsManager  Gestionnaire de l'affichage et de l'interaction avec les points de passage.
+     * @param mapViewParameters MapViewParameters observable dans une ObjectProperty → observable et permet la mise
+     *                          à jour du fond de carte.
+     */
+    public BaseMapManager(TileManager tileManager, WaypointsManager waypointsManager,
+                          ObjectProperty<MapViewParameters> mapViewParameters) {
         this.tileManager = tileManager;
         this.waypointsManager = waypointsManager;
         this.mapViewParameters = mapViewParameters;
@@ -42,7 +47,6 @@ public final class BaseMapManager {
         pane = new Pane(canvas);
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
-        drawMap();
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
@@ -50,7 +54,18 @@ public final class BaseMapManager {
         redrawOnNextPulse();
     }
 
-    public Pane pane() { return pane; }
+    /**
+     * Méthode nous permettant d'accéder à l'attribut panneau de BaseMapManager.
+     * @return Le panneau servant de conteneur à ses nœuds enfants notamment le canevas.
+     */
+
+    public Pane pane() {
+        return pane;
+    }
+
+    /**
+     * Méthode privée permettant de dessiner la carte sur le canvas, qui est dans le panneau.
+     */
 
     private void drawMap() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -63,21 +78,33 @@ public final class BaseMapManager {
         for (double x = mvpX; x <= mvpX + numberXofSectors; x++) {
             for (double y = mvpY; y <= mvpY + numberYofSectors; y++) {
                 try {
-                    double viewX = mapViewParameters.get().viewX(new PointWebMercator(x, y));
-                    double viewY = mapViewParameters.get().viewY(new PointWebMercator(x, y));
-                    gc.drawImage(tileManager.imageForTileAt(new TileManager.TileId(mapViewParameters.get().zoomLevel(), (int) x, (int) y)),
-                            viewX, viewY);
-                } catch(IOException ignored) {
-                }
+                    //Dessine la tuile actuelle, au niveau de zoom demandé, et à partir du pixel
+                    //du bord du canevas, ce qui permet d'avoir des bouts de tuile, et non seulement
+                    //des tuiles entières.
+                    gc.drawImage(tileManager.imageForTileAt(new TileManager.TileId(zoomLevel, x, y)),
+                            destinationX, destinationY);
+                } catch (IOException ignored) {}
+                //Incrémente les positions des valeurs X et Y de la longueur/largeur des tuiles.
+                destinationX += TILE_SIZE;
             }
+            destinationY += TILE_SIZE;
         }
     }
 
+    /**
+     * Méthode redessinant la carte si le booléen le demande.
+     */
+
     private void redrawIfNeeded() {
-        if(!redrawNeeded) return;
+        if (!redrawNeeded) return;
         redrawNeeded = false;
         drawMap();
     }
+
+    /**
+     * Méthode changeant la valeur du booléen chargé de savoir si un nouveau dessin est nécessaire à
+     * true, et demandant une nouvelle pulsation à la plateforme.
+     */
 
     private void redrawOnNextPulse() {
         redrawNeeded = true;

@@ -12,16 +12,31 @@ import javafx.scene.shape.SVGPath;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * 8.3.3
+ * WaypointMannager
+ * <p>
+ * Classe gérant l'affichage et l'interaction avec les points de passage.
+ *
+ * @author Jean Nordmann (344692)
+ * @author Maxime Ducourau (329544)
+ */
 public final class WaypointsManager {
 
-    private Graph graph;
-    private ObjectProperty<MapViewParameters> mapViewParameters;
-    private ObservableList<Waypoint> waypointList;
-    private Consumer<String> stringConsumer;
-    private Pane pane;
-    private Group group;
+    private final Graph graph;
+    private final ObjectProperty<MapViewParameters> mapViewParameters;
+    private final ObservableList<Waypoint> waypointList;
+    private final Consumer<String> stringConsumer;
+    private final Pane pane;
+    private final Group group;
 
-
+    /**
+     * Classe gérant l'affichage et l'interaction avec les points de passage.
+     * @param graph graph du réseau routier.
+     * @param mapViewParameters
+     * @param waypointList
+     * @param stringConsumer
+     */
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> mapViewParameters,
                             ObservableList<Waypoint> waypointList, Consumer<String> stringConsumer) {
         this.graph = graph;

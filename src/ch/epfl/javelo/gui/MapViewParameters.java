@@ -15,7 +15,7 @@ import javafx.geometry.Point2D;
  */
 
 public record MapViewParameters (int zoomLevel, double x, double y){
-    //Coordonnées x et y du coin en haut à gauche de la tuile de carte.
+    //Coordonnées x et y du coin en haut à gauche de la carte affichée.
 
     /**
      * Constructeur compact lançant une exception si les arguments donnés à la
