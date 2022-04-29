@@ -1,10 +1,17 @@
 package ch.epfl.javelo.gui;
 
+import ch.epfl.javelo.Math2;
+import ch.epfl.javelo.projection.PointWebMercator;
+import ch.epfl.javelo.projection.WebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
@@ -30,7 +37,9 @@ public final class BaseMapManager {
     private final ObjectProperty<MapViewParameters> mapViewParameters;
     private final Pane pane;
     private final Canvas canvas;
-    private boolean redrawNeeded;
+    private boolean redrawNeeded = false;
+    private double scrollValue;
+    private ObjectProperty<Point2D> previousCoordsOnScreen;
 
     /**
      * Constructeur public du BaseMapManager gérant l'interaction avec le fond de carte.
@@ -54,6 +63,11 @@ public final class BaseMapManager {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
+        canvas.heightProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
+        canvas.widthProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
+
+        addMouseScrolling();
+        addMouseClicking();
         redrawOnNextPulse();
         addMouseDragging();
     }
@@ -114,7 +128,6 @@ public final class BaseMapManager {
         if (!redrawNeeded) return;
         redrawNeeded = false;
         drawMap();
-        redrawOnNextPulse();
     }
 
     /**
@@ -126,5 +139,61 @@ public final class BaseMapManager {
         redrawNeeded = true;
         Platform.requestNextPulse();
     }
+
+    public void addMouseScrolling() {
+        canvas.setOnScroll((e) -> {
+            scrollValue += e.getDeltaY();
+            if(Math.abs(scrollValue) >= 30) {
+                double xOnScreen = e.getX(), yOnScreen = e.getY();
+
+                // Récupération du point en PointWebMercator de la souris
+                PointWebMercator pointWebMercator = mapViewParameters.get().pointAt(xOnScreen, yOnScreen);
+
+                // Calcul du nouveau niveau de zoom (+1 ou -1)
+                int newZoomLevel = Math2.clamp(8, mapViewParameters.get().zoomLevel()
+                        + (scrollValue > 0 ? 1 : -1),19);
+
+                mapViewParameters.set(new MapViewParameters(newZoomLevel,
+                        pointWebMercator.xAtZoomLevel(newZoomLevel)-xOnScreen,
+                        pointWebMercator.yAtZoomLevel(newZoomLevel)-yOnScreen));
+                scrollValue = 0;
+                redrawOnNextPulse();
+            }
+        });
+    }
+
+    public void addMouseDragging() {
+        // Prise de la coordonnée au début du clic.
+        canvas.setOnMousePressed((e) -> {
+            previousCoordsOnScreen.set(new Point2D(e.getX(), e.getY()));
+        });
+
+        // Calcul de la position actuelle de la carte affichée en fonction du déplacement.
+        canvas.setOnMouseDragged((e) -> {
+
+                double deltaX = e.getX() - previousCoordsOnScreen.get().getX(),
+                        deltaY = e.getY() - previousCoordsOnScreen.get().getY();
+                int zoomLevel = mapViewParameters.get().zoomLevel();
+                PointWebMercator pointWebMercator = mapViewParameters.get().pointAt(0, 0);
+                mapViewParameters.set(new MapViewParameters(zoomLevel,
+                        pointWebMercator.xAtZoomLevel(zoomLevel) - deltaX,
+                        pointWebMercator.yAtZoomLevel(zoomLevel) - deltaY));
+
+                redrawOnNextPulse();
+            previousCoordsOnScreen.set(new Point2D(e.getX(), e.getY()));
+            });
+
+        canvas.setOnMouseReleased((e) -> {
+            if(e.isStillSincePress()) waypointsManager.addWaypoint(e.getX(), e.getY());
+            previousCoordsOnScreen.set(null);
+        });
+    }
+
+    public void addMouseClicking() {
+        canvas.setOnMouseClicked((e) -> {
+            if(e.isStillSincePress()) waypointsManager.addWaypoint(e.getX(), e.getY());
+        });
+    }
+
 
 }

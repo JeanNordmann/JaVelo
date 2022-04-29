@@ -117,9 +117,13 @@ public final class TileManager {
                 OutputStream outputStream = new FileOutputStream(filePath.toFile())) {
                 //Transfère les données du flot d'entrée, vers le flot de sortie.
                 i.transferTo(outputStream);
-                Image image = new Image(i);
-                addMRUAndRemoveLRU(tileId, image);
-                return image;
+                try(InputStream inputStream = new FileInputStream(filePath.toFile())) {
+                    Image image = new Image(inputStream);
+                    //Méthode privée gérant le cache-mémoire et supprimant le Least Recently Used,
+                    //pour le remplacer par le Most Recently Used (l'image actuelle).
+                    addMRUAndRemoveLRU(tileId, image);
+                    return image;
+                }
             }
         }
     }
