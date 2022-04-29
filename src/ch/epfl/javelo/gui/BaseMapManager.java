@@ -22,6 +22,8 @@ import java.io.IOException;
 public final class BaseMapManager {
 
     private static final int TILE_SIZE = 256;
+    private static final int MIN_ZOOM_LEVEL = 8;
+    private static final int MAX_ZOOM_LEVEL = 19;
 
     private final TileManager tileManager;
     private final WaypointsManager waypointsManager;
@@ -45,6 +47,7 @@ public final class BaseMapManager {
         this.mapViewParameters = mapViewParameters;
         this.canvas = new Canvas();
         this.pane = new Pane(canvas);
+        previousCoordsOnScreen = new SimpleObjectProperty<>(new Point2D(0, 0));
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
@@ -52,6 +55,7 @@ public final class BaseMapManager {
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
         redrawOnNextPulse();
+        addMouseDragging();
     }
 
     /**
@@ -83,10 +87,10 @@ public final class BaseMapManager {
         int yMax = (int) bottomRight.getY() / TILE_SIZE;
 
         //Position Y de destination du coin haut-gauche de la tuile à dessiner sur le canevas.
-        int destinationY = (int) -topLeft.getY() % TILE_SIZE;
+        int destinationY  = (int) -topLeft.getY() % TILE_SIZE;
         for (int y = yMin; y <= yMax; y++) {
             //Position X de destination du coin haut-gauche de la tuile à dessiner sur le canevas.
-            int destinationX = (int) -topLeft.getX() % TILE_SIZE;
+            int destinationX = (int) - topLeft.getX() % TILE_SIZE;
             for (int x = xMin; x <= xMax; x++) {
                 try {
                     //Dessine la tuile actuelle, au niveau de zoom demandé, et à partir du pixel

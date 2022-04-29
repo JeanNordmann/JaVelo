@@ -2,6 +2,7 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
@@ -9,7 +10,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -22,6 +22,8 @@ import java.util.function.Consumer;
  * @author Maxime Ducourau (329544)
  */
 public final class WaypointsManager {
+
+    private final int SEARCH_DISTANCE = 1000;
 
     private final Graph graph;
     private final ObjectProperty<MapViewParameters> mapViewParameters;
@@ -48,17 +50,36 @@ public final class WaypointsManager {
         SVGPath insideBorder = new SVGPath();
         insideBorder.setContent("M0-23A1 1 0 000-29 1 1 0 000-23");
         group = new Group(outsideBorder, insideBorder);
+        // TODO sur de ça ?
         pane = new Pane(group);
-
-
-
-
     }
 
+    /**
+     *
+     * @return
+     */
     public Pane pane() { return pane; }
 
+    /**
+     * Méthode permettant d'ajouter une point de passage sur la carte à l'aide de ses coordonnées relatives
+     * sur la carte affichée à l'écran.
+     * @param x coordonnée X partante depuis le coin haut gauche
+     * @param y coordonnée Y partante depuis le coin haut gauche
+     */
     public void addWaypoint(double x, double y) {
-        PointCh pCh = new PointCh(x, y);
-        waypointList.add(new Waypoint(pCh, graph.nodeClosestTo(pCh, 500)));
+        PointWebMercator pointWebMercator = mapViewParameters.get().pointAt(x, y);
+        PointCh pointCh = pointWebMercator.toPointCh();
+        int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
+        if (idNodeClosestTo == -1) {
+            // Pas de nœud dans la distance de recherche.
+            //THROW ...
+            stringConsumer.accept("Erreur pas de noeud dans la distance de recherche.");
+            // stringConsumer.accept(() -> System.out.println("1 Erreur pas de noeud dans la distance de recherche.");
+
+            System.out.println("une exception devrais être afficher sur l'interface graphique");
+        } else {
+            // Ajout du Waypoint à liste des Waypoint.
+            waypointList.add(new Waypoint(graph.nodePoint(idNodeClosestTo), idNodeClosestTo));
+        }
     }
 }
