@@ -1,0 +1,12 @@
+VBox {
+    -fx-background-color: black;
+    -fx-background-radius: 8px;
+    -fx-opacity: 0;
+    -fx-max-width: 400px;
+    -fx-max-height: 30px;
+    -fx-alignment: center;
+}
+
+VBox Text {
+    -fx-fill: white;
+}
