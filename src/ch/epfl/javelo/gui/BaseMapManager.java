@@ -116,6 +116,7 @@ public final class BaseMapManager {
             }
             destinationY += TILE_SIZE;
         }
+        waypointsManager.addMouseReleasing();
         waypointsManager.draw();
     }
 
@@ -203,9 +204,11 @@ public final class BaseMapManager {
      */
     public void addMouseClicking() {
         canvas.setOnMouseClicked((e) -> {
-            if(e.isStillSincePress()) waypointsManager.addWaypoint(e.getX(), e.getY());
+            if (e.isStillSincePress()) {
+                waypointsManager.addWaypoint(e.getX(), e.getY());
+                waypointsManager.refreshGroups();
+                redrawOnNextPulse();
+            }
         });
     }
-
-
 }

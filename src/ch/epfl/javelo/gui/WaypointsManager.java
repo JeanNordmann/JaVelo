@@ -3,6 +3,7 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
+import com.sun.prism.GraphicsResource;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
@@ -68,10 +69,9 @@ public final class WaypointsManager {
     public Pane pane() { return pane; }
 
     public void draw() {
-        System.out.println(pane.getChildren().get(0).getStyleClass().toString());
-        System.out.println(pane.getChildren().get(1).getStyleClass().toString());
         for (int i = 0; i < waypointList.size(); i++) {
             PointWebMercator pointWebMercator = PointWebMercator.ofPointCh(waypointList.get(i).pointCh());
+            refreshGroups();
             double xWayPoint = mapViewParameters.get().viewX(pointWebMercator);
             double yWayPoint = mapViewParameters.get().viewY(pointWebMercator);
             pane.getChildren().get(i).setLayoutX(xWayPoint);
@@ -95,7 +95,7 @@ public final class WaypointsManager {
             stringConsumer.accept("Erreur pas de noeud dans la distance de recherche.");
             // stringConsumer.accept(() -> System.out.println("1 Erreur pas de nœud dans la distance de recherche.");
 
-            System.out.println("une exception devrait être affichée sur l'interface graphique");
+            System.out.println("Une exception devrait être affichée sur l'interface graphique");
         } else {
             // Ajout du Waypoint à liste des Waypoint.
             waypointList.add(new Waypoint(graph.nodePoint(idNodeClosestTo), idNodeClosestTo));
@@ -105,6 +105,13 @@ public final class WaypointsManager {
             refreshGroups();
         }
     }
+
+    public void removeWaypoint(int waypointIndex) {
+        waypointList.remove(waypointIndex);
+        System.out.println("remove");
+        pane.getChildren().remove(waypointIndex);
+    }
+
 
     public SVGPath getAndSetOutsideBorder() {
         SVGPath outsideBorder = new SVGPath();
@@ -126,6 +133,18 @@ public final class WaypointsManager {
         if(nodes.size() > 1) nodes.get(nodes.size() - 1).getStyleClass().add("last");
         for (int i = 1; i < nodes.size() - 1; ++i) {
             nodes.get(i).getStyleClass().add("middle");
+        }
+    }
+
+    public void addMouseReleasing() {
+        for (int i = 0; i < waypointList.size(); i++) {
+            int waypointIndex = i;
+            Group pin = (Group) pane.getChildren().get(waypointIndex);
+            pin.setOnMouseReleased(event -> {
+                removeWaypoint(waypointIndex);
+                System.out.println("je remove le : " + waypointIndex);
+                refreshGroups();
+            });
         }
     }
 
