@@ -5,16 +5,22 @@ import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
  * 8.3.3
- * WaypointMannager
+ * WaypointManager
  * <p>
  * Classe gérant l'affichage et l'interaction avec les points de passage.
  *
@@ -35,9 +41,9 @@ public final class WaypointsManager {
     /**
      * Classe gérant l'affichage et l'interaction avec les points de passage.
      * @param graph graph du réseau routier.
-     * @param mapViewParameters
-     * @param waypointList
-     * @param stringConsumer
+     * @param mapViewParameters paramètres du fond de carte actuel.
+     * @param waypointList liste observable de tous les points de passages.
+     * @param stringConsumer consumer nous permettant de signaler les erreurs à afficher sur l'interface graphique.
      */
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> mapViewParameters,
                             ObservableList<Waypoint> waypointList, Consumer<String> stringConsumer) {
@@ -45,13 +51,15 @@ public final class WaypointsManager {
         this.mapViewParameters = mapViewParameters;
         this.waypointList = waypointList;
         this.stringConsumer = stringConsumer;
-        SVGPath outsideBorder = new SVGPath();
-        outsideBorder.setContent("M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20");
-        SVGPath insideBorder = new SVGPath();
-        insideBorder.setContent("M0-23A1 1 0 000-29 1 1 0 000-23");
-        group = new Group(outsideBorder, insideBorder);
-        // TODO sur de ça ?
-        pane = new Pane(group);
+        //TODO essayer avec un seul et même groupe.
+        pane = new Pane();
+        for (int i = 0; i < waypointList.size(); i++) {
+            Group group = new Group(getAndSetOutsideBorder(), getAndSetInsideBorder());
+            group.getStyleClass().add("pin");
+            pane.getChildren().add(group);
+        }
+        refreshGroups();
+        pane.setPickOnBounds(false);
     }
 
     /**
@@ -60,6 +68,18 @@ public final class WaypointsManager {
      */
     public Pane pane() { return pane; }
 
+    public void draw() {
+        System.out.println(pane.getChildren().get(0).getStyleClass().toString());
+        System.out.println(pane.getChildren().get(1).getStyleClass().toString());
+        for (int i = 0; i < waypointList.size(); i++) {
+            PointWebMercator pointWebMercator = PointWebMercator.ofPointCh(waypointList.get(i).pointCh());
+            double xWayPoint = mapViewParameters.get().viewX(pointWebMercator);
+            double yWayPoint = mapViewParameters.get().viewY(pointWebMercator);
+            pane.getChildren().get(i).setLayoutX(xWayPoint);
+            pane.getChildren().get(i).setLayoutY(yWayPoint);
+        }
+        pane.setPickOnBounds(false);
+    }
     /**
      * Méthode permettant d'ajouter une point de passage sur la carte à l'aide de ses coordonnées relatives
      * sur la carte affichée à l'écran.
@@ -74,12 +94,16 @@ public final class WaypointsManager {
             // Pas de nœud dans la distance de recherche.
             //THROW ...
             stringConsumer.accept("Erreur pas de noeud dans la distance de recherche.");
-            // stringConsumer.accept(() -> System.out.println("1 Erreur pas de noeud dans la distance de recherche.");
+            // stringConsumer.accept(() -> System.out.println("1 Erreur pas de nœud dans la distance de recherche.");
 
-            System.out.println("une exception devrais être afficher sur l'interface graphique");
+            System.out.println("une exception devrait être affichée sur l'interface graphique");
         } else {
             // Ajout du Waypoint à liste des Waypoint.
             waypointList.add(new Waypoint(graph.nodePoint(idNodeClosestTo), idNodeClosestTo));
+            Group group = new Group(getAndSetOutsideBorder(), getAndSetInsideBorder());
+            group.getStyleClass().add("pin");
+            pane.getChildren().add(group);
+            refreshGroups();
         }
     }
 }
