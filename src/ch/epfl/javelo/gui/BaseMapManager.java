@@ -60,13 +60,14 @@ public final class BaseMapManager {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
+
         canvas.heightProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
         canvas.widthProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
 
         addMouseScrolling();
         addMouseClicking();
-        redrawOnNextPulse();
         addMouseDragging();
+        redrawOnNextPulse();
     }
 
     /**

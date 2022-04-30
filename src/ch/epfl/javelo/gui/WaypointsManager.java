@@ -29,14 +29,13 @@ import java.util.function.Consumer;
  */
 public final class WaypointsManager {
 
-    private final int SEARCH_DISTANCE = 1000;
+    private final int SEARCH_DISTANCE = 500;
 
     private final Graph graph;
     private final ObjectProperty<MapViewParameters> mapViewParameters;
     private final ObservableList<Waypoint> waypointList;
     private final Consumer<String> stringConsumer;
     private final Pane pane;
-    private final Group group;
 
     /**
      * Classe gérant l'affichage et l'interaction avec les points de passage.
@@ -106,4 +105,28 @@ public final class WaypointsManager {
             refreshGroups();
         }
     }
-}
+
+    public SVGPath getAndSetOutsideBorder() {
+        SVGPath outsideBorder = new SVGPath();
+        outsideBorder.setContent("M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20");
+        outsideBorder.getStyleClass().add("pin_outside");
+        return outsideBorder;
+    }
+
+    public SVGPath getAndSetInsideBorder() {
+        SVGPath insideBorder = new SVGPath();
+        insideBorder.setContent("M0-23A1 1 0 000-29 1 1 0 000-23");
+        insideBorder.getStyleClass().add("pin_inside");
+        return insideBorder;
+    }
+
+    public void refreshGroups() {
+        ObservableList<Node> nodes = pane.getChildren();
+        nodes.get(0).getStyleClass().add("first");
+        if(nodes.size() > 1) nodes.get(nodes.size() - 1).getStyleClass().add("last");
+        for (int i = 1; i < nodes.size() - 1; ++i) {
+            nodes.get(i).getStyleClass().add("middle");
+        }
+    }
+
+ }
