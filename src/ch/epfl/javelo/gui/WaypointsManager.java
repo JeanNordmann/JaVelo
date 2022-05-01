@@ -3,19 +3,14 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
-import com.sun.prism.GraphicsResource;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -29,8 +24,6 @@ import java.util.function.Consumer;
  * @author Maxime Ducourau (329544)
  */
 public final class WaypointsManager {
-
-    private final int SEARCH_DISTANCE = 500;
 
     private final Graph graph;
     private final ObjectProperty<MapViewParameters> mapViewParameters;
@@ -54,11 +47,14 @@ public final class WaypointsManager {
         //TODO essayer avec un seul et même groupe.
         pane = new Pane();
         for (int i = 0; i < waypointList.size(); i++) {
+
+            System.out.println("1 fois seulement");
             Group group = new Group(getAndSetOutsideBorder(), getAndSetInsideBorder());
             group.getStyleClass().add("pin");
             pane.getChildren().add(group);
         }
-        refreshGroups();
+
+        //refreshGroups();
         pane.setPickOnBounds(false);
     }
 
@@ -71,7 +67,6 @@ public final class WaypointsManager {
     public void draw() {
         for (int i = 0; i < waypointList.size(); i++) {
             PointWebMercator pointWebMercator = PointWebMercator.ofPointCh(waypointList.get(i).pointCh());
-            refreshGroups();
             double xWayPoint = mapViewParameters.get().viewX(pointWebMercator);
             double yWayPoint = mapViewParameters.get().viewY(pointWebMercator);
             pane.getChildren().get(i).setLayoutX(xWayPoint);
@@ -79,6 +74,7 @@ public final class WaypointsManager {
         }
         pane.setPickOnBounds(false);
     }
+
     /**
      * Méthode permettant d'ajouter une point de passage sur la carte à l'aide de ses coordonnées relatives
      * sur la carte affichée à l'écran.
@@ -88,6 +84,7 @@ public final class WaypointsManager {
     public void addWaypoint(double x, double y) {
         PointWebMercator pointWebMercator = mapViewParameters.get().pointAt(x, y);
         PointCh pointCh = pointWebMercator.toPointCh();
+        int SEARCH_DISTANCE = 500;
         int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
         if (idNodeClosestTo == -1) {
             // Pas de nœud dans la distance de recherche.
@@ -106,12 +103,10 @@ public final class WaypointsManager {
         }
     }
 
-    public void removeWaypoint(int waypointIndex) {
-        waypointList.remove(waypointIndex);
-        System.out.println("remove");
-        pane.getChildren().remove(waypointIndex);
+    public void moveWaypointOnMouseDragging(int index, double x, double y) {
+        pane.getChildren().get(index).setLayoutX(x);
+        pane.getChildren().get(index).setLayoutY(y);
     }
-
 
     public SVGPath getAndSetOutsideBorder() {
         SVGPath outsideBorder = new SVGPath();
@@ -128,24 +123,52 @@ public final class WaypointsManager {
     }
 
     public void refreshGroups() {
-        ObservableList<Node> nodes = pane.getChildren();
-        nodes.get(0).getStyleClass().add("first");
-        if(nodes.size() > 1) nodes.get(nodes.size() - 1).getStyleClass().add("last");
-        for (int i = 1; i < nodes.size() - 1; ++i) {
-            nodes.get(i).getStyleClass().add("middle");
+        System.out.println("refresh groupe");
+        if (pane.getChildren().size() > 0) {
+            if (pane.getChildren().get(0).getStyleClass().size() == 1) {
+                System.out.println("rien d'attecher j'attache pin");
+                pane.getChildren().get(0).getStyleClass().add("first");
+            } else  pane.getChildren().get(0).getStyleClass().set(1, "first");
+            System.out.println(pane.getChildren().size());
+
+        }
+        if(pane.getChildren().size() > 1) {
+            int i = pane.getChildren().size() - 1;
+            if (pane.getChildren().get(i).getStyleClass().size() == 1) {
+                pane.getChildren().get(i).getStyleClass().add("first");
+            } else {
+                pane.getChildren().get(i).getStyleClass().set(1, "last");
+            }
+        }
+        for (int i = 1; i < pane.getChildren().size()-1; i++) {
+            if (pane.getChildren().get(i).getStyleClass().size() == 1) {
+            pane.getChildren().get(i).getStyleClass().add("middle");
+        } else pane.getChildren().get(i).getStyleClass().set(1, "middle");
+
         }
     }
 
+    public void removeWaypointJEAN(int i) {
+        System.out.println("Je remove le WayPoint index : " + i);
+        waypointList.remove(i);
+        pane.getChildren().remove(i);
+
+    }
+    /**
+     *
+     */
     public void addMouseReleasing() {
-        for (int i = 0; i < waypointList.size(); i++) {
-            int waypointIndex = i;
-            Group pin = (Group) pane.getChildren().get(waypointIndex);
-            pin.setOnMouseReleased(event -> {
-                removeWaypoint(waypointIndex);
-                System.out.println("je remove le : " + waypointIndex);
-                refreshGroups();
+        int j = 0;
+        for (Waypoint waypoint : waypointList) {
+            Group pin = (Group) pane.getChildren().get(j);
+            pin.setOnMouseClicked(event -> {
+                System.out.println("je suis sur le Waypoint");
+                removeWaypointJEAN(waypointList.indexOf(waypoint));
             });
+            j++;
         }
+        refreshGroups();
+        draw();
     }
 
  }

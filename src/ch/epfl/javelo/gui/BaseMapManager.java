@@ -63,20 +63,13 @@ public final class BaseMapManager {
 
         canvas.heightProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
         canvas.widthProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
-
         addMouseScrolling();
         addMouseClicking();
         addMouseDragging();
         redrawOnNextPulse();
-    }
-
-    /**
-     * Méthode nous permettant d'accéder à l'attribut panneau de BaseMapManager.
-     * @return Le panneau servant de conteneur à ses nœuds enfants notamment le canevas.
-     */
-
-    public Pane pane() {
-        return pane;
+        removeWpOnClicking();
+        moveWpOnDragging();
+        //TODO faire une méthode aillant un arbre de géstion d'évenement
     }
 
     /**
@@ -118,28 +111,6 @@ public final class BaseMapManager {
         }
         waypointsManager.addMouseReleasing();
         waypointsManager.draw();
-    }
-
-    /**
-     * Méthode redessinant la carte si le booléen le demande.
-     */
-
-    private void redrawIfNeeded() {
-        if (!redrawNeeded) return;
-        redrawNeeded = false;
-        drawMap();
-
-    }
-
-    /**
-     * Méthode changeant la valeur du booléen chargé de savoir si un nouveau dessin est nécessaire à
-     * true, et demandant une nouvelle pulsation à la plateforme. Dans le but qu'on redessine la carte
-     * au maximum à une fréquence prédéfini, pour économiser des ressources.
-     */
-
-    private void redrawOnNextPulse() {
-        redrawNeeded = true;
-        Platform.requestNextPulse();
     }
 
     /**
@@ -206,9 +177,56 @@ public final class BaseMapManager {
         canvas.setOnMouseClicked((e) -> {
             if (e.isStillSincePress()) {
                 waypointsManager.addWaypoint(e.getX(), e.getY());
-                waypointsManager.refreshGroups();
                 redrawOnNextPulse();
             }
         });
+    }
+
+    /**
+     * Méthode gérant l'événement nous permettant de supprimer un WayPoint en cliquant dessus.
+     *
+     */
+    public void removeWpOnClicking() {
+
+
+    }
+
+    /**
+     * Méthode gérant l'évènement où un Waypoint est deplacé, et met à jour sa position.
+     */
+
+    public void moveWpOnDragging() {
+
+    }
+
+    /**
+     * Méthode nous permettant d'accéder à l'attribut panneau de BaseMapManager.
+     * @return Le panneau servant de conteneur à ses nœuds enfants notamment le canevas.
+     */
+
+    public Pane pane() {
+        return pane;
+    }
+
+    /**
+     * Méthode redessinant la carte si le booléen le demande.
+     */
+
+    private void redrawIfNeeded() {
+        if (!redrawNeeded) return;
+        redrawNeeded = false;
+        drawMap();
+
+    }
+
+    /**
+     * Méthode changeant la valeur du booléen chargé de savoir si un nouveau dessin est nécessaire à
+     * true, et demandant une nouvelle pulsation à la plateforme. Dans le but qu'on redessine la carte
+     * au maximum à une fréquence prédéfini, pour économiser des ressources.
+     */
+
+    private void redrawOnNextPulse() {
+        redrawNeeded = true;
+        Platform.requestNextPulse();
     }
 }
