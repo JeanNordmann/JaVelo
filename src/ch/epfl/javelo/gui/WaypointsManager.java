@@ -4,6 +4,7 @@ import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -29,6 +30,7 @@ public final class WaypointsManager {
     private final ObjectProperty<MapViewParameters> mapViewParameters;
     private final ObservableList<Waypoint> waypointList;
     private final Consumer<String> stringConsumer;
+    private final ObjectProperty<Point2D> previousCoordsOnScreen;
     private final Pane pane;
 
     /**
@@ -44,6 +46,7 @@ public final class WaypointsManager {
         this.mapViewParameters = mapViewParameters;
         this.waypointList = waypointList;
         this.stringConsumer = stringConsumer;
+        previousCoordsOnScreen = new SimpleObjectProperty<>(new Point2D(0, 0));
         //TODO essayer avec un seul et même groupe.
         pane = new Pane();
         for (int i = 0; i < waypointList.size(); i++) {
@@ -169,6 +172,20 @@ public final class WaypointsManager {
         }
         refreshGroups();
         draw();
+    }
+
+    public void waypointDragging() {
+        int j = 0;
+        for (Waypoint waypoint : waypointList) {
+            Group pin = (Group) pane.getChildren().get(j);
+            pin.setOnMousePressed(event -> previousCoordsOnScreen.set(new Point2D(event.getX(), event.getY())));
+
+            pin.setOnMouseDragged(event -> {
+                System.out.println("je suis en train de bouger le waypoint zbi");
+                moveWaypointOnMouseDragging(waypointList.indexOf(waypoint), event.getX(), event.getY());
+            });
+            ++j;
+        }
     }
 
  }

@@ -110,6 +110,7 @@ public final class BaseMapManager {
             destinationY += TILE_SIZE;
         }
         waypointsManager.addMouseReleasing();
+        waypointsManager.waypointDragging();
         waypointsManager.draw();
     }
 
