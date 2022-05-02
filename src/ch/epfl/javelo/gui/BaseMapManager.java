@@ -165,11 +165,6 @@ public final class BaseMapManager {
                 // Mise à jour de la coordonnée actuelle.
             previousCoordsOnScreen.set(new Point2D(e.getX(), e.getY()));
             });
-
-        canvas.setOnMouseReleased((e) -> {
-            if(e.isStillSincePress()) waypointsManager.addWaypoint(e.getX(), e.getY());
-            previousCoordsOnScreen.set(null);
-        });
     }
 
     /**
