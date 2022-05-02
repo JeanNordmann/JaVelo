@@ -5,6 +5,7 @@ import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -33,9 +34,9 @@ public final class BaseMapManager {
     private final ObjectProperty<MapViewParameters> mapViewParameters;
     private final Pane pane;
     private final Canvas canvas;
-    private boolean redrawNeeded = false;
+    private boolean redrawNeeded;
     private final ObjectProperty<Point2D> previousCoordsOnScreen;
-    // Attribut nous rendre moins sensible le zoom.
+    // Attribut nous permettant de rendre moins sensible le zoom.
     private double scrollValue;
 
     /**
@@ -53,7 +54,10 @@ public final class BaseMapManager {
         this.mapViewParameters = mapViewParameters;
         this.canvas = new Canvas();
         this.pane = new Pane(canvas);
+
         previousCoordsOnScreen = new SimpleObjectProperty<>(new Point2D(0, 0));
+        redrawNeeded = false;
+
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
@@ -63,13 +67,9 @@ public final class BaseMapManager {
 
         canvas.heightProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
         canvas.widthProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
-        addMouseScrolling();
-        addMouseClicking();
-        addMouseDragging();
-        redrawOnNextPulse();
-        removeWpOnClicking();
-        moveWpOnDragging();
-        //TODO faire une méthode aillant un arbre de géstion d'évenement
+        mapViewParameters.addListener((p, oldS, newS) -> redrawOnNextPulse());
+
+        eventHandler();
     }
 
     /**
@@ -109,9 +109,14 @@ public final class BaseMapManager {
             }
             destinationY += TILE_SIZE;
         }
-        waypointsManager.addMouseReleasing();
         waypointsManager.waypointDragging();
+        // le seul appel à draw depuis WayPointManager !
         waypointsManager.draw();
+    }
+    public void eventHandler() {
+        addMouseDragging();
+        addMouseClicking();
+        addMouseScrolling();
     }
 
     /**
@@ -136,8 +141,6 @@ public final class BaseMapManager {
                         pointWebMercator.xAtZoomLevel(newZoomLevel)-xOnScreen,
                         pointWebMercator.yAtZoomLevel(newZoomLevel)-yOnScreen));
                 scrollValue = 0;
-                //TODO ??? pas ici ???
-                redrawOnNextPulse();
             }
         });
     }
@@ -159,8 +162,6 @@ public final class BaseMapManager {
                 mapViewParameters.set(new MapViewParameters(zoomLevel,
                         pointWebMercator.xAtZoomLevel(zoomLevel) - deltaX,
                         pointWebMercator.yAtZoomLevel(zoomLevel) - deltaY));
-                //TODO ??? V ????
-                redrawOnNextPulse();
                 // Mise à jour de la coordonnée actuelle.
             previousCoordsOnScreen.set(new Point2D(e.getX(), e.getY()));
             });
@@ -178,27 +179,10 @@ public final class BaseMapManager {
         canvas.setOnMouseClicked((e) -> {
             if (e.isStillSincePress()) {
                 waypointsManager.addWaypoint(e.getX(), e.getY());
-                redrawOnNextPulse();
             }
         });
     }
 
-    /**
-     * Méthode gérant l'événement nous permettant de supprimer un WayPoint en cliquant dessus.
-     *
-     */
-    public void removeWpOnClicking() {
-
-
-    }
-
-    /**
-     * Méthode gérant l'évènement où un Waypoint est deplacé, et met à jour sa position.
-     */
-
-    public void moveWpOnDragging() {
-
-    }
 
     /**
      * Méthode nous permettant d'accéder à l'attribut panneau de BaseMapManager.
