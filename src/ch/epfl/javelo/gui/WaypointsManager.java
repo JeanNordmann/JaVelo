@@ -9,6 +9,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
@@ -51,13 +52,11 @@ public final class WaypointsManager {
         previousCoordsOnScreen = new SimpleObjectProperty<>(new Point2D(0, 0));
         pane = new Pane();
 
-        waypointList.addListener((ListChangeListener<? super Waypoint>) e -> recreatGroups());
-
-        recreatGroups();
+        waypointList.addListener((ListChangeListener<? super Waypoint>) e -> recreateGroups());
+        System.out.println(waypointList);
+        recreateGroups();
         pane.setPickOnBounds(false);
     }
-
-
 
     /**
      *
@@ -76,30 +75,31 @@ public final class WaypointsManager {
         pane.setPickOnBounds(false);
     }
 
-    public void recreatGroups() {
+    public void recreateGroups() {
+        pane.getChildren().clear();
         if (waypointList.size() > 0) {
             Group groupToAdd = new Group(getAndSetOutsideBorder(), getAndSetInsideBorder());
-            addListener(groupToAdd);
             groupToAdd.getStyleClass().add("pin");
             groupToAdd.getStyleClass().add("first");
+            setUpListeners(groupToAdd);
             pane.getChildren().add(groupToAdd);
         }
 
         if (waypointList.size() > 2) {
             for (int i = 1; i < waypointList.size()-1; i++) {
                 Group groupToAdd = new Group(getAndSetOutsideBorder(), getAndSetInsideBorder());
-                addListener(groupToAdd);
                 groupToAdd.getStyleClass().add("pin");
                 groupToAdd.getStyleClass().add("middle");
+                setUpListeners(groupToAdd);
                 pane.getChildren().add(groupToAdd);
             }
         }
 
         if (waypointList.size() > 1) {
             Group groupToAdd = new Group(getAndSetOutsideBorder(), getAndSetInsideBorder());
-            addListener(groupToAdd);
             groupToAdd.getStyleClass().add("pin");
             groupToAdd.getStyleClass().add("last");
+            setUpListeners(groupToAdd);
             pane.getChildren().add(groupToAdd);
         }
         draw();
@@ -124,11 +124,11 @@ public final class WaypointsManager {
         } else {
             // Ajout du Waypoint à liste des Waypoint.
             waypointList.add(new Waypoint(graph.nodePoint(idNodeClosestTo), idNodeClosestTo));
-            //recreatGroups();
+            //recreateGroups();
         }
     }
 
-    public void moveWaypoint(MouseEvent event, Group pin) {
+    public void moveWaypoint(MouseEvent event, Node pin) {
         Point2D translation = previousCoordsOnScreen.get().subtract(event.getX(), event.getY());
         pin.setLayoutX(pin.getLayoutX() - translation.getX());
         pin.setLayoutY(pin.getLayoutY() - translation.getY());
@@ -148,38 +148,40 @@ public final class WaypointsManager {
         return insideBorder;
     }
 
-    public void addListener(Group group) {
-        group.setOnMouseClicked(event -> {
+    public void waypointRemoving(Node pin) {
+        pin.setOnMouseClicked(event -> {
             if (event.isStillSincePress())
-                removeWaypointANCIENaddMouseRelasing(pane.getChildren().indexOf(group));
+                removeWaypoint(pane.getChildren().indexOf(pin));
         });
     }
 
     /**
      * RENOME FDP
      */
-    public void removeWaypointANCIENaddMouseRelasing(int i) {
+
+    public void removeWaypoint(int i) {
         waypointList.remove(i);
     }
 
-    public void waypointDragging() {
-        int j = 0;
-        for (Waypoint waypoint : waypointList) {
-            Group pin = (Group) pane.getChildren().get(j);
-
-            pin.setOnMousePressed(event -> {
+    public void waypointDragging(Node pin) {
+        pin.setOnMousePressed(event -> {
                 previousCoordsOnScreen.set(new Point2D(event.getX(), event.getY()));
             });
 
-            pin.setOnMouseDragged(event -> {
+        pin.setOnMouseDragged(event -> {
                 moveWaypoint(event, pin);
             });
 
-            pin.setOnMouseDragReleased(event -> {
+        pin.setOnMouseReleased(event -> {
+            removeWaypoint(pane.getChildren().indexOf(pin));
+            addWaypoint(event.getX(), event.getY());
 
             });
-            ++j;
-        }
+    }
+
+    public void setUpListeners(Node pin) {
+        waypointRemoving(pin);
+        waypointDragging(pin);
     }
 
 

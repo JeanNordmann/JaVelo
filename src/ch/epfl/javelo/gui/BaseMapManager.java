@@ -109,7 +109,6 @@ public final class BaseMapManager {
             }
             destinationY += TILE_SIZE;
         }
-        waypointsManager.waypointDragging();
         // le seul appel à draw depuis WayPointManager !
         waypointsManager.draw();
     }
@@ -162,8 +161,9 @@ public final class BaseMapManager {
                 mapViewParameters.set(new MapViewParameters(zoomLevel,
                         pointWebMercator.xAtZoomLevel(zoomLevel) - deltaX,
                         pointWebMercator.yAtZoomLevel(zoomLevel) - deltaY));
+
                 // Mise à jour de la coordonnée actuelle.
-            previousCoordsOnScreen.set(new Point2D(e.getX(), e.getY()));
+                previousCoordsOnScreen.set(new Point2D(e.getX(), e.getY()));
             });
     }
 
