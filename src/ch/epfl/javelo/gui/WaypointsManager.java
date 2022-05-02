@@ -76,12 +76,42 @@ public final class WaypointsManager {
         pane.setPickOnBounds(false);
     }
 
+    public void recreatGroups() {
+        if (waypointList.size() > 0) {
+            Group groupToAdd = new Group(getAndSetOutsideBorder(), getAndSetInsideBorder());
+            addListener(groupToAdd);
+            groupToAdd.getStyleClass().add("pin");
+            groupToAdd.getStyleClass().add("first");
+            pane.getChildren().add(groupToAdd);
+        }
+
+        if (waypointList.size() > 2) {
+            for (int i = 1; i < waypointList.size()-1; i++) {
+                Group groupToAdd = new Group(getAndSetOutsideBorder(), getAndSetInsideBorder());
+                addListener(groupToAdd);
+                groupToAdd.getStyleClass().add("pin");
+                groupToAdd.getStyleClass().add("middle");
+                pane.getChildren().add(groupToAdd);
+            }
+        }
+
+        if (waypointList.size() > 1) {
+            Group groupToAdd = new Group(getAndSetOutsideBorder(), getAndSetInsideBorder());
+            addListener(groupToAdd);
+            groupToAdd.getStyleClass().add("pin");
+            groupToAdd.getStyleClass().add("last");
+            pane.getChildren().add(groupToAdd);
+        }
+        draw();
+    }
+
     /**
      * Méthode permettant d'ajouter une point de passage sur la carte à l'aide de ses coordonnées relatives
      * sur la carte affichée à l'écran.
      * @param x coordonnée X partante depuis le coin haut gauche
      * @param y coordonnée Y partante depuis le coin haut gauche
      */
+
     public void addWaypoint(double x, double y) {
         PointCh pointCh = mapViewParameters.get().pointAt(x, y).toPointCh();
         int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
@@ -98,9 +128,10 @@ public final class WaypointsManager {
         }
     }
 
-    public void moveWaypointOnMouseDragging(int index, double x, double y) {
-        pane.getChildren().get(index).setLayoutX(x);
-        pane.getChildren().get(index).setLayoutY(y);
+    public void moveWaypoint(MouseEvent event, Group pin) {
+        Point2D translation = previousCoordsOnScreen.get().subtract(event.getX(), event.getY());
+        pin.setLayoutX(pin.getLayoutX() - translation.getX());
+        pin.setLayoutY(pin.getLayoutY() - translation.getY());
     }
 
     public SVGPath getAndSetOutsideBorder() {
@@ -135,14 +166,21 @@ public final class WaypointsManager {
         int j = 0;
         for (Waypoint waypoint : waypointList) {
             Group pin = (Group) pane.getChildren().get(j);
-            pin.setOnMousePressed(event -> previousCoordsOnScreen.set(new Point2D(event.getX(), event.getY())));
+
+            pin.setOnMousePressed(event -> {
+                previousCoordsOnScreen.set(new Point2D(event.getX(), event.getY()));
+            });
 
             pin.setOnMouseDragged(event -> {
-                System.out.println("je suis en train de bouger le waypoint zbi");
-                moveWaypointOnMouseDragging(waypointList.indexOf(waypoint), event.getX(), event.getY());
+                moveWaypoint(event, pin);
+            });
+
+            pin.setOnMouseDragReleased(event -> {
+
             });
             ++j;
         }
     }
+
 
  }
