@@ -63,6 +63,11 @@ public final class WaypointsManager {
         pane.setPickOnBounds(false);
     }
 
+    //TODO avant de Clean le code test et je te conseil d'essayer de 1 que le code actuelle fais bien ce qu'il doit faire
+    // (histoire que j'aille pas fais le triso) et 2 bien comprendre comment ça marche avec les sout de cette classe
+    //TODO pour les 2 classes il faudrait en plus de clean le code mettre les méthodes dans un ordre logique,
+    // et d'aileur après avoir fais les commentaires des méthodes, hésite pas à les renommé avec un nom plus logique !
+
     /**
      *
      * @return
@@ -82,6 +87,7 @@ public final class WaypointsManager {
 
     public void recreateGroups() {
         pane.getChildren().clear();
+        //TODO si t'arrive à modulariser pour éviter la répetition de code t'es un boss
         if (waypointList.size() > 0) {
             Group groupToAdd = new Group(getAndSetOutsideBorder(), getAndSetInsideBorder());
             groupToAdd.getStyleClass().add("pin");
@@ -124,15 +130,10 @@ public final class WaypointsManager {
         int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
         if (idNodeClosestTo == -1) {
             // Pas de nœud dans la distance de recherche.
-            //THROW ...
             stringConsumer.accept("Erreur pas de noeud dans la distance de recherche.");
-            // stringConsumer.accept(() -> System.out.println("1 Erreur pas de nœud dans la distance de recherche.");
-            System.out.println("Une exception devrait être affichée sur l'interface graphique");
             return false;
         } else {
-            // Ajout du Waypoint à liste des Waypoint.
             waypointList.add(new Waypoint(graph.nodePoint(idNodeClosestTo), idNodeClosestTo));
-            //recreateGroups();
             return true;
         }
     }
@@ -142,7 +143,6 @@ public final class WaypointsManager {
         Point2D translation = previousCoordsOnScreen.subtract(event.getX(), event.getY());
         pin.setLayoutX(pin.getLayoutX() - translation.getX());
         pin.setLayoutY(pin.getLayoutY() - translation.getY());
-        //System.out.println("Point 2d de position actuelle " + event.getX() + " " + event.getY());
         actualCoordinatePoint2D = new Point2D(pin.getLayoutX() - translation.getX(), pin.getLayoutY() - translation.getY());
     }
 
@@ -160,16 +160,8 @@ public final class WaypointsManager {
         return insideBorder;
     }
 
-    public void waypointRemoving(Node pin) {
-        /*pin.setOnMouseClicked(event -> {
-            if (initialCoordinatePoint2D.equals(actualCoordinatePoint2D)) {
-                System.out.println(" remove le WayPOint ");
-                waypointList.remove(pane.getChildren().indexOf(pin));
-            }
-        })*/;
-    }
-
-    public void waypointDragging(Node pin) {
+    public void setUpListeners(Node pin) {
+        //TODO comment bien les listener psk là on en fais bcp d'un coup
         pin.setOnMouseClicked(event -> {
             if (event.isStillSincePress())
             waypointList.remove(pane.getChildren().indexOf(pin));
@@ -181,11 +173,6 @@ public final class WaypointsManager {
                 previousCoordsOnScreen = new Point2D(event.getX(), event.getY());
                 initialCoordinatePoint2D = pin.localToParent(event.getX(), event.getY());
                 actualCoordinatePoint2D = pin.localToParent(event.getX(), event.getY());
-                //System.out.println(" previous cordinate = " + previousCoordsOnScreen);
-                //System.out.println("initialCoordinatePoint2d= " + initialCoordinatePoint2D);
-                //System.out.println("actualCoordinatePoint2D = " + actualCoordinatePoint2D);
-            } else {
-
             }
         });
 
@@ -198,39 +185,23 @@ public final class WaypointsManager {
 
                 System.out.println("SetOnmouseRelased");
                 relocateWaypoint(new Point2D(actualCoordinatePoint2D.getX(), actualCoordinatePoint2D.getY()), initialCoordinatePoint2D, pin);
-                //addWaypoint(event.getX(), event.getY());
                 previousCoordsOnScreen = new Point2D(0, 0);
-                initialCoordinatePoint2D = previousCoordsOnScreen;
-                actualCoordinatePoint2D = previousCoordsOnScreen;
+                initialCoordinatePoint2D =  new Point2D(0, 0);
+                actualCoordinatePoint2D =  new Point2D(0, 0);
             }
         });
     }
 
     public void relocateWaypoint(Point2D actualPosition, Point2D intialPosition, Node pin) {
-        //System.out.println("actualPosition dans relocate= " + actualPosition);
-        //System.out.println("intialPosition dans relocate = " + intialPosition);
         PointCh pointCh = mapViewParameters.get().pointAt(actualPosition.getX(), actualPosition.getY()).toPointCh();
         int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
         if (idNodeClosestTo == -1) {
-            // Pas de nœud dans la distance de recherche.
-            //THROW ...
             stringConsumer.accept("Déplacement2.0 refusé => retour pas de changement de Waypoint lIst et il faut remettre à la bonne position le waypoint sur l'affichage graphique");
-            // stringConsumer.accept(() -> System.out.println("1 Erreur pas de nœud dans la distance de recherche.");
-            //pin.setLayoutX(intialPosition.getX());
-            //pin.setLayoutY(intialPosition.getY());
+            // Car la liste WP n'est pas modifié, mais doit malgré tout être redessiné => pas de listeners.
             draw();
         } else {
-            // Ajout du Waypoint à liste des Waypoint.
             int position = pane.getChildren().indexOf(pin);
-            //waypointList.remove(position);
             waypointList.set(position, new Waypoint(graph.nodePoint(idNodeClosestTo), idNodeClosestTo));
-            //recreateGroups();
         }
-
-    }
-
-    public void setUpListeners(Node pin) {
-        waypointRemoving(pin);
-        waypointDragging(pin);
     }
  }
