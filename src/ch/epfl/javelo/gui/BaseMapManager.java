@@ -5,7 +5,6 @@ import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -24,29 +23,72 @@ import java.io.IOException;
  */
 
 public final class BaseMapManager {
-
+    /**
+     * Constante représentant la taille en pixels d'une tuile.
+     */
     private static final int TILE_SIZE = 256;
+
+    /**
+     * Constante représentant le niveau de zoom minimal de la carte, pour l'affichage.
+     */
     private static final int MIN_ZOOM_LEVEL = 8;
+
+    /**
+     * Constante représentant le niveau de zoom maximal de la carte, pour l'affichage.
+     */
     private static final int MAX_ZOOM_LEVEL = 19;
 
+    /**
+     * Attribut représentant le gestionnaire de tuiles.
+     */
     private final TileManager tileManager;
+
+    /**
+     * Attributs représentant le gestionnaire de points de passage.
+     */
     private final WaypointsManager waypointsManager;
+
+    /**
+     * Attribut représentant une propriété JavaFX contenant les paramètres de la carte affichée.
+     */
     private final ObjectProperty<MapViewParameters> mapViewParameters;
+
+    /**
+     * Attribut représentant le panneau.
+     */
     private final Pane pane;
+
+    /**
+     * Attribut représentant le canvas JavaFX.
+     */
     private final Canvas canvas;
+
+    /**
+     * Booléen dont la valeur représente si un nouveau dessin est nécessaire.
+     */
     private boolean redrawNeeded;
+
+    /**
+     * Attribut représentant une propriété JavaFX contenant un Point2D stockant
+     * les précédentes coordonnées sur l'écran.
+     */
     private final ObjectProperty<Point2D> previousCoordsOnScreen;
-    // Attribut nous permettant de rendre moins sensible le zoom.
+
+    /**
+     * Attribut nous permettant de rendre moins sensible le zoom.
+     */
     private double scrollValue;
 
     /**
-     * Constructeur public du BaseMapManager gérant l'interaction avec le fond de carte.
+     * Constructeur public du BaseMapManager gérant l'interaction avec le fond de carte, et initialisant
+     * les attributs à leurs valeurs données ou par défaut.
      *
      * @param tileManager       Gestionnaire de tuile : nous permet de récupérer les tuiles.
      * @param waypointsManager  Gestionnaire de l'affichage et de l'interaction avec les points de passage.
      * @param mapViewParameters MapViewParameters observable dans une ObjectProperty → observable et permet la mise
      *                          à jour du fond de carte.
      */
+
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointsManager,
                           ObjectProperty<MapViewParameters> mapViewParameters) {
         this.tileManager = tileManager;
@@ -109,24 +151,33 @@ public final class BaseMapManager {
             }
             destinationY += TILE_SIZE;
         }
-        // le seul appel à draw depuis WayPointManager !
-        waypointsManager.draw();
+        //Seul appel à updateWaypointsLocations depuis BaseMapManager.
+        waypointsManager.updateWaypointsLocations();
     }
-    public void eventHandler() {
+
+    /**
+     * Méthode privée ajoutant les gestionnaires d'évènements correspondants au zoom, au glissement de la carte,
+     * et à l'ajout d'un point de passage sur la carte.
+     */
+
+    private void eventHandler() {
+        //Ajoute les gestionnaires d'évènements correspondants au zoom, au glissement de la carte,
+        //et à l'ajout d'un point de passage sur la carte.
         addMouseDragging();
         addMouseClicking();
         addMouseScrolling();
     }
 
     /**
-     * Méthode permettant de gérer l'interaction de zoom de la carte affiché.
-     * C'est-à-dire qui adapte le zoom si la souris ou le trackpad zoom ou dézoome.
+     * Méthode permettant de gérer l'interaction de zoom de la carte affichée.
+     * Elle adapte le zoom si la souris ou le trackpad zoom ou dézoome.
      */
-    public void addMouseScrolling() {
+
+    private void addMouseScrolling() {
         canvas.setOnScroll((e) -> {
             // Temporisation nous permettant de rendre moins sensible le zoom.
             scrollValue += e.getDeltaY();
-            if(Math.abs(scrollValue) >= 30) {
+            if (Math.abs(scrollValue) >= 30) {
                 double xOnScreen = e.getX(), yOnScreen = e.getY();
 
                 // Récupération du point en PointWebMercator de la souris
@@ -134,20 +185,21 @@ public final class BaseMapManager {
 
                 // Calcul du nouveau niveau de zoom (+1 ou -1)
                 int newZoomLevel = Math2.clamp(MIN_ZOOM_LEVEL, mapViewParameters.get().zoomLevel()
-                        + (scrollValue > 0 ? 1 : -1),MAX_ZOOM_LEVEL);
+                        + (scrollValue > 0 ? 1 : -1), MAX_ZOOM_LEVEL);
 
                 mapViewParameters.set(new MapViewParameters(newZoomLevel,
-                        pointWebMercator.xAtZoomLevel(newZoomLevel)-xOnScreen,
-                        pointWebMercator.yAtZoomLevel(newZoomLevel)-yOnScreen));
+                        pointWebMercator.xAtZoomLevel(newZoomLevel) - xOnScreen,
+                        pointWebMercator.yAtZoomLevel(newZoomLevel) - yOnScreen));
                 scrollValue = 0;
             }
         });
     }
 
     /**
-     * Méthode permettant de gérer l'interaction de déplacement de la carte
+     * Méthode permettant de gérer l'interaction de déplacement de la carte.
      */
-    public void addMouseDragging() {
+
+    private void addMouseDragging() {
         // Prise de la coordonnée au début du clic.
         canvas.setOnMousePressed((e) -> previousCoordsOnScreen.set(new Point2D(e.getX(), e.getY())));
 
@@ -170,10 +222,10 @@ public final class BaseMapManager {
     /**
      * Méthode nous permettant d'ajouter un Waypoint à la position du clic.
      */
-    public void addMouseClicking() {
+
+    private void addMouseClicking() {
         canvas.setOnMouseClicked((e) -> {
             if (e.isStillSincePress()) {
-                System.out.println("ajoute un wayPoint dans baseMap");
                 waypointsManager.addWaypoint(e.getX(), e.getY());
             }
         });
