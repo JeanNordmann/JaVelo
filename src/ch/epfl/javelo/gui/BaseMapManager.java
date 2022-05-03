@@ -173,6 +173,7 @@ public final class BaseMapManager {
     public void addMouseClicking() {
         canvas.setOnMouseClicked((e) -> {
             if (e.isStillSincePress()) {
+                System.out.println("ajoute un wayPoint dans baseMap");
                 waypointsManager.addWaypoint(e.getX(), e.getY());
             }
         });
