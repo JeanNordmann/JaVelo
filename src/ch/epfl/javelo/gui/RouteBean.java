@@ -7,6 +7,8 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +59,7 @@ public final class RouteBean {
 
     //TODO Constructeur j'en sais rien des paramètres pour l'instant.
     public RouteBean() {
-        waypoints.addListener((observable, oldValue, newValue) -> draw());
+        waypoints.addListener((observable, oldValue, newValue) -> computeNewRouteAndProfile());
 
         routeCacheMemory = new LinkedHashMap<>(MEMORY_CACHE_SIZE, 0.75f, true);
     }
@@ -143,8 +145,15 @@ public final class RouteBean {
         return elevationProfile.get();
     }
 
-    public void draw() {
-        //TODO
+
+    public void computeNewRouteAndProfile() {
+        ObservableList<Waypoint> waypoints = getWaypoints();
+        if(isValidRoute()) {
+            List<Route> routes = new ArrayList<>();
+            for (int i = 0; i < waypoints.size() - 1; i++) {
+                routes.add(getRouteFromCacheMemory(waypoints.get(i), waypoints.get(i + 1)));
+            }
+        }
     }
 
     private boolean isValidRoute() {
@@ -155,7 +164,7 @@ public final class RouteBean {
             return false;
         }
         for (int i = 0; i < waypointList.size() - 1; i++) {
-            if(!isRouteExisting(waypointList.get(i), waypointList.get(i+1))) {
+            if(!isRouteExisting(waypointList.get(i), waypointList.get(i + 1))) {
                 route = null;
                 elevationProfile = null;
                 return false;
@@ -164,9 +173,19 @@ public final class RouteBean {
         return true;
     }
 
+    private Route getRouteFromCacheMemory(Waypoint firstWaypoint, Waypoint secondWaypoint) {
+        Pair<Integer, Integer> pair = new Pair<>(firstWaypoint.nodeId(), secondWaypoint.nodeId());
+        if (routeCacheMemory.containsKey(pair)) {
+            return routeCacheMemory.get(pair);
+        } else {
+            Route route = routeComputer.bestRouteBetween(firstWaypoint.nodeId(), secondWaypoint.nodeId());
+            routeCacheMemory.put(pair, route);
+            return route;
+        }
+    }
+
     private boolean isRouteExisting(Waypoint firstWaypoint, Waypoint secondWaypoint) {
-        return routeComputer.bestRouteBetween(firstWaypoint.nodeId(),
-                secondWaypoint.nodeId()) != null;
+        return getRouteFromCacheMemory(firstWaypoint, secondWaypoint) != null;
     }
 
     private ElevationProfile computeElevationProfile(Route route) {
