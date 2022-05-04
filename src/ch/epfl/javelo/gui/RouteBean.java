@@ -72,95 +72,11 @@ public final class RouteBean {
 
         waypoints.addListener((ListChangeListener<? super Waypoint>) e -> computeNewRouteAndProfile());
         //TODO pas sur
-/*
         route.addListener((observable, oldValue, newValue) -> {
             if (oldValue != null && newValue == null) setHighlightedPosition(Double.NaN);
             //TODO surtout pas dans la version final
             if (oldValue == null && newValue != null) setHighlightedPosition(1000);
         });
-*/
-    }
-
-    /**
-     * Accesseur retournant la propriété de la liste observable de points de passage.
-     * @return la propriété de la liste observable de points de passage.
-     */
-    public ObservableList<Waypoint> waypointsProperty() {
-        return waypoints;
-    }
-
-    /**
-     * Accesseur retournant la liste observable de points de passage.
-     * @return la liste observable de points de passage.
-     */
-    public List<Waypoint> getWaypoints() {
-        return List.copyOf(waypoints);
-    }
-
-    /**
-     * Modificateur de la liste observable de points de passage.
-     * @param newWaypoints nouvelle liste de points de passage.
-     */
-    public void setWaypoints(ObservableList<Waypoint> newWaypoints) {
-        waypoints.clear();
-        waypoints.addAll(newWaypoints);
-    }
-
-    /**
-     * Accesseur retournant la propriété de l'itinéraire permettant de relier les points
-     * de passage.
-     * @return La propriété de l'itinéraire permettant de relier les points de passage. .
-     */
-    public ReadOnlyObjectProperty<Route> routeProperty() {
-        return route;
-    }
-
-    /**
-     * Accesseur retournant l'itinéraire permettant de relier les points de passage.
-     * @return L'itinéraire permettant de relier les points de passage.
-     */
-    public Route getRoute() {
-        return route.get();
-    }
-
-    /**
-     * Accesseur retournant la propriété de la position mise en évidence.
-     * @return La propriété de la position mise en évidence.
-     */
-    public DoubleProperty highlightedPositionProperty() {
-        return highlightedPosition;
-    }
-
-    /**
-     * Accesseur retournant la position mise en évidence.
-     * @return la position mise en évidence.
-     */
-    public double getHighlightedPosition() {
-        return highlightedPosition.get();
-    }
-
-    /**
-     * Modificateur de la propriété de la position mise en évidence.
-     * @param newHighlightedPosition nouvelle position mise en évidence.
-     */
-    public void setHighlightedPosition(double newHighlightedPosition) {
-        this.highlightedPosition.set(newHighlightedPosition);
-    }
-
-    /**
-     * Accesseur retournant la propriété du profil de l'itinéraire.
-     * @return la propriété du profil de l'itinéraire.
-     */
-    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileProperty() {
-        return elevationProfile;
-    }
-
-    /**
-     * Accesseur retournant le profil de l'itinéraire.
-     * @return le profil de l'itinéraire.
-     */
-    public ElevationProfile getElevationProfile() {
-        return elevationProfile.get();
     }
 
 
@@ -200,7 +116,6 @@ public final class RouteBean {
     private Route getRouteFromCacheMemory(Waypoint firstWaypoint, Waypoint secondWaypoint) {
         Pair<Integer, Integer> pair = new Pair<>(firstWaypoint.nodeId(), secondWaypoint.nodeId());
         if (routeCacheMemory.containsKey(pair)) {
-            System.out.println("je get dans le cache zbi");
             return routeCacheMemory.get(pair);
         } else {
             Route route = routeComputer.bestRouteBetween(firstWaypoint.nodeId(), secondWaypoint.nodeId());
@@ -218,4 +133,93 @@ public final class RouteBean {
     }
 
 
+    // accesseur et modicateur
+    // PS check si on n'a pas utilisé le mot get/ set dans des commentaires en français
+
+    //TODO ask jean : normal violer l'immuabilité ?
+    /**
+     * Accesseur retournant la propriété de la liste observable de points de passage.
+     * @return la propriété de la liste observable de points de passage.
+     */
+    public ObservableList<Waypoint> waypointsProperty() {
+        // Pas immuable, pas grave, car on offre dans tous les cas un setter.
+        return waypoints;
+    }
+
+    /**
+     * Accesseur retournant la liste observable de points de passage.
+     * @return la liste observable de points de passage.
+     */
+    public List<Waypoint> getWaypoints() {
+        return List.copyOf(waypoints);
+    }
+
+    /**
+     * Modificateur de la liste observable de points de passage.
+     * @param newWaypoints nouvelle liste de points de passage.
+     */
+    public void setWaypoints(ObservableList<Waypoint> newWaypoints) {
+        waypoints.clear();
+        waypoints.addAll(newWaypoints);
+    }
+
+    /**
+     * Accesseur retournant la propriété de l'itinéraire permettant de relier les points
+     * de passage.
+     * @return La propriété de l'itinéraire permettant de relier les points de passage. .
+     */
+    public ReadOnlyObjectProperty<Route> routeProperty() {
+        return route;
+    }
+
+    /**
+     * Accesseur retournant l'itinéraire permettant de relier les points de passage.
+     * (Ok vis-à-vis de l'immuabilité, car toutes les classes implémentant Route sont immuables.(finales))
+     * @return L'itinéraire permettant de relier les points de passage.
+     */
+    public Route getRoute() {
+        return route.get();
+    }
+
+    /**
+     * Accesseur retournant la propriété de la position mise en évidence.
+     * @return La propriété de la position mise en évidence.
+     */
+    public DoubleProperty highlightedPositionProperty() {
+        // Pas immuable, pas grave, car on offre dans tous les cas un setter.
+        return highlightedPosition;
+    }
+
+    /**
+     * Accesseur retournant la position mise en évidence.
+     * @return la position mise en évidence.
+     */
+    public double getHighlightedPosition() {
+        return highlightedPosition.get();
+    }
+
+    /**
+     * Modificateur de la propriété de la position mise en évidence.
+     * @param newHighlightedPosition nouvelle position mise en évidence.
+     */
+    public void setHighlightedPosition(double newHighlightedPosition) {
+        this.highlightedPosition.set(newHighlightedPosition);
+    }
+
+    /**
+     * Accesseur retournant la propriété du profil de l'itinéraire.
+     * @return la propriété du profil de l'itinéraire.
+     */
+    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileProperty() {
+        return elevationProfile;
+    }
+
+    /**
+     * Accesseur retournant le profil de l'itinéraire.
+     * (Ok vis-à-vis de l'immuabilité, car elevationProfile est immuable.(finales))
+     * @return le profil de l'itinéraire.
+     */
+    public ElevationProfile getElevationProfile() {
+        return elevationProfile.get();
+    }
 }
