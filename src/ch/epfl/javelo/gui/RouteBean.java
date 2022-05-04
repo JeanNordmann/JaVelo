@@ -107,7 +107,7 @@ public final class RouteBean {
     /**
      * Accesseur retournant la propriété de l'itinéraire permettant de relier les points
      * de passage.
-     * @return la propriété de l'itinéraire permettant de relier les points de passage. .
+     * @return La propriété de l'itinéraire permettant de relier les points de passage. .
      */
     public ReadOnlyObjectProperty<Route> routeProperty() {
         return route;
@@ -115,7 +115,7 @@ public final class RouteBean {
 
     /**
      * Accesseur retournant l'itinéraire permettant de relier les points de passage.
-     * @return l'itinéraire permettant de relier les points de passage.
+     * @return L'itinéraire permettant de relier les points de passage.
      */
     public Route getRoute() {
         return route.get();
@@ -123,7 +123,7 @@ public final class RouteBean {
 
     /**
      * Accesseur retournant la propriété de la position mise en évidence.
-     * @return la propriété de la position mise en évidence.
+     * @return La propriété de la position mise en évidence.
      */
     public DoubleProperty highlightedPositionProperty() {
         return highlightedPosition;
@@ -163,26 +163,32 @@ public final class RouteBean {
 
 
     public void computeNewRouteAndProfile() {
-        ObservableList<Waypoint> waypoints = getWaypoints();
+        List<Waypoint> waypoints = getWaypoints();
         if(isValidRoute()) {
             List<Route> routeList = new ArrayList<>();
             for (int i = 0; i < waypoints.size() - 1; i++) {
-                routes.add(getRouteFromCacheMemory(waypoints.get(i), waypoints.get(i + 1)));
+                Route route = getRouteFromCacheMemory(waypoints.get(i), waypoints.get(i + 1));
+                routeList.add(route);
+                computeElevationProfile(route);
             }
+            route.set(new MultiRoute(routeList));
+            elevationProfile.set(computeElevationProfile(route.get()));
         }
+
+
     }
 
     private boolean isValidRoute() {
         List<Waypoint> waypointList = getWaypoints();
         if (waypointList.size() < 2) {
-            route = null;
-            elevationProfile = null;
+            route.set(null);
+            elevationProfile.set(null);
             return false;
         }
         for (int i = 0; i < waypointList.size() - 1; i++) {
             if(!isRouteExisting(waypointList.get(i), waypointList.get(i + 1))) {
-                route = null;
-                elevationProfile = null;
+                route.set(null);
+                elevationProfile.set(null);
                 return false;
             }
         }
@@ -192,6 +198,7 @@ public final class RouteBean {
     private Route getRouteFromCacheMemory(Waypoint firstWaypoint, Waypoint secondWaypoint) {
         Pair<Integer, Integer> pair = new Pair<>(firstWaypoint.nodeId(), secondWaypoint.nodeId());
         if (routeCacheMemory.containsKey(pair)) {
+            System.out.println("je get dans le cache zbi");
             return routeCacheMemory.get(pair);
         } else {
             Route route = routeComputer.bestRouteBetween(firstWaypoint.nodeId(), secondWaypoint.nodeId());

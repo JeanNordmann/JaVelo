@@ -23,6 +23,7 @@ import java.io.IOException;
  */
 
 public final class BaseMapManager {
+
     /**
      * Constante représentant la taille en pixels d'une tuile.
      */
@@ -31,7 +32,7 @@ public final class BaseMapManager {
     /**
      * Constante représentant le niveau de zoom minimal de la carte, pour l'affichage.
      */
-    private static final int MIN_ZOOM_LEVEL = 8;
+    private static final int MIN_ZOOM_LEVEL = 3;
 
     /**
      * Constante représentant le niveau de zoom maximal de la carte, pour l'affichage.

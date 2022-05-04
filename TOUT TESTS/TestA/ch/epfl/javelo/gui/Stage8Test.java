@@ -37,19 +37,23 @@ public final class Stage8Test extends Application {
                         new Waypoint(new PointCh(2538659, 1154350), 117669));
         Consumer<String> errorConsumer = new ErrorConsumer();
 
+        RouteBean routeBean = new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
+        routeBean.setWaypoints(waypoints);
+
         WaypointsManager waypointsManager =
                 new WaypointsManager(graph,
                         mapViewParametersP,
-                        waypoints,
+                        routeBean.waypointsProperty(),
                         errorConsumer);
         BaseMapManager baseMapManager =
                 new BaseMapManager(tileManager,
                         waypointsManager,
                         mapViewParametersP);
+        RouteManager routeManager = new RouteManager(routeBean, mapViewParametersP, errorConsumer);
         StackPane mainPane =
-                new StackPane(baseMapManager.pane()
-                        ,
-                        waypointsManager.pane());
+                new StackPane(baseMapManager.pane(),
+                        waypointsManager.pane(),
+                        routeManager.pane());
         mainPane.getStylesheets().add("map.css");
 
 
