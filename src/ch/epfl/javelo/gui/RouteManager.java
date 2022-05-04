@@ -10,6 +10,7 @@ import javafx.beans.value.ObservableListValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
@@ -143,6 +144,36 @@ public class RouteManager {
         }
     }
 
+    private void clickOnHighlightMarker() {
+        //TODO pas supprimé : Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY()); et Point2D highlightCirclePosition = new Point2D(highlightCircle.getLayoutX(), highlightCircle.getLayoutY());
+        // Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY());
+        // Point2D highlightCirclePosition = new Point2D(highlightCircle.getLayoutX(), highlightCircle.getLayoutY());
+
+        Waypoint waypointToAdd = new Waypoint(routeBean.getRoute().pointAt(routeBean.getHighlightedPosition()),
+                routeBean.getRoute().nodeClosestTo(routeBean.getHighlightedPosition()));
+        if (routeBean.getWaypoints().contains(waypointToAdd)) {
+            stringConsumer.accept("Un point de passage est déjà présent à cet endroit !");
+        } else {
+            ObservableList<Waypoint> observableWaypointList = (FXCollections.observableArrayList());
+            List<Waypoint> waypointList = routeBean.getWaypoints();
+            //clear la liste de waypoint
+            routeBean.setWaypoints(FXCollections.observableArrayList());
+
+            boolean aClean = true;
+            for (int i = 0, waypointListSize = waypointList.size(); i < waypointListSize; i++) {
+                Waypoint value = waypointList.get(i);
+                observableWaypointList.add(value);
+                routeBean.setWaypoints(observableWaypointList);
+                if (routeBean.getRoute() != null && routeBean.getRoute().length() > routeBean.getHighlightedPosition() && aClean) {
+                    observableWaypointList.add(i, waypointToAdd);
+                    aClean = false;
+                }
+            }
+            routeBean.setWaypoints(observableWaypointList);
+        }
+
+    }
+
 
     /**
      * Méthode privée configurant les auditeurs, afin de positionner et/ou
@@ -159,31 +190,7 @@ public class RouteManager {
         //TODO idéalement (lu sur piazza) devrait pas prendre coordonné centre cercle, mais ou on a cliqué exactement
 
         // Listener nous permettant d'ajouter un point si on clique sur le marqueur.
-        highlightCircle.setOnMouseClicked(e -> {
-            //TODO pas surprimé : Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY());
-            Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY());
-            Point2D highlightCirclePosition = new Point2D(highlightCircle.getLayoutX(), highlightCircle.getLayoutY());
-            int nodeId = routeBean.getRoute().nodeClosestTo(routeBean.getHighlightedPosition());
-            PointCh highlightCirclePointCh = routeBean.getRoute().pointAt(routeBean.getHighlightedPosition());
-            Waypoint waypoint = new Waypoint(highlightCirclePointCh, nodeId);
-            //ObservableList<Waypoint> observableWaypointList = FXCollections.observableArrayList();
-            ObservableList<Waypoint> observableWaypointList = (FXCollections.observableArrayList());
-            List<Waypoint> waypointList = routeBean.getWaypoints();
-            //clear la liste de waypoint
-            routeBean.setWaypoints(FXCollections.observableArrayList());
-
-            boolean aClean = true;
-            for (int i = 0, waypointListSize = waypointList.size(); i < waypointListSize; i++) {
-                Waypoint value = waypointList.get(i);
-                observableWaypointList.add(value);
-                routeBean.setWaypoints(observableWaypointList);
-                if (routeBean.getRoute() != null && routeBean.getRoute().length() > routeBean.getHighlightedPosition() && aClean) {
-                    observableWaypointList.add(i, waypoint);
-                    aClean = false;
-                }
-            }
-            routeBean.setWaypoints(observableWaypointList);
-        });
+        highlightCircle.setOnMouseClicked(e -> clickOnHighlightMarker());
         // Listener nous permettant de redessiner la polyligne et le marqueur si on change le zoomLevel du mapViewParameter.
         routeBean.routeProperty().addListener(e -> constructPolyline());
         mapViewParameters.addListener((p, oldS, newS) -> {
