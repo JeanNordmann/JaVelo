@@ -7,6 +7,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableListValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -152,16 +154,33 @@ public class RouteManager {
      * la polyline lorsque la carte a été glissée, mais que son niveau de zoom
      * n'a pas changé.
      */
+    //TODO bound dezoom
     private void setUpListeners() {
+        //TODO idéalement (lu sur piazza) devrait pas prendre coordonné centre cercle, mais ou on a cliqué exactement
         circle.setOnMouseClicked(e -> {
-            Point2D circlePosition = circle.localToParent(e.getX(), e.getY());
-            addWaypoint(circlePosition.getX(), circlePosition.getY());
-            PointCh pointCh = routeBean.getRoute().pointAt(routeBean.getHighlightedPosition());
-            ObservableList<Waypoint> waypointList ;
-            waypointList.addAll(routeBean.getWaypoints());
-            int indexWhereAddWP = routeBean.getRoute().indexOfSegmentAt(routeBean.getHighlightedPosition());
-            waypointList.add(indexWhereAddWP, new Waypoint(pointCh, routeBean.getRoute().nodeClosestTo(routeBean.getHighlightedPosition())));
-            routeBean.setWaypoints(waypointList);
+            //TODO pas surprimé : Point2D eventPosition = circle.localToParent(e.getX(), e.getY());
+            Point2D eventPosition = circle.localToParent(e.getX(), e.getY());
+            Point2D circlePosition = new Point2D(circle.getLayoutX(), circle.getLayoutY());
+            int nodeId = routeBean.getRoute().nodeClosestTo(routeBean.getHighlightedPosition());
+            PointCh circlePointCh = routeBean.getRoute().pointAt(routeBean.getHighlightedPosition());
+            Waypoint waypoint = new Waypoint(circlePointCh, nodeId);
+            //ObservableList<Waypoint> observableWaypointList = FXCollections.observableArrayList();
+            ObservableList<Waypoint> observableWaypointList = (FXCollections.observableArrayList());
+            List<Waypoint> waypointList = routeBean.getWaypoints();
+            //clear la liste de waypoint
+            routeBean.setWaypoints(FXCollections.observableArrayList());
+
+            boolean aClean = true;
+            for (int i = 0, waypointListSize = waypointList.size(); i < waypointListSize; i++) {
+                Waypoint value = waypointList.get(i);
+                observableWaypointList.add(value);
+                routeBean.setWaypoints(observableWaypointList);
+                if (routeBean.getRoute() != null && routeBean.getRoute().length() > routeBean.getHighlightedPosition() && aClean) {
+                    observableWaypointList.add(i, waypoint);
+                    aClean = false;
+                }
+            }
+            routeBean.setWaypoints(observableWaypointList);
         });
         routeBean.routeProperty().addListener(e -> constructPolyline());
         mapViewParameters.addListener((p, oldS, newS) -> {
@@ -179,8 +198,14 @@ public class RouteManager {
             }
         });
         routeBean.routeProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue == null && newValue != null) polyline.setVisible(true);
-            if (oldValue != null && newValue == null) polyline.setVisible(false);
+            if (oldValue == null && newValue != null) {
+                polyline.setVisible(true);
+                circle.setVisible(true);
+            }
+            if (oldValue != null && newValue == null) {
+                polyline.setVisible(false);
+                circle.setVisible(false);
+            }
         });
         routeBean.highlightedPositionProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue.equals(Double.NaN) && !newValue.equals(Double.NaN)){ circle.setVisible(true);

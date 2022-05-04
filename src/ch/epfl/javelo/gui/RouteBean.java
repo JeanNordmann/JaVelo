@@ -72,11 +72,13 @@ public final class RouteBean {
 
         waypoints.addListener((ListChangeListener<? super Waypoint>) e -> computeNewRouteAndProfile());
         //TODO pas sur
+/*
         route.addListener((observable, oldValue, newValue) -> {
             if (oldValue != null && newValue == null) setHighlightedPosition(Double.NaN);
             //TODO surtout pas dans la version final
             if (oldValue == null && newValue != null) setHighlightedPosition(1000);
         });
+*/
     }
 
     /**
@@ -92,7 +94,7 @@ public final class RouteBean {
      * @return la liste observable de points de passage.
      */
     public List<Waypoint> getWaypoints() {
-        return waypoints;
+        return List.copyOf(waypoints);
     }
 
     /**
