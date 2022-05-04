@@ -93,8 +93,6 @@ public class RouteManager {
         pane = new Pane();
         pane.setPickOnBounds(false);
 
-        //TODO no magique Number
-        routeBean.setHighlightedPosition(1000);
         constructPolyline();
         constructMarker();
         setUpListeners();
@@ -171,7 +169,6 @@ public class RouteManager {
             }
             routeBean.setWaypoints(observableWaypointList);
         }
-
     }
 
 
