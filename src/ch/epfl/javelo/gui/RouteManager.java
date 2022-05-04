@@ -31,7 +31,7 @@ import java.util.function.Consumer;
  * @author Maxime Ducourau (329544)
  */
 
-public class RouteManager {
+public final class RouteManager {
     /**
      * Constante définissant le rayon du disque représentant la position mise
      * en évidence.
