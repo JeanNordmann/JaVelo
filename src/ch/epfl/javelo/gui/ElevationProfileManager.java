@@ -20,6 +20,7 @@ public final class ElevationProfileManager {
         this.elevationProfile = elevationProfile;
         this.highlightedPosition = highlightedPosition;
         borderPane = new Pane();
+
     }
 
     /**
