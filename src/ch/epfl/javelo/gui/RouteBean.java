@@ -79,8 +79,8 @@ public final class RouteBean {
         });
     }
 
-
-    public void computeNewRouteAndProfile() {
+//TODO j'ai passer en privé, pas problématique ?
+    private void computeNewRouteAndProfile() {
         List<Waypoint> waypoints = getWaypoints();
         if(isValidRoute()) {
             List<Route> routeList = new ArrayList<>();
@@ -112,7 +112,7 @@ public final class RouteBean {
         }
         return true;
     }
-
+//TODO concention ok de mettre get devant méthode privé ?
     private Route getRouteFromCacheMemory(Waypoint firstWaypoint, Waypoint secondWaypoint) {
         Pair<Integer, Integer> pair = new Pair<>(firstWaypoint.nodeId(), secondWaypoint.nodeId());
         if (routeCacheMemory.containsKey(pair)) {

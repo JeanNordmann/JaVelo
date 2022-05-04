@@ -61,7 +61,7 @@ public class RouteManager {
     /**
      * Attribut représentant le disque de la position mise en évidence.
      */
-    private final Circle circle;
+    private final Circle highlightCircle;
 
     /**
      * Attribut représentant le panneau contenant
@@ -86,8 +86,8 @@ public class RouteManager {
         this.stringConsumer = stringConsumer;
         this.polyline = new Polyline();
         polyline.setId("route");
-        this.circle = new Circle(RADIUS_HIGHLIGHTED_POINT);
-        circle.setId("highlight");
+        this.highlightCircle = new Circle(RADIUS_HIGHLIGHTED_POINT);
+        highlightCircle.setId("highlight");
 
         pane = new Pane();
         pane.setPickOnBounds(false);
@@ -134,12 +134,12 @@ public class RouteManager {
 
     private void constructMarker() {
         if (routeBean.getRoute() != null) {
-            pane.getChildren().remove(circle);
+            pane.getChildren().remove(highlightCircle);
             MapViewParameters actualMVP = mapViewParameters.get();
             PointWebMercator highlightedPWM = PointWebMercator.ofPointCh(routeBean.getRoute().pointAt(routeBean.getHighlightedPosition()));
-            circle.setLayoutX(actualMVP.viewX(highlightedPWM));
-            circle.setLayoutY(actualMVP.viewY(highlightedPWM));
-            pane.getChildren().add(circle);
+            highlightCircle.setLayoutX(actualMVP.viewX(highlightedPWM));
+            highlightCircle.setLayoutY(actualMVP.viewY(highlightedPWM));
+            pane.getChildren().add(highlightCircle);
         }
     }
 
@@ -157,13 +157,15 @@ public class RouteManager {
     //TODO bound dezoom
     private void setUpListeners() {
         //TODO idéalement (lu sur piazza) devrait pas prendre coordonné centre cercle, mais ou on a cliqué exactement
-        circle.setOnMouseClicked(e -> {
-            //TODO pas surprimé : Point2D eventPosition = circle.localToParent(e.getX(), e.getY());
-            Point2D eventPosition = circle.localToParent(e.getX(), e.getY());
-            Point2D circlePosition = new Point2D(circle.getLayoutX(), circle.getLayoutY());
+
+        // Listener nous permettant d'ajouter un point si on clique sur le marqueur.
+        highlightCircle.setOnMouseClicked(e -> {
+            //TODO pas surprimé : Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY());
+            Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY());
+            Point2D highlightCirclePosition = new Point2D(highlightCircle.getLayoutX(), highlightCircle.getLayoutY());
             int nodeId = routeBean.getRoute().nodeClosestTo(routeBean.getHighlightedPosition());
-            PointCh circlePointCh = routeBean.getRoute().pointAt(routeBean.getHighlightedPosition());
-            Waypoint waypoint = new Waypoint(circlePointCh, nodeId);
+            PointCh highlightCirclePointCh = routeBean.getRoute().pointAt(routeBean.getHighlightedPosition());
+            Waypoint waypoint = new Waypoint(highlightCirclePointCh, nodeId);
             //ObservableList<Waypoint> observableWaypointList = FXCollections.observableArrayList();
             ObservableList<Waypoint> observableWaypointList = (FXCollections.observableArrayList());
             List<Waypoint> waypointList = routeBean.getWaypoints();
@@ -182,6 +184,7 @@ public class RouteManager {
             }
             routeBean.setWaypoints(observableWaypointList);
         });
+        // Listener nous permettant de redessiner la polyligne et le marqueur si on change le zoomLevel du mapViewParameter.
         routeBean.routeProperty().addListener(e -> constructPolyline());
         mapViewParameters.addListener((p, oldS, newS) -> {
             if (oldS.zoomLevel() != newS.zoomLevel()) {
@@ -189,33 +192,41 @@ public class RouteManager {
                 constructMarker();
             }
         });
+        // Listener nous permettant de déplacer la polyligne et le marqueur si on bouge la carte (mais pas le zoom level,
+        // car s'il est aussi modifié l'itinéraire est de toute façon redessiner.)
         mapViewParameters.addListener((p, oldS, newS) -> {
             if (!oldS.topLeft().equals(newS.topLeft()) && oldS.zoomLevel() == newS.zoomLevel()) {
                 polyline.setLayoutX(polyline.getLayoutX() + oldS.topLeft().getX() - newS.topLeft().getX());
                 polyline.setLayoutY(polyline.getLayoutY() + oldS.topLeft().getY() - newS.topLeft().getY());
-                circle.setLayoutX(circle.getLayoutX() + oldS.topLeft().getX() - newS.topLeft().getX());
-                circle.setLayoutY(circle.getLayoutY() + oldS.topLeft().getY() - newS.topLeft().getY());
+                highlightCircle.setLayoutX(highlightCircle.getLayoutX() + oldS.topLeft().getX() - newS.topLeft().getX());
+                highlightCircle.setLayoutY(highlightCircle.getLayoutY() + oldS.topLeft().getY() - newS.topLeft().getY());
             }
         });
+
+        // Listener nous permettant de d'actualiser la visibilité de la polyligne et du marqueur, affin qu'ils
+        // deviennent invisibles s'il n'y a pas d'itinéraire.
         routeBean.routeProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue == null && newValue != null) {
                 polyline.setVisible(true);
-                circle.setVisible(true);
+                highlightCircle.setVisible(true);
             }
             if (oldValue != null && newValue == null) {
                 polyline.setVisible(false);
-                circle.setVisible(false);
+                highlightCircle.setVisible(false);
             }
         });
-        routeBean.highlightedPositionProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue.equals(Double.NaN) && !newValue.equals(Double.NaN)){ circle.setVisible(true);
-                System.out.println("circle set true");}
 
-            if (!oldValue.equals(Double.NaN) && newValue.equals(Double.NaN)){
-                System.out.println("circle set false");
-                circle.setVisible(false);}
+        // Listener nous permettant de rendre la route invisible si sa valeur est Nan
+        routeBean.highlightedPositionProperty().addListener((observable, oldValue, newValue) -> {
+            //TODO demander à jean P s'ils ont réussi à utiliser la méthode isNan qui est plus clean !
+            if (oldValue.equals(Double.NaN) && !newValue.equals(Double.NaN)) highlightCircle.setVisible(true);
+            // TODO maxime j'ai un doute jsp si ça fait sens de check aussi l'ancienne valeur, de plus on set la visibilité
+            // du higlighted dans 2 listeners ducoup jsp si ça peut faire de la merde
+            if (!oldValue.equals(Double.NaN) && newValue.equals(Double.NaN)) highlightCircle.setVisible(false);
         });
+        // Listener nous permettant de redessiner le marqueur si sa position sur l'itinéraire change.
         routeBean.highlightedPositionProperty().addListener(e -> constructMarker());
+        // Listener nous permettant de redessiner le marqueur si la route change.
         routeBean.routeProperty().addListener(e -> constructMarker());
     }
 }
