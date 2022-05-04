@@ -1,18 +1,16 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
+//TODO check immuabilité
 public final class RouteBean {
 
     /**
@@ -28,47 +26,64 @@ public final class RouteBean {
     /**
      * Attribut représentant la liste observable des points de passage.
      */
-    private ObjectProperty<ObservableList<Waypoint>> waypoints;
+    private final ObservableList<Waypoint> waypoints;
 
     /**
      * Attribut représentant l'itinéraire permettant de relier les points de passage,
      * en lecture seule.
      */
-    private ObjectProperty<Route> route;
+    private final ObjectProperty<Route> route;
 
     /**
      * Attribut représentant la position mise en évidence.
      */
-    private DoubleProperty highlightedPosition;
+    private final DoubleProperty highlightedPosition;
 
     /**
      * Attribut représentant le profil de l'itinéraire, mise en lecture seule.
      */
-    private ObjectProperty<ElevationProfile> elevationProfile;
+    private final ObjectProperty<ElevationProfile> elevationProfile;
 
     /**
      * Attribut représentant le calculateur d'itinéraire.
      */
-    private RouteComputer routeComputer;
+    private final RouteComputer routeComputer;
+
 
     /**
      * Attribut représentant une table associant à une paire de nœuds le meilleur itinéraire
      * (simple) les reliant.
      */
-    private LinkedHashMap<Pair<Integer, Integer>, Route> routeCacheMemory;
+    private final LinkedHashMap<Pair<Integer, Integer>, Route> routeCacheMemory;
 
-    //TODO Constructeur j'en sais rien des paramètres pour l'instant.
-    public RouteBean() {
-        waypoints.addListener((observable, oldValue, newValue) -> computeNewRouteAndProfile());
+    /**
+     * Constructeur initialisant le calcul d'itinéraire à celui passé en paramètres, et les autres attributs à leurs
+     * valeurs de base.
+     * @param routeComputer calculateur d'itinéraire, de type RouteComputer, utilisé pour déterminer le meilleur
+     *                      itinéraire reliant deux points de passage.
+     */
+    public RouteBean(RouteComputer routeComputer) {
+        this.routeComputer = routeComputer;
+        this.waypoints = FXCollections.observableArrayList();
+        this.highlightedPosition = new SimpleDoubleProperty(Double.NaN);
+        this.route = new SimpleObjectProperty<>();
+        this.elevationProfile = new SimpleObjectProperty<>();
+        this.routeCacheMemory = new LinkedHashMap<>(MEMORY_CACHE_SIZE, 0.75f, true);
 
-        routeCacheMemory = new LinkedHashMap<>(MEMORY_CACHE_SIZE, 0.75f, true);
+        waypoints.addListener((ListChangeListener<? super Waypoint>) e -> computeNewRouteAndProfile());
+        //TODO pas sur
+        route.addListener((observable, oldValue, newValue) -> {
+            if (oldValue != null && newValue == null) setHighlightedPosition(Double.NaN);
+            //TODO surtout pas dans la version final
+            if (oldValue == null && newValue != null) setHighlightedPosition(1000);
+        });
     }
 
     /**
      * Accesseur retournant la propriété de la liste observable de points de passage.
      * @return la propriété de la liste observable de points de passage.
      */
-    public ObjectProperty<ObservableList<Waypoint>> waypointsProperty() {
+    public ObservableList<Waypoint> waypointsProperty() {
         return waypoints;
     }
 
@@ -76,8 +91,8 @@ public final class RouteBean {
      * Accesseur retournant la liste observable de points de passage.
      * @return la liste observable de points de passage.
      */
-    public ObservableList<Waypoint> getWaypoints() {
-        return waypoints.get();
+    public List<Waypoint> getWaypoints() {
+        return waypoints;
     }
 
     /**
@@ -85,7 +100,8 @@ public final class RouteBean {
      * @param newWaypoints nouvelle liste de points de passage.
      */
     public void setWaypoints(ObservableList<Waypoint> newWaypoints) {
-        this.waypoints.set(newWaypoints);
+        waypoints.clear();
+        waypoints.addAll(newWaypoints);
     }
 
     /**
@@ -149,7 +165,7 @@ public final class RouteBean {
     public void computeNewRouteAndProfile() {
         ObservableList<Waypoint> waypoints = getWaypoints();
         if(isValidRoute()) {
-            List<Route> routes = new ArrayList<>();
+            List<Route> routeList = new ArrayList<>();
             for (int i = 0; i < waypoints.size() - 1; i++) {
                 routes.add(getRouteFromCacheMemory(waypoints.get(i), waypoints.get(i + 1)));
             }
@@ -157,7 +173,7 @@ public final class RouteBean {
     }
 
     private boolean isValidRoute() {
-        ObservableList<Waypoint> waypointList = getWaypoints();
+        List<Waypoint> waypointList = getWaypoints();
         if (waypointList.size() < 2) {
             route = null;
             elevationProfile = null;

@@ -70,7 +70,6 @@ public final class WaypointsManager {
      * Panneau auquel se rattachent tous les groupes.
      */
     private final Pane pane;
-
     /**
      * Constructeur initialisant les attributs à leurs valeurs données, et sinon à leurs valeurs par défaut.
      * @param graph graph du réseau routier.

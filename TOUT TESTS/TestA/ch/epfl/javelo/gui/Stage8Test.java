@@ -2,6 +2,8 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.routing.CityBikeCF;
+import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -49,6 +51,9 @@ public final class Stage8Test extends Application {
                         ,
                         waypointsManager.pane());
         mainPane.getStylesheets().add("map.css");
+
+
+
 
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(300);
