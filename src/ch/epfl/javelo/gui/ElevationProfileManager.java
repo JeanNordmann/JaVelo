@@ -8,7 +8,8 @@ import javafx.scene.layout.Pane;
 public final class ElevationProfileManager {
     private final ReadOnlyObjectProperty<ElevationProfile> elevationProfile;
     private final ReadOnlyDoubleProperty highlightedPosition;
-
+//TODO pas 2 waypoint au meme endroit
+    // TODO utiliser indexOF
 
     /**
      *
