@@ -16,7 +16,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.*;
 
 import java.awt.geom.Rectangle2D;
-
+//STATIC DEVANT LES CONSTANTE
 public final class ElevationProfileManager {
 
     /**
