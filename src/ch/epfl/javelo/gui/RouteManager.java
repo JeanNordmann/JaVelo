@@ -146,12 +146,20 @@ public final class RouteManager {
         //TODO pas supprimé : Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY()); et Point2D highlightCirclePosition = new Point2D(highlightCircle.getLayoutX(), highlightCircle.getLayoutY());
         // Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY());
         // Point2D highlightCirclePosition = new Point2D(highlightCircle.getLayoutX(), highlightCircle.getLayoutY());
-
+//TODO idéalement (lu sur piazza) devrait pas prendre coordonné centre cercle, mais ou on a cliqué exactement
         Waypoint waypointToAdd = new Waypoint(routeBean.getRoute().pointAt(routeBean.getHighlightedPosition()),
                 routeBean.getRoute().nodeClosestTo(routeBean.getHighlightedPosition()));
-        if (routeBean.getWaypoints().contains(waypointToAdd)) {
+        List<Waypoint> waypointList = routeBean.getWaypoints();
+
+        if (waypointList.contains(waypointToAdd)) {
             stringConsumer.accept("Un point de passage est déjà présent à cet endroit !");
         } else {
+            int indexOfNewWaypoint = routeBean.getRoute().indexOfSegmentAt(routeBean.getHighlightedPosition()) + 1;
+            waypointList.add(indexOfNewWaypoint, waypointToAdd);
+
+            /*
+
+
             ObservableList<Waypoint> observableWaypointList = (FXCollections.observableArrayList());
             List<Waypoint> waypointList = routeBean.getWaypoints();
             //clear la liste de waypoint
@@ -167,7 +175,7 @@ public final class RouteManager {
                     aClean = false;
                 }
             }
-            routeBean.setWaypoints(observableWaypointList);
+            routeBean.setWaypoints(observableWaypointList);*/
         }
     }
 
@@ -182,9 +190,8 @@ public final class RouteManager {
      * la polyline lorsque la carte a été glissée, mais que son niveau de zoom
      * n'a pas changé.
      */
-    //TODO bound dezoom
     private void setUpListeners() {
-        //TODO idéalement (lu sur piazza) devrait pas prendre coordonné centre cercle, mais ou on a cliqué exactement
+
 
         // Listener nous permettant d'ajouter un point si on clique sur le marqueur.
         highlightCircle.setOnMouseClicked(e -> clickOnHighlightMarker());

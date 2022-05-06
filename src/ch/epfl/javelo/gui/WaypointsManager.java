@@ -184,9 +184,14 @@ public final class WaypointsManager {
             stringConsumer.accept("Aucune route à proximité !");
         } else {
             //Ajoute le point de passage trouvé à la liste de points de passage de la classe.
-            waypointList.add(new Waypoint(graph.nodePoint(idNodeClosestTo), idNodeClosestTo));
+            Waypoint waypointToAdd = new Waypoint(graph.nodePoint(idNodeClosestTo), idNodeClosestTo);
+            if (!waypointList.contains(waypointToAdd)) {
+                waypointList.add(waypointToAdd);
+            } else {
+                stringConsumer.accept("Un point de passage est déjà présent à cet endroit !");
+            }
         }
-    }
+        }
 
     /**
      * Méthode permettant de déplacer un marqueur lorsqu'un évènement de souris a été détecté.

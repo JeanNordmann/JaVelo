@@ -10,7 +10,6 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-//TODO check immuabilité
 public final class RouteBean {
 
     /**
@@ -79,7 +78,6 @@ public final class RouteBean {
         });
     }
 
-//TODO j'ai passer en privé, pas problématique ?
     private void computeNewRouteAndProfile() {
         List<Waypoint> waypoints = getWaypoints();
         if(isValidRoute()) {
@@ -112,7 +110,7 @@ public final class RouteBean {
         }
         return true;
     }
-//TODO concention ok de mettre get devant méthode privé ?
+
     private Route getRouteFromCacheMemory(Waypoint firstWaypoint, Waypoint secondWaypoint) {
         Pair<Integer, Integer> pair = new Pair<>(firstWaypoint.nodeId(), secondWaypoint.nodeId());
         if (routeCacheMemory.containsKey(pair)) {
@@ -151,7 +149,7 @@ public final class RouteBean {
      * @return la liste observable de points de passage.
      */
     public List<Waypoint> getWaypoints() {
-        return List.copyOf(waypoints);
+        return waypoints;
     }
 
     /**

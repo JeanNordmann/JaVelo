@@ -3,15 +3,18 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.routing.CityBikeCF;
+import ch.epfl.javelo.routing.ElevationProfile;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;
@@ -71,4 +74,14 @@ public final class Stage8Test extends Application {
         @Override
         public void accept(String s) { System.out.println(s); }
     }
+    /*@Test
+    void transormTest() {
+        ReadOnlyObjectProperty<ElevationProfile> readOnlyObjectProperty =
+                new SimpleObjectProperty<>(null);
+        ReadOnlyObjectProperty<Double> d = new Read<Double>(2) {
+        };
+        ElevationProfileManager elevationProfile =
+                new ElevationProfileManager(readOnlyObjectProperty, d);
+
+    }*/
 }
