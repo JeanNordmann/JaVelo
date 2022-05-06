@@ -1,17 +1,21 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
+import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import javafx.scene.transform.*;
+
+import java.awt.geom.Rectangle2D;
 
 public final class ElevationProfileManager {
 
@@ -29,9 +33,15 @@ public final class ElevationProfileManager {
      * Attribut représentant le panneau contenant le dessin du profil.
      */
     private final BorderPane borderPane;
-
-    private ReadOnlyDoubleProperty mousePositionOnProfile;
-
+    private Pane pane;
+    private VBox vBox;
+    private Path path;
+    private Group group;
+    private Polygon polygon;
+    private Line line;
+    private Text statisticsText;
+    private Text text;
+    private DoubleProperty mousePositionOnProfile;
     private int numberOfTextsNeeded;
     private  ObjectProperty<Rectangle2D> rectangle2D;
     private ObjectProperty<Transform> screenToWorldTransform;
@@ -52,6 +62,16 @@ public final class ElevationProfileManager {
         this.elevationProfile = elevationProfile;
         this.highlightedPosition = highlightedPosition;
         borderPane = new BorderPane();
+        borderPane.getStylesheets().add("elevation_profile.css");
+        insets = new Insets(10, 10, 20, 40);
+        setUpProfileDisplay();
+        double[] dimensions = getBlueRectangleDimensions();
+        rectangle2D = new SimpleObjectProperty<>();
+        posStep = new SimpleIntegerProperty(0);
+        eleStep = new SimpleIntegerProperty(0);
+
+
+        setUpListener();
 
     }
 
@@ -103,10 +123,12 @@ public final class ElevationProfileManager {
 
     private void setUpProfileDisplay() {
 
-        Path path = new Path();
+        path = new Path();
         path.setId("grid");
 
-        Group group = new Group();
+//TODO le nombre de textes à ajouter
+
+        group = new Group();
         Text text = new Text();
         text.getStyleClass().add("grid_label");
         text.getStyleClass().add("horizontal");
@@ -116,22 +138,27 @@ public final class ElevationProfileManager {
         text1.getStyleClass().add("vertical");
         group.getChildren().add(text1);
 
-        Polygon polygon = new Polygon();
+        polygon = new Polygon();
         polygon.setId("profile");
 
-        Line line = new Line();
+        line = new Line();
 
-        Pane pane = new Pane();
+        pane = new Pane();
 
         pane.getChildren().add(path);
         pane.getChildren().add(group);
         pane.getChildren().add(polygon);
         pane.getChildren().add(line);
 
+        statisticsText = new Text();
+        vBox = new VBox();
+        vBox.setId("profile_data");
+        vBox.getChildren().add(statisticsText);
+
+        borderPane.getChildren().add(pane);
+        borderPane.getChildren().add(vBox);
 
 
-
-        borderPane.getStylesheets().set(0, "elevation_profile.css");
 
     }
 
