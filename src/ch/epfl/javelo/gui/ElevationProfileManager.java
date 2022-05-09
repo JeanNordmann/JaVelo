@@ -1,5 +1,6 @@
 package ch.epfl.javelo.gui;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -11,13 +12,14 @@ import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Polygon;
+import javafx.scene.shape.*;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.*;
 
-import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
+
 //STATIC DEVANT LES CONSTANTE
 public final class ElevationProfileManager {
 
@@ -53,8 +55,8 @@ public final class ElevationProfileManager {
             { 1000, 2000, 5000, 10_000, 25_000, 50_000, 100_000 };
     private final int[] ELE_STEPS =
             { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
-    private final double MIN_PIXEL_POS = 50;
-    private final double MIN_PIXEL_ELE = 25;
+    private static final double MIN_PIXEL_POS = 50;
+    private static final double MIN_PIXEL_ELE = 25;
     private final IntegerProperty posStep;
     private final IntegerProperty eleStep;
 
@@ -138,20 +140,12 @@ public final class ElevationProfileManager {
 
     private void setUpProfileDisplay() {
 
-        path = new Path();
-        path.setId("grid");
+        initializeGridAndLabels();
 
 //TODO le nombre de textes à ajouter
 
+        path = new Path();
         group = new Group();
-        Text text = new Text();
-        text.getStyleClass().add("grid_label");
-        text.getStyleClass().add("horizontal");
-        group.getChildren().add(text);
-        Text text1 = new Text();
-        text1.getStyleClass().add("grid_label");
-        text1.getStyleClass().add("vertical");
-        group.getChildren().add(text1);
 
         polygon = new Polygon();
         polygon.setId("profile");
@@ -203,10 +197,6 @@ public final class ElevationProfileManager {
                 elevationProfile.get().totalDescent(),
                 elevationProfile.get().minElevation(),
                 elevationProfile.get().maxElevation()));
-    }
-
-    private void labelsValues() {
-
     }
 
     private void setUpEventHandlers() {
