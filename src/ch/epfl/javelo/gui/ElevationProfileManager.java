@@ -5,6 +5,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -43,10 +45,10 @@ public final class ElevationProfileManager {
     private Text text;
     private DoubleProperty mousePositionOnProfile;
     private int numberOfTextsNeeded;
-    private  ObjectProperty<Rectangle2D> rectangle2D;
+    private ObjectProperty<Rectangle2D> rectangle2D;
     private ObjectProperty<Transform> screenToWorldTransform;
     private ObjectProperty<Transform> worldToScreenTransform;
-    private final Insets insets;
+    private final Insets insets = new Insets(10, 10, 20, 40);
     private final int[] POS_STEPS =
             { 1000, 2000, 5000, 10_000, 25_000, 50_000, 100_000 };
     private final int[] ELE_STEPS =
@@ -63,12 +65,11 @@ public final class ElevationProfileManager {
         this.highlightedPosition = highlightedPosition;
         borderPane = new BorderPane();
         borderPane.getStylesheets().add("elevation_profile.css");
-        insets = new Insets(10, 10, 20, 40);
         setUpProfileDisplay();
-        double[] dimensions = getBlueRectangleDimensions();
         rectangle2D = new SimpleObjectProperty<>();
-        posStep = new SimpleIntegerProperty(0);
-        eleStep = new SimpleIntegerProperty(0);
+        setRectangle2D();
+        posStep = new SimpleIntegerProperty(computeVerticalLinesSpacing());
+        eleStep = new SimpleIntegerProperty(computeHorizontalLinesSpacing());
 
 
         setUpListener();
@@ -107,7 +108,21 @@ public final class ElevationProfileManager {
         return mousePositionOnProfile;
     }
 
+    private void setRectangle2D() {
+        rectangle2D.setValue(new Rectangle2D(insets.getLeft(),insets.getTop(),
+                borderPane.getWidth() - insets.getLeft() - insets.getRight(),
+                borderPane.getHeight() - insets.getTop() - insets.getBottom()) {
+        });
+    }
+
     private void setUpListener() {
+        // Listeners liés à l'interface graphique.
+        borderPane.widthProperty().addListener(e -> setRectangle2D());
+        borderPane.heightProperty().addListener(e -> setRectangle2D());
+
+        //TODO idée mettre en attribut les steps et les actualiser...
+        rectangle2D.addListener(e -> initializeGridAndLabels());
+
 
         elevationProfile.addListener((p,oldV,newV) -> {
             if (oldV.minElevation() != newV.minElevation() || oldV.maxElevation() != newV.maxElevation())
@@ -177,37 +192,6 @@ public final class ElevationProfileManager {
 
     }
 
-    private int computeVerticalLinesSpacing() {
-        for (int pos_step : POS_STEPS) {
-            double minPixel =
-                    rectangle2D.get().getWidth() / (elevationProfile.get().length() / pos_step);
-            if (minPixel >= MIN_PIXEL_POS) {
-                return pos_step;
-            }
-        }
-        // pour get le dernier.
-        return POS_STEPS[POS_STEPS.length - 1];
-    }
-
-    private int computeHorizontalLinesSpacing() {
-        for (int ele_step : ELE_STEPS) {
-            double minPixel = rectangle2D.get().getHeight()
-                    / ((elevationProfile.get().maxElevation() - elevationProfile.get().minElevation()) / ele_step);
-            if (minPixel >= MIN_PIXEL_ELE) {
-                return ele_step;
-            }
-        }
-        // pour get le dernier.
-        return ELE_STEPS[ELE_STEPS.length - 1];
-    }
-
-    private int numberOfHorizontalLine() {
-        return 0;
-    }
-    private int numberOfVerticalLine() {
-     return 0;
-    }
-
     private void formatStatistics() {
         //TODO set les layouts du truc
         statisticsText.setText(String.format("Longueur : %.1f km" +
@@ -239,17 +223,171 @@ public final class ElevationProfileManager {
         pane.setOnMouseExited(event -> mousePositionOnProfile.set(Double.NaN));
     }
 
-    private double[] getBlueRectangleDimensions() {
-        double[] dimensions = new double[4];
-        dimensions[0] = insets.getLeft();
-        dimensions[1] = insets.getTop();
-        dimensions[2] = pane.getWidth() - insets.getRight();
-        dimensions[3] = pane.getHeight() - insets.getBottom();
-        return dimensions;
-    }
+
 
     private boolean isInBlueRectangle(double x, double y) {
         return x >= insets.getLeft() && x <= pane.getWidth() - insets.getRight()
                 && y >= insets.getTop() && y <= pane.getHeight() - insets.getBottom();
+    }
+
+    private void initializeGridAndLabels() {
+        int minElevation =  (int) elevationProfile.get().minElevation();
+        int maxElevation = (int) elevationProfile.get().maxElevation();
+
+        double elevationLength = elevationProfile.get().length();
+
+        int spaceBetween2HLines = computeHorizontalLinesSpacing();
+        int spaceBetween2VLines = computeVerticalLinesSpacing();
+
+        int numberOfHLines = numberOfHorizontalLine();
+        int numberOfVLines = numberOfVerticalLine();
+
+        int initialHLine = Math2.ceilDiv(minElevation, spaceBetween2HLines);
+
+        Transform worldToScreen = worldToScreenTransform.get();
+        List<PathElement> pathElementList = new ArrayList<>();
+
+        group = new Group();
+
+        //Ajout de la ligne en bas du rectangle bleu si elle ne nécessite pas d'étiquette.
+        if (minElevation % spaceBetween2HLines != 0) {
+            Point2D point2DMoveTo = worldToScreen.deltaTransform(0, minElevation);
+            Point2D point2DLineTo = worldToScreen.deltaTransform(elevationLength, minElevation);
+            pathElementList.add(new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY()));
+            pathElementList.add(new LineTo(point2DLineTo.getX(), point2DLineTo.getY()));
+        }
+
+        //Ajout de la ligne à droite du rectangle bleu si elle ne nécessite pas d'étiquette.
+        if (elevationLength % spaceBetween2VLines != 0) {
+            Point2D point2DMoveTo = worldToScreen.deltaTransform(elevationLength, minElevation);
+            Point2D point2DLineTo = worldToScreen.deltaTransform(elevationLength, maxElevation);
+            pathElementList.add(new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY()));
+            pathElementList.add(new LineTo(point2DLineTo.getX(), point2DLineTo.getY()));
+        }
+
+        for (int i = 0; i < numberOfHLines; i++) {
+            int variable = (initialHLine + i) * spaceBetween2HLines;
+            Point2D point2DMoveTo = worldToScreen.deltaTransform(0, variable);
+            Point2D point2DLineTo = worldToScreen.deltaTransform(elevationLength, variable);
+            PathElement moveTo = new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY());
+            PathElement lineTo = new LineTo(point2DLineTo.getX(), point2DLineTo.getY());
+            pathElementList.add(moveTo);
+            pathElementList.add(lineTo);
+            Text text = new Text(Integer.toString(variable));
+            text.setLayoutX(point2DMoveTo.getX());
+            text.setLayoutY(point2DMoveTo.getY());
+            text.setTextOrigin(VPos.CENTER);
+            text.setFont(Font.font("Avenir", 10));
+            text.prefWidth(text.getWrappingWidth() + 2);
+            text.getStyleClass().add("grid_label");
+            text.getStyleClass().add("vertical");
+            group.getChildren().add(text);
+        }
+
+        for (int i = 0; i < numberOfVLines; i++) {
+            int variable = i * spaceBetween2VLines;
+            Point2D point2DMoveTo = worldToScreen.deltaTransform(variable, minElevation);
+            Point2D point2DLineTo = worldToScreen.deltaTransform(variable, maxElevation);
+            PathElement moveTo = new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY());
+            PathElement lineTo = new LineTo(point2DLineTo.getX(), point2DLineTo.getY());
+            pathElementList.add(moveTo);
+            pathElementList.add(lineTo);
+            Text text = new Text(Integer.toString(variable / 1000));
+            text.setLayoutX(point2DMoveTo.getX());
+            text.setLayoutY(point2DMoveTo.getY());
+            text.setTextOrigin(VPos.TOP);
+            text.setFont(Font.font("Avenir", 10));
+            text.prefWidth(0);
+            text.getStyleClass().add("grid_label");
+            text.getStyleClass().add("horizontal");
+            group.getChildren().add(text);
+        }
+        path = new Path(pathElementList);
+        path.setId("grid");
+    }
+
+    private void computePolygon() {
+        // Le polygone dont la coordonnée (0,0) représente le coin haut gauche.
+        // 2 cases par point, un point par pixel javaFx + les deux coins inférieurs.
+        double[] coordinate = new double[2 * ((int) rectangle2D.get().getWidth() + 2)];
+        for (int i = 0; i < rectangle2D.get().getWidth(); i++) {
+            double xOnScreen = insets.getLeft() + i;
+            double xOnWorld = screenToWorldTransform.get().transform(xOnScreen, 0).getX();
+            Point2D point2DPosition = worldToScreenTransform
+            coordinate[2 * i] = i
+            coordinate[2 * i + 1] =
+        }
+
+        coordinate[1] = 0;
+        coordinate[0] = 0;
+    }
+
+    /**
+     * Méthode privée nous permettant de calculer l'espacement des lignes verticales,
+     * c'est-à-dire l'espacement entre deux indications de distance.
+     * @return l'espacement des lignes verticales
+     */
+    private int computeVerticalLinesSpacing() {
+        for (int posStep : POS_STEPS) {
+            double minPixel =
+                    rectangle2D.get().getWidth() / (elevationProfile.get().length() / posStep);
+            // Test si on respecte la condition pour le l'espacement actuelle.
+            if (minPixel >= MIN_PIXEL_POS) {
+                return posStep;
+            }
+        }
+        // retourne l'espacement maximal si aucun ne satisfait la condition
+        return POS_STEPS[POS_STEPS.length - 1];
+    }
+
+    /**
+     * Méthode privée nous permettant de calculer l'espacement des lignes horizontales,
+     * c'est-à-dire l'espacement entre deux indications d'altitude.
+     * @return l'espacement des lignes horizontales.
+     */
+    private int computeHorizontalLinesSpacing() {
+        for (int eleStep : ELE_STEPS) {
+            double minPixel = rectangle2D.get().getHeight()
+                    / ((elevationProfile.get().maxElevation() - elevationProfile.get().minElevation()) / eleStep);
+            // Test si on respecte la condition pour le l'espacement actuelle.
+            if (minPixel >= MIN_PIXEL_ELE) {
+                return eleStep;
+            }
+        }
+        // retourne l'espacement maximal si aucun ne satisfait la condition
+        return ELE_STEPS[ELE_STEPS.length - 1];
+    }
+
+    /**
+     * Méthode privée retournant le nombre de lignes horizontales ayant un texte d'altitude associé.
+     * C'est-à-dire incluant la première si l'altitude minimale est un multiple de l'espacement
+     * et incluant également la dernière si l'altitude maximale est un multiple de l'espacement.
+     * @return le nombre de lignes horizontales ayant un texte d'altitude associé.
+     */
+    private int numberOfHorizontalLine() {
+        double minEle = elevationProfile.get().minElevation();
+        double maxEle = elevationProfile.get().maxElevation();
+        int step = computeHorizontalLinesSpacing();
+        // dénivelée au-dessus de la dernière ligne
+        double spaceUp = maxEle % step;
+        // dénivelée au-dessus de la ligne en dessous de la première ligne à dessiner
+        double spaceDown = minEle % step;
+        double newDeltaEle = maxEle - spaceUp  - (minEle - spaceDown);
+        // cas limite où il faut dessiner la première ligne (donc une de +).
+        if (spaceDown == 0 ) newDeltaEle += step;
+        return (int) newDeltaEle / step ;
+    }
+
+    /**
+     * Méthode privée retournant le nombre de lignes verticales ayant un texte de distance associé.
+     * C'est-à-dire incluant la ligne ayant l'indication "0" dans tous les cas
+     * et incluant la dernière ligne si la longueur de l'itinéraire est un multiple de l'espacement.
+     * @return le nombre de lignes verticales ayant un texte de distance associé.
+     */
+    private int numberOfVerticalLine() {
+        int maxPos = (int) elevationProfile.get().length();
+        int step = computeVerticalLinesSpacing() ;
+        // + 1, car pour une distance de n il faut n + 1 séparateur.
+        return maxPos / step + 1;
     }
 }
