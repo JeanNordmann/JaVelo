@@ -37,9 +37,8 @@ public  final class Stage10Test extends Application {
         ElevationProfileManager profileManager =
                 new ElevationProfileManager(profileProperty,
                         highlightProperty);
-
-        highlightProperty.bind(
-                profileManager.mousePositionOnProfileProperty());
+//TODO tester avec cette ligne
+       // highlightProperty.bind(profileManager.mousePositionOnProfileProperty());
 
         Scene scene = new Scene(profileManager.pane());
 

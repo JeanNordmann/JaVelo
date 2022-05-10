@@ -67,15 +67,22 @@ public final class ElevationProfileManager {
         this.highlightedPosition = highlightedPosition;
         borderPane = new BorderPane();
         borderPane.getStylesheets().add("elevation_profile.css");
+        // Objet initialisé à des valeurs artificiellement triviales pour éviter des erreurs
+        //TODO A CHANGER
+        rectangle2D = new SimpleObjectProperty<>(new Rectangle2D(insets.getLeft(),
+                insets.getTop(), insets.getLeft(), insets.getTop()));
+
+        worldToScreenTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
+        screenToWorldTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
         setUpProfileDisplay();
-        rectangle2D = new SimpleObjectProperty<>();
-        setRectangle2D();
+        rectangle2D.bind;
+        borderPane.widthProperty().addListener((observable, oldValue, newValue) -> pane.setPrefWidth(borderPane.getWidth()));
+        borderPane.heightProperty().addListener((observable, oldValue, newValue) -> pane.setPrefHeight(borderPane.getHeight()));
         posStep = new SimpleIntegerProperty(computeVerticalLinesSpacing());
         eleStep = new SimpleIntegerProperty(computeHorizontalLinesSpacing());
-
-
         setUpListener();
-
+        //setRectangle2D();
+        computePolygon();
     }
 
 
@@ -111,9 +118,13 @@ public final class ElevationProfileManager {
     }
 
     private void setRectangle2D() {
-        rectangle2D.setValue(new Rectangle2D(insets.getLeft(),insets.getTop(),
-                borderPane.getWidth() - insets.getLeft() - insets.getRight(),
-                borderPane.getHeight() - insets.getTop() - insets.getBottom()) {
+        double deltaX = insets.getLeft() + insets.getRight();
+        double deltaY = insets.getTop() + insets.getBottom();
+        double paneWidth = borderPane.getWidth();
+        double paneHeight = borderPane.getHeight();
+        rectangle2D.setValue(new Rectangle2D(insets.getLeft(), insets.getTop(),
+                paneWidth > deltaX ? paneWidth - deltaX : 0,
+                paneHeight > deltaY ? paneHeight - deltaX : 0) {
         });
     }
 
@@ -123,12 +134,16 @@ public final class ElevationProfileManager {
         borderPane.heightProperty().addListener(e -> setRectangle2D());
 
         //TODO idée mettre en attribut les steps et les actualiser...
-        rectangle2D.addListener(e -> initializeGridAndLabels());
+        rectangle2D.addListener(e -> {
+            initializeGridAndLabels();
+            computePolygon();
+        });
 
 
         elevationProfile.addListener((p,oldV,newV) -> {
             if (oldV.minElevation() != newV.minElevation() || oldV.maxElevation() != newV.maxElevation())
             setTransformation();
+            computePolygon();
             });
 
         rectangle2D.addListener(e -> setTransformation());
@@ -297,19 +312,23 @@ public final class ElevationProfileManager {
     }
 
     private void computePolygon() {
-        // Le polygone dont la coordonnée (0,0) représente le coin haut gauche.
-        // 2 cases par point, un point par pixel javaFx + les deux coins inférieurs.
+        // Le point du polygone à la coordonnée (0,0) est le coin haut gauche.
+        // Taille de deux cases par point, un point par pixel javaFx + les deux coins inférieurs.
         double[] coordinate = new double[2 * ((int) rectangle2D.get().getWidth() + 2)];
-        for (int i = 0; i < rectangle2D.get().getWidth(); i++) {
+        // Coordonnées des points des points de l'itinéraire
+        for (int i = 0; i < (int) rectangle2D.get().getWidth(); i++) {
             double xOnScreen = insets.getLeft() + i;
             double xOnWorld = screenToWorldTransform.get().transform(xOnScreen, 0).getX();
-            Point2D point2DPosition = worldToScreenTransform
-            coordinate[2 * i] = i
-            coordinate[2 * i + 1] =
+            Point2D wayPointOnScreen = worldToScreenTransform.get().transform(xOnWorld,
+                    elevationProfile.get().elevationAt(xOnWorld));
+            coordinate[2 * i] = wayPointOnScreen.getX();
+            coordinate[2 * i + 1] = wayPointOnScreen.getY();
         }
-
-        coordinate[1] = 0;
-        coordinate[0] = 0;
+        // Coordonnées des deux coins du bas.
+        coordinate[ 2 * (int) rectangle2D.get().getWidth()] = rectangle2D.get().getMaxX();
+        coordinate[ 2 * (int) rectangle2D.get().getWidth() + 1] = rectangle2D.get().getMaxY();
+        coordinate[ 2 * (int) rectangle2D.get().getWidth() + 2] = rectangle2D.get().getMinX();
+        coordinate[ 2 * (int) rectangle2D.get().getWidth() + 3] = rectangle2D.get().getMaxY();
     }
 
     /**
@@ -379,5 +398,9 @@ public final class ElevationProfileManager {
         int step = computeVerticalLinesSpacing() ;
         // + 1, car pour une distance de n il faut n + 1 séparateur.
         return maxPos / step + 1;
+    }
+
+    private ObjectProperty<Rectangle2D> computeRect2DSize() {
+
     }
 }
