@@ -8,6 +8,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.nio.file.Path;
@@ -39,8 +40,8 @@ public  final class Stage10Test extends Application {
                         highlightProperty);
 //TODO tester avec cette ligne
        //highlightProperty.bind(profileManager.mousePositionOnProfileProperty());
-
-        Scene scene = new Scene(profileManager.pane());
+        Pane pane = profileManager.pane();
+        Scene scene = new Scene(pane);
 
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(300);

@@ -65,7 +65,13 @@ public final class ElevationProfileManager {
                                    ReadOnlyDoubleProperty highlightedPosition) {
         this.elevationProfile = elevationProfile;
         this.highlightedPosition = highlightedPosition;
+        pane = new Pane();
         borderPane = new BorderPane();
+        System.out.println(borderPane.getWidth() + "width et height " + borderPane.getHeight());
+        borderPane.setCenter(pane);
+        borderPane.setBottom(vBox);
+        System.out.println(borderPane.getWidth() + "width et height " + borderPane.getHeight());
+
         borderPane.getStylesheets().add("elevation_profile.css");
         // Objet initialisé à des valeurs artificiellement triviales pour éviter des erreurs
         //TODO A CHANGER
@@ -73,8 +79,7 @@ public final class ElevationProfileManager {
 
         worldToScreenTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
         screenToWorldTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
-        pane = new Pane();
-        bindBlueRectangleDimensions();
+        //bindBlueRectangleDimensions();
         setUpProfileDisplay();
         posStep = new SimpleIntegerProperty(computeVerticalLinesSpacing());
         eleStep = new SimpleIntegerProperty(computeHorizontalLinesSpacing());
@@ -121,6 +126,9 @@ public final class ElevationProfileManager {
         } catch (NonInvertibleTransformException e) {
             e.printStackTrace();
         }
+        System.out.println(worldToScreenTransform.get().transform(0
+                , elevationProfile.get().minElevation()));
+
 
     }
 
@@ -165,8 +173,6 @@ public final class ElevationProfileManager {
         pane.getChildren().add(group);
         pane.getChildren().add(polygon);
         pane.getChildren().add(line);
-        borderPane.setCenter(pane);
-        borderPane.setBottom(vBox);
     }
 
     private void bindHighlightedPosition() {
@@ -259,8 +265,8 @@ public final class ElevationProfileManager {
 
         for (int i = 0; i < numberOfHLines; i++) {
             int variable = (initialHLine + i) * spaceBetween2HLines;
-            Point2D point2DMoveTo = worldToScreen.deltaTransform(0, variable);
-            Point2D point2DLineTo = worldToScreen.deltaTransform(elevationLength, variable);
+            Point2D point2DMoveTo = worldToScreen.transform(0, variable);
+            Point2D point2DLineTo = worldToScreen.transform(elevationLength, variable);
             PathElement moveTo = new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY());
             PathElement lineTo = new LineTo(point2DLineTo.getX(), point2DLineTo.getY());
             pathElementList.add(moveTo);
@@ -278,8 +284,10 @@ public final class ElevationProfileManager {
 
         for (int i = 0; i < numberOfVLines; i++) {
             int variable = i * spaceBetween2VLines;
-            Point2D point2DMoveTo = worldToScreen.deltaTransform(variable, minElevation);
-            Point2D point2DLineTo = worldToScreen.deltaTransform(variable, maxElevation);
+            Point2D point2DMoveTo = worldToScreen.transform(variable, minElevation);
+            Point2D point2DLineTo = worldToScreen.transform(variable, maxElevation);
+            System.out.println(point2DMoveTo);
+            System.out.println(point2DLineTo);
             PathElement moveTo = new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY());
             PathElement lineTo = new LineTo(point2DLineTo.getX(), point2DLineTo.getY());
             pathElementList.add(moveTo);
@@ -294,12 +302,9 @@ public final class ElevationProfileManager {
             text.getStyleClass().add("horizontal");
             group.getChildren().add(text);
         }
+
         path = new Path(pathElementList);
         path.setId("grid");
-        System.out.println(pane.getWidth());
-        System.out.println(pane.getHeight());
-        System.out.println(rectangle2D.get().getWidth() + "je suis le rectangle 2D la largeur");
-        System.out.println(rectangle2D.get().getHeight() + "je suis le rectangle 2D la longueur");
     }
 
     private void computePolygon() {
