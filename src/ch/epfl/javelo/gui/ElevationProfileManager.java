@@ -155,32 +155,27 @@ public final class ElevationProfileManager {
 
     private void setUpProfileDisplay() {
 
-        initializeGridAndLabels();
-
-//TODO le nombre de textes à ajouter
 
         path = new Path();
         group = new Group();
-
         polygon = new Polygon();
         polygon.setId("profile");
-
         line = new Line();
-
         pane = new Pane();
-
-        pane.getChildren().add(path);
-        pane.getChildren().add(group);
-        pane.getChildren().add(polygon);
-        pane.getChildren().add(line);
+        initializeGridAndLabels();
 
         statisticsText = new Text();
         vBox = new VBox();
         vBox.setId("profile_data");
         vBox.getChildren().add(statisticsText);
 
-        borderPane.getChildren().add(pane);
-        borderPane.getChildren().add(vBox);
+        borderPane.setCenter(pane);
+        borderPane.setBottom(vBox);
+
+        pane.getChildren().add(path);
+        pane.getChildren().add(group);
+        pane.getChildren().add(polygon);
+        pane.getChildren().add(line);
 
 
 
@@ -252,7 +247,8 @@ public final class ElevationProfileManager {
         Transform worldToScreen = worldToScreenTransform.get();
         List<PathElement> pathElementList = new ArrayList<>();
 
-        group = new Group();
+        if (group != null) group.getChildren().clear();
+        if (pane != null) pane.getChildren().clear();
 
         //Ajout de la ligne en bas du rectangle bleu si elle ne nécessite pas d'étiquette.
         if (minElevation % spaceBetween2HLines != 0) {
@@ -309,6 +305,8 @@ public final class ElevationProfileManager {
         }
         path = new Path(pathElementList);
         path.setId("grid");
+        System.out.println(pane.getWidth());
+        System.out.println(pane.getHeight());
     }
 
     private void computePolygon() {
