@@ -134,8 +134,8 @@ public final class ElevationProfileManager {
 
     private void setUpListener() {
         // Listeners liés à l'interface graphique.
-        /*borderPane.widthProperty().addListener(e -> setRectangle2D());
-        borderPane.heightProperty().addListener(e -> setRectangle2D());*/
+        pane.widthProperty().addListener(e -> bindBlueRectangleDimensions());
+        pane.heightProperty().addListener(e -> bindBlueRectangleDimensions());
 
         //TODO idée mettre en attribut les steps et les actualiser...
         rectangle2D.addListener(e -> {
@@ -333,9 +333,12 @@ public final class ElevationProfileManager {
      * @return l'espacement des lignes verticales
      */
     private int computeVerticalLinesSpacing() {
+        int a = 0;
         for (int posStep : POS_STEPS) {
+            double rectangleWidth = rectangle2D.get().getWidth();
+            double length = elevationProfile.get().length();
             double minPixel =
-                    rectangle2D.get().getWidth() / (elevationProfile.get().length() / posStep);
+                    rectangle2D.get().getWidth() / (elevationProfile.get().length() / (double) posStep);
             // Test si on respecte la condition pour le l'espacement actuelle.
             if (minPixel >= MIN_PIXEL_POS) {
                 return posStep;
@@ -381,7 +384,19 @@ public final class ElevationProfileManager {
         // cas limite où il faut dessiner la première ligne (donc une de +).
         if (spaceDown == 0 ) newDeltaEle += step;
         return (int) newDeltaEle / step ;
-    }
+    }/*  private int numberOfHorizontalLine() {
+        double minEle = elevationProfile.get().minElevation();
+        double maxEle = elevationProfile.get().maxElevation();
+        int step = computeHorizontalLinesSpacing();
+        // dénivelée au-dessus de la dernière ligne
+        double spaceUp = maxEle % step;
+        // dénivelée au-dessus de la ligne en dessous de la première ligne à dessiner
+        double spaceDown = minEle % step;
+        double newDeltaEle = maxEle - spaceUp  - (minEle - spaceDown);
+        // cas limite où il faut dessiner la première ligne (donc une de +).
+        if (spaceDown == 0 ) newDeltaEle += step;
+        return (int) newDeltaEle / step ;
+    }*/
 
     /**
      * Méthode privée retournant le nombre de lignes verticales ayant un texte de distance associé.
