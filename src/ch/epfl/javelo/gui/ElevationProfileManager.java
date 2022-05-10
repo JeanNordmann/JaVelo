@@ -19,10 +19,10 @@ import javafx.scene.transform.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//TODO
 //STATIC DEVANT LES CONSTANTE
 public final class ElevationProfileManager {
-
+//TODO faire waypoint corectement !
     /**
      * Attribut représentant une propriété, accessible en lecture seule,
      * contenant le profil à afficher.
@@ -85,8 +85,21 @@ public final class ElevationProfileManager {
         computePolygon();
     }
 
+    /**
+     * Méthode publique retournant le panneau de la classe.
+     * @return Le panneau contenant le dessin du profil, de type Pane.
+     */
+    public BorderPane pane() {
+        return borderPane;
+    }
+
+
+    public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
+        return mousePositionOnProfile;
+    }
 
     private void setTransformation() {
+
         // à la place du Listener on devrait bind
         Affine affine = new Affine();
         // Décale au coin au gauche du rectangle
@@ -113,21 +126,6 @@ public final class ElevationProfileManager {
 
     }
 
-    public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
-        return mousePositionOnProfile;
-    }
-
-    private void setRectangle2D() {
-        double deltaX = insets.getLeft() + insets.getRight();
-        double deltaY = insets.getTop() + insets.getBottom();
-        double paneWidth = borderPane.getWidth();
-        double paneHeight = borderPane.getHeight();
-        rectangle2D.setValue(new Rectangle2D(insets.getLeft(), insets.getTop(),
-                paneWidth > deltaX ? paneWidth - deltaX : 0,
-                paneHeight > deltaY ? paneHeight - deltaX : 0) {
-        });
-    }
-
     private void setUpListener() {
         // Listeners liés à l'interface graphique.
         borderPane.widthProperty().addListener(e -> setRectangle2D());
@@ -147,11 +145,7 @@ public final class ElevationProfileManager {
             });
 
         rectangle2D.addListener(e -> setTransformation());
-
     }
-
-
-
 
     private void setUpProfileDisplay() {
 
@@ -169,25 +163,13 @@ public final class ElevationProfileManager {
         vBox.setId("profile_data");
         vBox.getChildren().add(statisticsText);
 
-        borderPane.setCenter(pane);
-        borderPane.setBottom(vBox);
 
         pane.getChildren().add(path);
         pane.getChildren().add(group);
         pane.getChildren().add(polygon);
         pane.getChildren().add(line);
-
-
-
-    }
-
-
-    /**
-     * Méthode publique retournant le panneau de la classe.
-     * @return Le panneau contenant le dessin du profil, de type Pane.
-     */
-    public BorderPane pane() {
-        return borderPane;
+        borderPane.setCenter(pane);
+        borderPane.setBottom(vBox);
     }
 
     private void bindHighlightedPosition() {
@@ -398,7 +380,4 @@ public final class ElevationProfileManager {
         return maxPos / step + 1;
     }
 
-    private ObjectProperty<Rectangle2D> computeRect2DSize() {
-
-    }
 }
