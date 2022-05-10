@@ -69,15 +69,13 @@ public final class ElevationProfileManager {
         borderPane.getStylesheets().add("elevation_profile.css");
         // Objet initialisé à des valeurs artificiellement triviales pour éviter des erreurs
         //TODO A CHANGER
-        rectangle2D = new SimpleObjectProperty<>(new Rectangle2D(insets.getLeft(),
-                insets.getTop(), insets.getLeft(), insets.getTop()));
+        rectangle2D = new SimpleObjectProperty<>(new Rectangle2D(0, 0, 0, 0));
 
         worldToScreenTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
         screenToWorldTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
+        pane = new Pane();
+        bindBlueRectangleDimensions();
         setUpProfileDisplay();
-        rectangle2D.bind;
-        borderPane.widthProperty().addListener((observable, oldValue, newValue) -> pane.setPrefWidth(borderPane.getWidth()));
-        borderPane.heightProperty().addListener((observable, oldValue, newValue) -> pane.setPrefHeight(borderPane.getHeight()));
         posStep = new SimpleIntegerProperty(computeVerticalLinesSpacing());
         eleStep = new SimpleIntegerProperty(computeHorizontalLinesSpacing());
         setUpListener();
@@ -128,8 +126,8 @@ public final class ElevationProfileManager {
 
     private void setUpListener() {
         // Listeners liés à l'interface graphique.
-        borderPane.widthProperty().addListener(e -> setRectangle2D());
-        borderPane.heightProperty().addListener(e -> setRectangle2D());
+        /*borderPane.widthProperty().addListener(e -> setRectangle2D());
+        borderPane.heightProperty().addListener(e -> setRectangle2D());*/
 
         //TODO idée mettre en attribut les steps et les actualiser...
         rectangle2D.addListener(e -> {
@@ -155,7 +153,6 @@ public final class ElevationProfileManager {
         polygon = new Polygon();
         polygon.setId("profile");
         line = new Line();
-        pane = new Pane();
         initializeGridAndLabels();
 
         statisticsText = new Text();
@@ -176,6 +173,18 @@ public final class ElevationProfileManager {
    /*     line.setLayoutX(Bindings.createDoubleBinding( , highlightedPosition);*/
         Bindings.select(rectangle2D, "minY");
 
+    }
+    private void bindBlueRectangleDimensions() {
+        rectangle2D.bind(Bindings.createObjectBinding(() -> {
+            if(pane.getWidth() >= insets.getLeft() + insets.getRight() && pane.getHeight() >= insets.getTop() +
+                    insets.getBottom()) {
+                return new Rectangle2D(insets.getLeft(), insets.getTop(),
+                        pane().getWidth() - insets.getRight() - insets.getLeft(),
+                        pane.getHeight() - insets.getBottom() - insets.getTop());
+
+            }
+            return new Rectangle2D(0, 0, 0, 0);
+        }, pane.widthProperty(), pane.heightProperty()));
     }
 
     private void formatStatistics() {
@@ -289,6 +298,8 @@ public final class ElevationProfileManager {
         path.setId("grid");
         System.out.println(pane.getWidth());
         System.out.println(pane.getHeight());
+        System.out.println(rectangle2D.get().getWidth() + "je suis le rectangle 2D la largeur");
+        System.out.println(rectangle2D.get().getHeight() + "je suis le rectangle 2D la longueur");
     }
 
     private void computePolygon() {
