@@ -61,6 +61,7 @@ public final class ElevationProfileManager {
     private static final double MIN_PIXEL_ELE = 25;
 
 
+
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfile,
                                    ReadOnlyDoubleProperty highlightedPosition) {
         this.elevationProfile = elevationProfile;
@@ -73,20 +74,15 @@ public final class ElevationProfileManager {
         borderPane.setBottom(vBox);
 
         borderPane.getStylesheets().add("elevation_profile.css");
-        // Objet initialisé à des valeurs artificiellement triviales pour éviter des erreurs
-
 
         pane.prefHeightProperty().bind(borderPane.heightProperty().subtract(40));
         pane.prefWidthProperty().bind(borderPane.widthProperty());
-
         bindBlueRectangleDimensions();
-
-        worldToScreenTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
-        screenToWorldTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
 
         setUpProfileDisplay();
         setUpListener();
         computePolygon();
+        setUpEventHandlers();
     }
 
 
@@ -96,28 +92,20 @@ public final class ElevationProfileManager {
         //TODO idée mettre en attribut les steps et les actualiser...
         rectangle2D.addListener(e -> {
             setTransformation();
-            computePolygon();
             setUpProfileDisplay();
         });
 
-
+// faire mieux
         elevationProfile.addListener((p,oldV,newV) -> {
-            if (oldV.minElevation() != newV.minElevation() || oldV.maxElevation() != newV.maxElevation())
+            if (oldV.minElevation() != newV.minElevation() || oldV.maxElevation() != newV.maxElevation() || oldV.length() != newV.length())
             setTransformation();
-            computePolygon();
             setUpProfileDisplay();
             });
-
     }
 
     private void setUpProfileDisplay() {
-
-
-
         computePolygon();
-
         initializeGridAndLabels();
-
 
         vBox.setId("profile_data");
         vBox.getChildren().clear();
@@ -128,60 +116,6 @@ public final class ElevationProfileManager {
         pane.getChildren().add(group);
         pane.getChildren().add(polygon);
         pane.getChildren().add(line);
-    }
-
-    private void bindHighlightedPosition() {
-   /*     line.setLayoutX(Bindings.createDoubleBinding( , highlightedPosition);*/
-        Bindings.select(rectangle2D, "minY");
-
-    }
-
-    private void bindBlueRectangleDimensions() {
-        rectangle2D.bind(Bindings.createObjectBinding(() -> {
-            if(pane.getWidth() >= insets.getLeft() + insets.getRight() && pane.getHeight() >= insets.getTop() +
-                    insets.getBottom()) {
-                System.out.println("rectangle binder a vrais taille");
-                return new Rectangle2D(insets.getLeft(), insets.getTop(),
-                        pane().getWidth() - insets.getRight() - insets.getLeft(),
-                        pane.getHeight() - insets.getBottom() - insets.getTop());
-
-            }
-            System.out.println("rectangle artificiellement binder");
-            return new Rectangle2D(0, 0, 0, 0);
-        }, pane.widthProperty(), pane.heightProperty()));
-    }
-    private void formatStatistics() {
-        //TODO set les layouts du truc
-        statisticsText.setText(String.format("Longueur : %.1f km" +
-                "     Montée : %.0f m" +
-                "     Descente : %.0f m" +
-                "     Altitude : de %.0f m à %.0f m",
-                elevationProfile.get().length() / 1000,
-                elevationProfile.get().totalAscent(),
-                elevationProfile.get().totalDescent(),
-                elevationProfile.get().minElevation(),
-                elevationProfile.get().maxElevation()));
-    }
-
-    private void setUpEventHandlers() {
-        pane.setOnMouseMoved(event -> {
-            if (isInBlueRectangle(event.getX(), event.getY())) {
-                Point2D worldCoordinates = screenToWorldTransform.get().transform(event.getX(),
-                        event.getY());
-                mousePositionOnProfile.set(worldCoordinates.getX());
-
-            } else {
-                mousePositionOnProfile.set(Double.NaN);
-            }
-        });
-        pane.setOnMouseExited(event -> mousePositionOnProfile.set(Double.NaN));
-    }
-
-
-
-    private boolean isInBlueRectangle(double x, double y) {
-        return x >= insets.getLeft() && x <= pane.getWidth() - insets.getRight()
-                && y >= insets.getTop() && y <= pane.getHeight() - insets.getBottom();
     }
 
     private void initializeGridAndLabels() {
@@ -206,8 +140,8 @@ public final class ElevationProfileManager {
         Transform worldToScreen = worldToScreenTransform.get();
         List<PathElement> pathElementList = new ArrayList<>();
 
-         group.getChildren().clear();
-         pane.getChildren().clear();
+        group.getChildren().clear();
+        pane.getChildren().clear();
 
         //Ajout de la ligne en bas du rectangle bleu si elle ne nécessite pas d'étiquette.
         if (minElevation % spaceBetween2HLines != 0) {
@@ -267,6 +201,32 @@ public final class ElevationProfileManager {
         path.setId("grid");
     }
 
+    private void bindHighlightedPosition() {
+   /*     line.setLayoutX(Bindings.createDoubleBinding( , highlightedPosition);*/
+        Bindings.select(rectangle2D, "minY");
+
+    }
+
+    private void setUpEventHandlers() {
+        pane.setOnMouseMoved(event -> {
+            if (isInBlueRectangle(event.getX(), event.getY())) {
+                Point2D worldCoordinates = screenToWorldTransform.get().transform(event.getX(),
+                        event.getY());
+                mousePositionOnProfile.set(worldCoordinates.getX());
+
+            } else {
+                mousePositionOnProfile.set(Double.NaN);
+            }
+        });
+        pane.setOnMouseExited(event -> mousePositionOnProfile.set(Double.NaN));
+    }
+
+
+    private boolean isInBlueRectangle(double x, double y) {
+        return x >= insets.getLeft() && x <= pane.getWidth() - insets.getRight()
+                && y >= insets.getTop() && y <= pane.getHeight() - insets.getBottom();
+    }
+
 
     private void computePolygon() {
         // Le point du polygone à la coordonnée (0,0) est le coin haut gauche.
@@ -291,6 +251,33 @@ public final class ElevationProfileManager {
         polygon.setFill(Color.RED);
         polygon.setId("profile");
 
+    }
+
+    private void bindBlueRectangleDimensions() {
+        rectangle2D.bind(Bindings.createObjectBinding(() -> {
+            if(pane.getWidth() >= insets.getLeft() + insets.getRight() && pane.getHeight() >= insets.getTop() +
+                    insets.getBottom()) {
+                System.out.println("rectangle binder a vrais taille");
+                return new Rectangle2D(insets.getLeft(), insets.getTop(),
+                        pane().getWidth() - insets.getRight() - insets.getLeft(),
+                        pane.getHeight() - insets.getBottom() - insets.getTop());
+
+            }
+            System.out.println("rectangle artificiellement binder");
+            return new Rectangle2D(0, 0, 0, 0);
+        }, pane.widthProperty(), pane.heightProperty()));
+    }
+    private void formatStatistics() {
+        //TODO set les layouts du truc
+        statisticsText.setText(String.format("Longueur : %.1f km" +
+                        "     Montée : %.0f m" +
+                        "     Descente : %.0f m" +
+                        "     Altitude : de %.0f m à %.0f m",
+                elevationProfile.get().length() / 1000,
+                elevationProfile.get().totalAscent(),
+                elevationProfile.get().totalDescent(),
+                elevationProfile.get().minElevation(),
+                elevationProfile.get().maxElevation()));
     }
 
     /**
@@ -374,6 +361,10 @@ public final class ElevationProfileManager {
         statisticsText = new Text();
         vBox = new VBox();
         rectangle2D = new SimpleObjectProperty<>(new Rectangle2D(0, 0, 0, 0));
+        worldToScreenTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
+        screenToWorldTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
+        mousePositionOnProfile = new SimpleDoubleProperty(Double.NaN);
+
     }
 
     /**
