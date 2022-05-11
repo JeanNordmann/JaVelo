@@ -3,6 +3,7 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -12,6 +13,7 @@ import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -57,8 +59,6 @@ public final class ElevationProfileManager {
             { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
     private static final double MIN_PIXEL_POS = 50;
     private static final double MIN_PIXEL_ELE = 25;
-    private final IntegerProperty posStep;
-    private final IntegerProperty eleStep;
 
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfile,
@@ -67,80 +67,37 @@ public final class ElevationProfileManager {
         this.highlightedPosition = highlightedPosition;
         pane = new Pane();
         borderPane = new BorderPane();
-        System.out.println(borderPane.getWidth() + "width et height " + borderPane.getHeight());
+        creatObject();
+
         borderPane.setCenter(pane);
         borderPane.setBottom(vBox);
-        System.out.println(borderPane.getWidth() + "width et height " + borderPane.getHeight());
 
         borderPane.getStylesheets().add("elevation_profile.css");
         // Objet initialisé à des valeurs artificiellement triviales pour éviter des erreurs
-        //TODO A CHANGER
-        rectangle2D = new SimpleObjectProperty<>(new Rectangle2D(0, 0, 0, 0));
+
+
+        pane.prefHeightProperty().bind(borderPane.heightProperty().subtract(40));
+        pane.prefWidthProperty().bind(borderPane.widthProperty());
+
+        bindBlueRectangleDimensions();
 
         worldToScreenTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
         screenToWorldTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
-        //bindBlueRectangleDimensions();
+
         setUpProfileDisplay();
-        posStep = new SimpleIntegerProperty(computeVerticalLinesSpacing());
-        eleStep = new SimpleIntegerProperty(computeHorizontalLinesSpacing());
         setUpListener();
-        //setRectangle2D();
         computePolygon();
     }
 
-    /**
-     * Méthode publique retournant le panneau de la classe.
-     * @return Le panneau contenant le dessin du profil, de type Pane.
-     */
-    public BorderPane pane() {
-        return borderPane;
-    }
-
-
-    public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
-        return mousePositionOnProfile;
-    }
-
-    private void setTransformation() {
-
-        // à la place du Listener on devrait bind
-        Affine affine = new Affine();
-        // Décale au coin au gauche du rectangle
-        affine.prependTranslation(-insets.getLeft(), -insets.getTop());
-        // inverse les coordonnées de l'altitude. Puis Ajout de la hauteur
-        // Dans le but que pour une une hauteur de 50
-        // 50->400      deviennent   0 -> 400
-        // 25->800      deviennent   25-> 800
-        // 0->1200      deviennent   50-> 1200
-        affine.prependScale(1, -1);
-        affine.prependTranslation(0, rectangle2D.get().getHeight());
-        // changement d'échelle
-        double deltaElevation = (elevationProfile.get().maxElevation() - elevationProfile.get().minElevation());
-        affine.prependScale(1 / rectangle2D.get().getWidth(), 1 / rectangle2D.get().getHeight());
-        affine.prependScale(elevationProfile.get().length(), deltaElevation);
-        // décalement de l'altitude
-        affine.prependTranslation(0,elevationProfile.get().minElevation());
-        screenToWorldTransform.set(affine);
-        try {
-            worldToScreenTransform.set(affine.createInverse());
-        } catch (NonInvertibleTransformException e) {
-            e.printStackTrace();
-        }
-        System.out.println(worldToScreenTransform.get().transform(0
-                , elevationProfile.get().minElevation()));
-
-
-    }
 
     private void setUpListener() {
         // Listeners liés à l'interface graphique.
-        pane.widthProperty().addListener(e -> bindBlueRectangleDimensions());
-        pane.heightProperty().addListener(e -> bindBlueRectangleDimensions());
 
         //TODO idée mettre en attribut les steps et les actualiser...
         rectangle2D.addListener(e -> {
-            initializeGridAndLabels();
+            setTransformation();
             computePolygon();
+            setUpProfileDisplay();
         });
 
 
@@ -148,26 +105,24 @@ public final class ElevationProfileManager {
             if (oldV.minElevation() != newV.minElevation() || oldV.maxElevation() != newV.maxElevation())
             setTransformation();
             computePolygon();
+            setUpProfileDisplay();
             });
 
-        rectangle2D.addListener(e -> setTransformation());
     }
 
     private void setUpProfileDisplay() {
 
 
-        path = new Path();
-        group = new Group();
-        polygon = new Polygon();
-        polygon.setId("profile");
-        line = new Line();
+
+        computePolygon();
+
         initializeGridAndLabels();
 
-        statisticsText = new Text();
-        vBox = new VBox();
-        vBox.setId("profile_data");
-        vBox.getChildren().add(statisticsText);
 
+        vBox.setId("profile_data");
+        vBox.getChildren().clear();
+        formatStatistics();
+        vBox.getChildren().add(statisticsText);
 
         pane.getChildren().add(path);
         pane.getChildren().add(group);
@@ -180,26 +135,28 @@ public final class ElevationProfileManager {
         Bindings.select(rectangle2D, "minY");
 
     }
+
     private void bindBlueRectangleDimensions() {
         rectangle2D.bind(Bindings.createObjectBinding(() -> {
             if(pane.getWidth() >= insets.getLeft() + insets.getRight() && pane.getHeight() >= insets.getTop() +
                     insets.getBottom()) {
+                System.out.println("rectangle binder a vrais taille");
                 return new Rectangle2D(insets.getLeft(), insets.getTop(),
                         pane().getWidth() - insets.getRight() - insets.getLeft(),
                         pane.getHeight() - insets.getBottom() - insets.getTop());
 
             }
+            System.out.println("rectangle artificiellement binder");
             return new Rectangle2D(0, 0, 0, 0);
         }, pane.widthProperty(), pane.heightProperty()));
     }
-
     private void formatStatistics() {
         //TODO set les layouts du truc
         statisticsText.setText(String.format("Longueur : %.1f km" +
                 "     Montée : %.0f m" +
                 "     Descente : %.0f m" +
                 "     Altitude : de %.0f m à %.0f m",
-                elevationProfile.get().length(),
+                elevationProfile.get().length() / 1000,
                 elevationProfile.get().totalAscent(),
                 elevationProfile.get().totalDescent(),
                 elevationProfile.get().minElevation(),
@@ -236,16 +193,21 @@ public final class ElevationProfileManager {
         int spaceBetween2HLines = computeHorizontalLinesSpacing();
         int spaceBetween2VLines = computeVerticalLinesSpacing();
 
+        System.out.println(spaceBetween2HLines);
+        System.out.println(spaceBetween2VLines);
+
         int numberOfHLines = numberOfHorizontalLine();
         int numberOfVLines = numberOfVerticalLine();
 
+        System.out.println(numberOfHLines);
+        System.out.println(numberOfVLines);
         int initialHLine = Math2.ceilDiv(minElevation, spaceBetween2HLines);
 
         Transform worldToScreen = worldToScreenTransform.get();
         List<PathElement> pathElementList = new ArrayList<>();
 
-        if (group != null) group.getChildren().clear();
-        if (pane != null) pane.getChildren().clear();
+         group.getChildren().clear();
+         pane.getChildren().clear();
 
         //Ajout de la ligne en bas du rectangle bleu si elle ne nécessite pas d'étiquette.
         if (minElevation % spaceBetween2HLines != 0) {
@@ -286,8 +248,6 @@ public final class ElevationProfileManager {
             int variable = i * spaceBetween2VLines;
             Point2D point2DMoveTo = worldToScreen.transform(variable, minElevation);
             Point2D point2DLineTo = worldToScreen.transform(variable, maxElevation);
-            System.out.println(point2DMoveTo);
-            System.out.println(point2DLineTo);
             PathElement moveTo = new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY());
             PathElement lineTo = new LineTo(point2DLineTo.getX(), point2DLineTo.getY());
             pathElementList.add(moveTo);
@@ -307,6 +267,7 @@ public final class ElevationProfileManager {
         path.setId("grid");
     }
 
+
     private void computePolygon() {
         // Le point du polygone à la coordonnée (0,0) est le coin haut gauche.
         // Taille de deux cases par point, un point par pixel javaFx + les deux coins inférieurs.
@@ -325,6 +286,11 @@ public final class ElevationProfileManager {
         coordinate[ 2 * (int) rectangle2D.get().getWidth() + 1] = rectangle2D.get().getMaxY();
         coordinate[ 2 * (int) rectangle2D.get().getWidth() + 2] = rectangle2D.get().getMinX();
         coordinate[ 2 * (int) rectangle2D.get().getWidth() + 3] = rectangle2D.get().getMaxY();
+
+        polygon = new Polygon(coordinate);
+        polygon.setFill(Color.RED);
+        polygon.setId("profile");
+
     }
 
     /**
@@ -356,7 +322,7 @@ public final class ElevationProfileManager {
     private int computeHorizontalLinesSpacing() {
         for (int eleStep : ELE_STEPS) {
             double minPixel = rectangle2D.get().getHeight()
-                    / ((elevationProfile.get().maxElevation() - elevationProfile.get().minElevation()) / eleStep);
+                    / ((elevationProfile.get().maxElevation() - elevationProfile.get().minElevation())/ (double) eleStep);
             // Test si on respecte la condition pour le l'espacement actuelle.
             if (minPixel >= MIN_PIXEL_ELE) {
                 return eleStep;
@@ -384,19 +350,7 @@ public final class ElevationProfileManager {
         // cas limite où il faut dessiner la première ligne (donc une de +).
         if (spaceDown == 0 ) newDeltaEle += step;
         return (int) newDeltaEle / step ;
-    }/*  private int numberOfHorizontalLine() {
-        double minEle = elevationProfile.get().minElevation();
-        double maxEle = elevationProfile.get().maxElevation();
-        int step = computeHorizontalLinesSpacing();
-        // dénivelée au-dessus de la dernière ligne
-        double spaceUp = maxEle % step;
-        // dénivelée au-dessus de la ligne en dessous de la première ligne à dessiner
-        double spaceDown = minEle % step;
-        double newDeltaEle = maxEle - spaceUp  - (minEle - spaceDown);
-        // cas limite où il faut dessiner la première ligne (donc une de +).
-        if (spaceDown == 0 ) newDeltaEle += step;
-        return (int) newDeltaEle / step ;
-    }*/
+    }
 
     /**
      * Méthode privée retournant le nombre de lignes verticales ayant un texte de distance associé.
@@ -411,4 +365,54 @@ public final class ElevationProfileManager {
         return maxPos / step + 1;
     }
 
+
+    private void creatObject() {
+        polygon = new Polygon();
+        path = new Path();
+        group = new Group();
+        line = new Line();
+        statisticsText = new Text();
+        vBox = new VBox();
+        rectangle2D = new SimpleObjectProperty<>(new Rectangle2D(0, 0, 0, 0));
+    }
+
+    /**
+     * Méthode publique retournant le panneau de la classe.
+     * @return Le panneau contenant le dessin du profil, de type Pane.
+     */
+    public BorderPane pane() {
+        return borderPane;
+    }
+
+    public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
+        return mousePositionOnProfile;
+    }
+
+    private void setTransformation() {
+
+        // à la place du Listener on devrait bind
+        Affine affine = new Affine();
+        // Décale au coin au gauche du rectangle
+        affine.prependTranslation(-insets.getLeft(), -insets.getTop());
+        // inverse les coordonnées de l'altitude. Puis Ajout de la hauteur
+        // Dans le but que pour une une hauteur de 50
+        // 50->400      deviennent   0 -> 400
+        // 25->800      deviennent   25-> 800
+        // 0->1200      deviennent   50-> 1200
+        affine.prependScale(1, -1);
+        affine.prependTranslation(0, rectangle2D.get().getHeight());
+        // changement d'échelle
+        double deltaElevation = (elevationProfile.get().maxElevation() - elevationProfile.get().minElevation());
+        affine.prependScale(1 / rectangle2D.get().getWidth(), 1 / rectangle2D.get().getHeight());
+        affine.prependScale(elevationProfile.get().length(), deltaElevation);
+        // décalement de l'altitude
+        affine.prependTranslation(0,elevationProfile.get().minElevation());
+        screenToWorldTransform.set(affine);
+        try {
+            worldToScreenTransform.set(affine.createInverse());
+        } catch (NonInvertibleTransformException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
