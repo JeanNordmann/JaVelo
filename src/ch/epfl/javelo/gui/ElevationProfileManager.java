@@ -213,7 +213,7 @@ public final class ElevationProfileManager {
                 Point2D worldCoordinates = screenToWorldTransform.get().transform(event.getX(),
                         event.getY());
                 mousePositionOnProfile.set(worldCoordinates.getX());
-
+                System.out.println(mousePositionOnProfile.toString());
             } else {
                 mousePositionOnProfile.set(Double.NaN);
             }
