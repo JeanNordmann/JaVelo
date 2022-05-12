@@ -3,7 +3,6 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -15,16 +14,27 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.transform.*;
-
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Transform;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-//TODO
-//STATIC DEVANT LES CONSTANTE
+
+/**
+ * 10.3.1
+ * ElevationProfileManager
+ * <p>
+ * Classe gérant l'affichage et l'interaction avec le profil en long d'un itinéraire.
+ *
+ * @author Jean Nordmann (344692)
+ * @author Maxime Ducourau (329544)
+ */
+
 public final class ElevationProfileManager {
-//TODO faire waypoint corectement !
     /**
      * Attribut représentant une propriété, accessible en lecture seule,
      * contenant le profil à afficher.
@@ -39,56 +49,146 @@ public final class ElevationProfileManager {
      * Attribut représentant le panneau contenant le dessin du profil.
      */
     private final BorderPane borderPane;
-    private Pane pane;
+
+    /**
+     * Attribut représentant le panneau dans lequel sont placés le chemin représentant la grille,
+     * un certain nombre d'étiquettes textuelles regroupées dans un groupe et représentant les
+     * étiquettes de la grille, un polygone représentant le graphe du profil, une ligne
+     * représentant la position mise en évidence.
+     */
+    private final Pane pane;
+
+    /**
+     * Attribut représentant un panneau de type VBox contenant un texte contenant les statistiques
+     * du profil.
+     */
     private VBox vBox;
+
+    /**
+     * Attribut de type Path représentant la grille.
+     */
     private Path path;
+
+    /**
+     * Attribut de type Group représentant le groupe contenant les étiquettes de la grille.
+     */
     private Group group;
+
+    /**
+     * Attribut de type Polygon représentant le graphe du profil.
+     */
     private Polygon polygon;
+
+    /**
+     * Attribut de type Line représentant la position mise en évidence.
+     */
     private Line line;
+
+    /**
+     * Attribut de type Text représentant les statistiques du profil.
+     */
     private Text statisticsText;
-    private Text text;
+
+    /**
+     * Attribut représentant une propriété JavaFX contenant la position de la souris sur le profil.
+     */
     private DoubleProperty mousePositionOnProfile;
-    private int numberOfTextsNeeded;
+
+    /**
+     * Attribut représentant une propriété JavaFX contenant le rectangle en deux dimensions dans
+     * lequel doit être dessinée le profil.
+     */
     private ObjectProperty<Rectangle2D> rectangle2D;
+
+    /**
+     * Attribut représentant une propriété JavaFX contenant la transformation passant des
+     * coordonnées du panneau JavaFX contenant le rectangle bleu au système de coordonnées du
+     * "monde réel".
+     */
     private ObjectProperty<Transform> screenToWorldTransform;
+
+    /**
+     * Attribut représentant une propriété JavaFX contenant la transformation inverse.
+     */
     private ObjectProperty<Transform> worldToScreenTransform;
+
+    /**
+     * Attribut de type Insets, représentant les distances entre les bords du panneau et les
+     * bords du rectangle bleu, en pixels (dans l'ordre : haut, droite, bas, gauche).
+     */
     private final Insets insets = new Insets(10, 10, 20, 40);
-    private final int[] POS_STEPS =
-            { 1000, 2000, 5000, 10_000, 25_000, 50_000, 100_000 };
-    private final int[] ELE_STEPS =
-            { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
+
+    /**
+     * Attribut représentant un tableau contenant les valeurs possibles pour l'écart entre les
+     * lignes verticales correspondant à la position (en mètres).
+     */
+    private final int[] POS_STEPS = {1000, 2000, 5000, 10_000, 25_000, 50_000, 100_000};
+
+    /**
+     * Attribut représentant un tableau contenant les valeurs possibles pour l'écart entre les
+     * lignes horizontales correspondant à l'altitude (en mètres).
+     */
+    private final int[] ELE_STEPS = {5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000};
+
+    /**
+     * Attribut représentant la valeur minimale pour l'écart entre deux lignes verticales, en
+     * pixels JavaFX.
+     */
     private static final double MIN_PIXEL_POS = 50;
+
+    /**
+     * Attribut représentant la valeur minimale pour l'écart entre deux lignes horizontales, en
+     * pixels JavaFX.
+     */
     private static final double MIN_PIXEL_ELE = 25;
 
-
-
+    /**
+     * Constructeur initialisant tous les attributs à leurs valeurs passées en paramètres, ou à
+     * leur valeur par défaut, liant les valeurs de certains attributs à d'autres (rectangle
+     * bleu et ligne de mise en évidence) et configurant les auditeurs et les gestionnaires
+     * d'évènements.
+     * @param elevationProfile propriété, accessible en lecture seule, contenant le profil à
+     *                         afficher.
+     * @param highlightedPosition propriété, accessible en lecture seule, contenant la position
+     *                            le long du profil à mettre en évidence.
+     */
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfile,
                                    ReadOnlyDoubleProperty highlightedPosition) {
         this.elevationProfile = elevationProfile;
         this.highlightedPosition = highlightedPosition;
         pane = new Pane();
         borderPane = new BorderPane();
-        creatObject();
+        //Initialise tous les objets non finaux de la classe.
+        createObject();
 
+        //Configure le grand panneau et indiquant quel panneau se place où.
         borderPane.setCenter(pane);
         borderPane.setBottom(vBox);
-
+        //Ajoute la feuille de style CSS à attacher au nœud.
         borderPane.getStylesheets().add("elevation_profile.css");
 
+        //Lie les dimensions du "petit" panneau aux dimensions du panneau "général".
         pane.prefHeightProperty().bind(borderPane.heightProperty().subtract(40));
         pane.prefWidthProperty().bind(borderPane.widthProperty());
-        bindBlueRectangleDimensions();
 
+        //Lie les coordonnées du rectangle bleu, et celles de la ligne de mise en évidence.
+        bindBlueRectangleDimensions();
+        bindHighlightedLine();
+
+        //Configure l'affichage du profil, les auditeurs et les gestionnaires d'évènements.
         setUpProfileDisplay();
         setUpListener();
-        computePolygon();
         setUpEventHandlers();
     }
 
 
+    /**
+     * Méthode privée configurant les auditeurs liés aux changements de dimensions du rectangle
+     * bleu et des changements du profil.
+     */
     private void setUpListener() {
-        // Listeners liés à l'interface graphique.
-
+        //Auditeur détectant les changements de dimensions du rectangle bleu et recalculant les
+        //transformations et l'affichage du profil.
         //TODO idée mettre en attribut les steps et les actualiser...
         rectangle2D.addListener(e -> {
             setTransformation();
@@ -96,6 +196,8 @@ public final class ElevationProfileManager {
         });
 
 // faire mieux
+        //Auditeur détectant les changements du profil et recalculant les transformations et
+        //l'affichage du profil.
         elevationProfile.addListener((p,oldV,newV) -> {
             if (oldV.minElevation() != newV.minElevation() || oldV.maxElevation() != newV.maxElevation() || oldV.length() != newV.length())
             setTransformation();
@@ -103,58 +205,70 @@ public final class ElevationProfileManager {
             });
     }
 
+    /**
+     * Méthode privée configurant l'affichage du profil.
+     */
     private void setUpProfileDisplay() {
+        //Calcule le polygone représentant le profil.
         computePolygon();
+
+        //Calcule la grille servant de repère au graphe du profil, ainsi que les étiquettes
+        //rattachées.
         initializeGridAndLabels();
 
-        vBox.setId("profile_data");
+        //Calcule les nouvelles statistiques du profil.
         vBox.getChildren().clear();
         formatStatistics();
         vBox.getChildren().add(statisticsText);
 
+        //Ajoute tous les nouveaux nœuds au panneau gérant l'affichage du profil.
         pane.getChildren().add(path);
         pane.getChildren().add(group);
         pane.getChildren().add(polygon);
         pane.getChildren().add(line);
     }
 
+    /**
+     * Méthode privée calculant les positions des lignes de la grille du graphe représentant le
+     * profil, ainsi que les étiquettes des valeurs le long des axes.
+     */
     private void initializeGridAndLabels() {
+
+        //Variables utilisées plusieurs fois plus bas.
         int minElevation =  (int) elevationProfile.get().minElevation();
         int maxElevation = (int) elevationProfile.get().maxElevation();
-
         double elevationLength = elevationProfile.get().length();
-
         int spaceBetween2HLines = computeHorizontalLinesSpacing();
         int spaceBetween2VLines = computeVerticalLinesSpacing();
-
-        System.out.println(spaceBetween2HLines);
-        System.out.println(spaceBetween2VLines);
-
         int numberOfHLines = numberOfHorizontalLine();
         int numberOfVLines = numberOfVerticalLine();
 
-        System.out.println(numberOfHLines);
-        System.out.println(numberOfVLines);
+        //Calculant le multiple de la valeur de la ligne initiale à dessiner.
         int initialHLine = Math2.ceilDiv(minElevation, spaceBetween2HLines);
 
+        //Variable représentant la transformation passant des coordonnées du monde, à celles du
+        //de JavaFX.
         Transform worldToScreen = worldToScreenTransform.get();
+
         List<PathElement> pathElementList = new ArrayList<>();
 
+        //Supprimant les anciens enfants du groupe représentant la grille, et du panneau gérant
+        //l'affichage du profil.
         group.getChildren().clear();
         pane.getChildren().clear();
 
         //Ajout de la ligne en bas du rectangle bleu si elle ne nécessite pas d'étiquette.
         if (minElevation % spaceBetween2HLines != 0) {
-            Point2D point2DMoveTo = worldToScreen.deltaTransform(0, minElevation);
-            Point2D point2DLineTo = worldToScreen.deltaTransform(elevationLength, minElevation);
+            Point2D point2DMoveTo = worldToScreen.transform(0, minElevation);
+            Point2D point2DLineTo = worldToScreen.transform(elevationLength, minElevation);
             pathElementList.add(new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY()));
             pathElementList.add(new LineTo(point2DLineTo.getX(), point2DLineTo.getY()));
         }
 
         //Ajout de la ligne à droite du rectangle bleu si elle ne nécessite pas d'étiquette.
         if (elevationLength % spaceBetween2VLines != 0) {
-            Point2D point2DMoveTo = worldToScreen.deltaTransform(elevationLength, minElevation);
-            Point2D point2DLineTo = worldToScreen.deltaTransform(elevationLength, maxElevation);
+            Point2D point2DMoveTo = worldToScreen.transform(elevationLength, minElevation);
+            Point2D point2DLineTo = worldToScreen.transform(elevationLength, maxElevation);
             pathElementList.add(new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY()));
             pathElementList.add(new LineTo(point2DLineTo.getX(), point2DLineTo.getY()));
         }
@@ -168,13 +282,7 @@ public final class ElevationProfileManager {
             pathElementList.add(moveTo);
             pathElementList.add(lineTo);
             Text text = new Text(Integer.toString(variable));
-            text.setLayoutX(point2DMoveTo.getX());
-            text.setLayoutY(point2DMoveTo.getY());
-            text.setTextOrigin(VPos.CENTER);
-            text.setFont(Font.font("Avenir", 10));
-            text.prefWidth(text.getWrappingWidth() + 2);
-            text.getStyleClass().add("grid_label");
-            text.getStyleClass().add("vertical");
+            setUpVerticalLabel(text, point2DMoveTo);
             group.getChildren().add(text);
         }
 
@@ -187,13 +295,7 @@ public final class ElevationProfileManager {
             pathElementList.add(moveTo);
             pathElementList.add(lineTo);
             Text text = new Text(Integer.toString(variable / 1000));
-            text.setLayoutX(point2DMoveTo.getX());
-            text.setLayoutY(point2DMoveTo.getY());
-            text.setTextOrigin(VPos.TOP);
-            text.setFont(Font.font("Avenir", 10));
-            text.prefWidth(0);
-            text.getStyleClass().add("grid_label");
-            text.getStyleClass().add("horizontal");
+            setUpHorizontalLabel(text, point2DMoveTo);
             group.getChildren().add(text);
         }
 
@@ -201,19 +303,62 @@ public final class ElevationProfileManager {
         path.setId("grid");
     }
 
-    private void bindHighlightedPosition() {
-   /*     line.setLayoutX(Bindings.createDoubleBinding( , highlightedPosition);*/
-        Bindings.select(rectangle2D, "minY");
+    /**
+     * Méthode privée configurant une étiquette horizontale (de position).
+     * @param text texte donné, avec sa valeur.
+     * @param point2DMoveTo coordonnées de l'extrémité de la ligne à côté de laquelle il faut
+     *                      placer l'étiquette.
+     */
+    private void setUpHorizontalLabel(Text text, Point2D point2DMoveTo) {
+        text.setTextOrigin(VPos.TOP);
+        text.setFont(Font.font("Avenir", 10));
+        text.setLayoutX(point2DMoveTo.getX() - text.prefWidth(0) / 2);
+        text.setLayoutY(point2DMoveTo.getY());
+        text.getStyleClass().add("grid_label");
+        text.getStyleClass().add("horizontal");
+    }
+
+    /**
+     * Méthode privée configurant une étiquette verticale (d'altitude).
+     * @param text texte donné, avec sa valeur.
+     * @param point2DMoveTo coordonnées de l'extrémité de la ligne à côté de laquelle il faut
+     *                      placer l'étiquette.
+     */
+    private void setUpVerticalLabel(Text text, Point2D point2DMoveTo) {
+        text.setTextOrigin(VPos.CENTER);
+        text.setFont(Font.font("Avenir", 10));
+        text.setLayoutX(point2DMoveTo.getX() - (text.prefWidth(0) + 2));
+        text.setLayoutY(point2DMoveTo.getY());
+        text.getStyleClass().add("grid_label");
+        text.getStyleClass().add("vertical");
+    }
+
+    /**
+     * Méthode privée liant quatre propriétés de la ligne. Sa position à la position de la souris
+     * sur le profil, son ordonnée de départ et de fin aux coordonnées minimales et maximales du
+     * rectangle bleu, et si elle est visible ou non en fonction de sa valeur (positive ou non).
+     */
+    private void bindHighlightedLine() {
+        line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> worldToScreenTransform.get()
+                .transform(mousePositionOnProfile.get(), elevationProfile.get().minElevation())
+                .getX(), mousePositionOnProfile));
+        line.startYProperty().bind(Bindings.select(rectangle2D, "minY"));
+        line.endYProperty().bind(Bindings.select(rectangle2D, "maxY"));
+        line.visibleProperty().bind(highlightedPosition.greaterThanOrEqualTo(0));
 
     }
 
+    /**
+     * Méthode privée configurant les gestionnaires d'évènements, pour obtenir la coordonnée X de
+     * la souris si elle se situe sur le rectangle bleu, et sinon à NaN, lorsqu'elle sort du
+     * rectangle bleu ou du panneau.
+     */
     private void setUpEventHandlers() {
         pane.setOnMouseMoved(event -> {
             if (isInBlueRectangle(event.getX(), event.getY())) {
                 Point2D worldCoordinates = screenToWorldTransform.get().transform(event.getX(),
                         event.getY());
                 mousePositionOnProfile.set(worldCoordinates.getX());
-                System.out.println(mousePositionOnProfile.toString());
             } else {
                 mousePositionOnProfile.set(Double.NaN);
             }
@@ -222,17 +367,26 @@ public final class ElevationProfileManager {
     }
 
 
+    /**
+     * Méthode privée determinant si une paire de coordonnées x et y donnés en paramètres sont
+     * situés dans le rectangle bleu contenant le profil.
+     * @param x coordonnée x donnée.
+     * @param y coordonnée y donnée.
+     * @return true si et seulement si la paire de coordonnée est dans le rectangle bleu.
+     */
     private boolean isInBlueRectangle(double x, double y) {
         return x >= insets.getLeft() && x <= pane.getWidth() - insets.getRight()
                 && y >= insets.getTop() && y <= pane.getHeight() - insets.getBottom();
     }
 
-
+    /**
+     * Méthode privée calculant le polygone représentant le profil.
+     */
     private void computePolygon() {
-        // Le point du polygone à la coordonnée (0,0) est le coin haut gauche.
-        // Taille de deux cases par point, un point par pixel javaFx + les deux coins inférieurs.
+        //Le point du polygone à la coordonnée (0,0) est le coin haut gauche.
+        //Taille de deux cases par point, un point par pixel javaFx + les deux coins inférieurs.
         double[] coordinate = new double[2 * ((int) rectangle2D.get().getWidth() + 2)];
-        // Coordonnées des points des points de l'itinéraire
+        //Coordonnées des points des points de l'itinéraire
         for (int i = 0; i < (int) rectangle2D.get().getWidth(); i++) {
             double xOnScreen = insets.getLeft() + i;
             double xOnWorld = screenToWorldTransform.get().transform(xOnScreen, 0).getX();
@@ -241,7 +395,7 @@ public final class ElevationProfileManager {
             coordinate[2 * i] = wayPointOnScreen.getX();
             coordinate[2 * i + 1] = wayPointOnScreen.getY();
         }
-        // Coordonnées des deux coins du bas.
+        //Coordonnées des deux coins du bas.
         coordinate[ 2 * (int) rectangle2D.get().getWidth()] = rectangle2D.get().getMaxX();
         coordinate[ 2 * (int) rectangle2D.get().getWidth() + 1] = rectangle2D.get().getMaxY();
         coordinate[ 2 * (int) rectangle2D.get().getWidth() + 2] = rectangle2D.get().getMinX();
@@ -253,22 +407,31 @@ public final class ElevationProfileManager {
 
     }
 
+    /**
+     * Méthode privée liant les dimensions du rectangle bleu aux dimensions du panneau dans
+     * lequel le rectangle bleu se trouve.
+     */
     private void bindBlueRectangleDimensions() {
         rectangle2D.bind(Bindings.createObjectBinding(() -> {
+            //Si les dimensions du panneau sont suffisantes pour accueillir un rectangle bleu,
+            //alors on le renvoie.
             if(pane.getWidth() >= insets.getLeft() + insets.getRight() && pane.getHeight() >= insets.getTop() +
                     insets.getBottom()) {
-                System.out.println("rectangle binder a vrais taille");
                 return new Rectangle2D(insets.getLeft(), insets.getTop(),
                         pane().getWidth() - insets.getRight() - insets.getLeft(),
                         pane.getHeight() - insets.getBottom() - insets.getTop());
 
             }
-            System.out.println("rectangle artificiellement binder");
+            //Sinon, on renvoie un rectangle nul (dimensions nulles).
             return new Rectangle2D(0, 0, 0, 0);
         }, pane.widthProperty(), pane.heightProperty()));
     }
+
+    /**
+     * Méthode privée mettant les statistiques du profil selon un certain format, de sorte à ce
+     * qu'elles s'affichent en ligne en dessous du profil.
+     */
     private void formatStatistics() {
-        //TODO set les layouts du truc
         statisticsText.setText(String.format("Longueur : %.1f km" +
                         "     Montée : %.0f m" +
                         "     Descente : %.0f m" +
@@ -283,21 +446,18 @@ public final class ElevationProfileManager {
     /**
      * Méthode privée nous permettant de calculer l'espacement des lignes verticales,
      * c'est-à-dire l'espacement entre deux indications de distance.
-     * @return l'espacement des lignes verticales
+     * @return l'espacement des lignes verticales.
      */
     private int computeVerticalLinesSpacing() {
-        int a = 0;
         for (int posStep : POS_STEPS) {
-            double rectangleWidth = rectangle2D.get().getWidth();
-            double length = elevationProfile.get().length();
-            double minPixel =
-                    rectangle2D.get().getWidth() / (elevationProfile.get().length() / (double) posStep);
-            // Test si on respecte la condition pour le l'espacement actuelle.
+            double minPixel = rectangle2D.get().getWidth() /
+                    (elevationProfile.get().length() / (double) posStep);
+            //Teste si on respecte la condition pour le l'espacement actuel.
             if (minPixel >= MIN_PIXEL_POS) {
                 return posStep;
             }
         }
-        // retourne l'espacement maximal si aucun ne satisfait la condition
+        //Retourne l'espacement maximal si aucun ne satisfait la condition.
         return POS_STEPS[POS_STEPS.length - 1];
     }
 
@@ -310,12 +470,12 @@ public final class ElevationProfileManager {
         for (int eleStep : ELE_STEPS) {
             double minPixel = rectangle2D.get().getHeight()
                     / ((elevationProfile.get().maxElevation() - elevationProfile.get().minElevation())/ (double) eleStep);
-            // Test si on respecte la condition pour le l'espacement actuelle.
+            //Teste si on respecte la condition pour le l'espacement actuel.
             if (minPixel >= MIN_PIXEL_ELE) {
                 return eleStep;
             }
         }
-        // retourne l'espacement maximal si aucun ne satisfait la condition
+        //Retourne l'espacement maximal si aucun ne satisfait la condition.
         return ELE_STEPS[ELE_STEPS.length - 1];
     }
 
@@ -329,12 +489,12 @@ public final class ElevationProfileManager {
         double minEle = elevationProfile.get().minElevation();
         double maxEle = elevationProfile.get().maxElevation();
         int step = computeHorizontalLinesSpacing();
-        // dénivelée au-dessus de la dernière ligne
+        //Dénivelé au-dessus de la dernière ligne.
         double spaceUp = maxEle % step;
-        // dénivelée au-dessus de la ligne en dessous de la première ligne à dessiner
+        //Dénivelé au-dessus de la ligne en dessous de la première ligne à dessiner.
         double spaceDown = minEle % step;
         double newDeltaEle = maxEle - spaceUp  - (minEle - spaceDown);
-        // cas limite où il faut dessiner la première ligne (donc une de +).
+        //Cas limite où il faut dessiner la première ligne (donc une de +).
         if (spaceDown == 0 ) newDeltaEle += step;
         return (int) newDeltaEle / step ;
     }
@@ -347,19 +507,22 @@ public final class ElevationProfileManager {
      */
     private int numberOfVerticalLine() {
         int maxPos = (int) elevationProfile.get().length();
-        int step = computeVerticalLinesSpacing() ;
-        // + 1, car pour une distance de n il faut n + 1 séparateur.
+        int step = computeVerticalLinesSpacing();
+        //+ 1, car pour une distance de n il faut n + 1 séparateurs.
         return maxPos / step + 1;
     }
 
-
-    private void creatObject() {
+    /**
+     * Méthode privée initialisant tous les attributs non finaux de la classe.
+     */
+    private void createObject() {
         polygon = new Polygon();
         path = new Path();
         group = new Group();
         line = new Line();
         statisticsText = new Text();
         vBox = new VBox();
+        vBox.setId("profile_data");
         rectangle2D = new SimpleObjectProperty<>(new Rectangle2D(0, 0, 0, 0));
         worldToScreenTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
         screenToWorldTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
@@ -375,35 +538,42 @@ public final class ElevationProfileManager {
         return borderPane;
     }
 
+    /**
+     * Méthode publique retournant la propriété en lecture seule contenant la position de la souris
+     * sur le profil.
+     * @return la propriété en lecture seule contenant la position de la souris sur le profil.
+     */
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
         return mousePositionOnProfile;
     }
 
+    /**
+     * Méthode privée calculant la transformation passant des coordonnées du panneau JavaFX aux
+     * coordonnées du monde "réel", et la transformation inverse.
+     */
     private void setTransformation() {
-
-        // à la place du Listener on devrait bind
         Affine affine = new Affine();
-        // Décale au coin au gauche du rectangle
+        //Décale au coin au gauche du rectangle.
         affine.prependTranslation(-insets.getLeft(), -insets.getTop());
-        // inverse les coordonnées de l'altitude. Puis Ajout de la hauteur
-        // Dans le but que pour une une hauteur de 50
-        // 50->400      deviennent   0 -> 400
-        // 25->800      deviennent   25-> 800
-        // 0->1200      deviennent   50-> 1200
+        //Inverse les coordonnées de l'altitude. Puis Ajout de la hauteur
+        //Dans le but que pour une hauteur de 50
+        //50 → 400 deviennent 0 → 400
+        //25 → 800 deviennent 25 → 800
+        //0 → 1200 deviennent 50 → 1200
         affine.prependScale(1, -1);
         affine.prependTranslation(0, rectangle2D.get().getHeight());
-        // changement d'échelle
+        //Changement d'échelle.
         double deltaElevation = (elevationProfile.get().maxElevation() - elevationProfile.get().minElevation());
         affine.prependScale(1 / rectangle2D.get().getWidth(), 1 / rectangle2D.get().getHeight());
         affine.prependScale(elevationProfile.get().length(), deltaElevation);
-        // décalement de l'altitude
+        //Décalage de l'altitude.
         affine.prependTranslation(0,elevationProfile.get().minElevation());
         screenToWorldTransform.set(affine);
+        //Si la transformation inverse est possible, alors elle est calculée.
         try {
             worldToScreenTransform.set(affine.createInverse());
         } catch (NonInvertibleTransformException e) {
             e.printStackTrace();
         }
-
     }
 }

@@ -25,21 +25,18 @@ import java.util.Objects;
 public final class SingleRoute implements Route {
 
     /**
-     * Deux attributs inhérents à la classe SingleRoute.
-     * Le premier, edges, est la liste d'arêtes demandée.
-     * Le second, est le tableau des positions qui est
-     * initialisé à la construction, pour ne pas avoir à le
-     * recalculer à chaque fois, puisqu'il reste toujours le
-     * même.
+     * Attribut représentant la liste des arêtes de la route.
      */
-
     private final List<Edge> edges;
+
+    /**
+     * Attribut représentant le tableau des positions de la route.
+     */
     private final double[] positionsTab;
 
     /**
      * Constructeur public, initialisant une SingleRoute,
-     * donc sa liste d'arêtes, et son tableau de positions.
-     *
+     * donc sa liste d'arêtes et son tableau de positions.
      * @param edges Liste d'arêtes donnée.
      */
 

@@ -10,6 +10,18 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+/**
+ * 9.3.2
+ * RouteBean
+ * <p>
+ * Classe étant un bean JavaFX regroupant les propriétés relatives aux points
+ * de passage et à l'itinéraire correspondant.
+ *
+ * @author Jean Nordmann (344692)
+ * @author Maxime Ducourau (329544)
+ */
+
 public final class RouteBean {
 
     /**

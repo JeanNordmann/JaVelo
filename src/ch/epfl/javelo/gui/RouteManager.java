@@ -22,10 +22,9 @@ import java.util.function.Consumer;
 
 /**
  * 9.3.2
- * RouteBean
+ * RouteManager
  * <p>
- * Classe étant un bean JavaFX regroupant les propriétés relatives aux points
- * de passage et à l'itinéraire correspondant.
+ * Classe gérant l'affichage de l'itinéraire et (une partie de) l'interaction avec lui.
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
@@ -44,7 +43,7 @@ public final class RouteManager {
     private final RouteBean routeBean;
 
     /**
-     * Attribut représentant une propriété JavaFX, en lectureseule, contenant
+     * Attribut représentant une propriété JavaFX, en lecture seule, contenant
      * les paramètres de la carte affichée.
      */
     private final ReadOnlyObjectProperty<MapViewParameters> mapViewParameters;
@@ -191,7 +190,6 @@ public final class RouteManager {
      * n'a pas changé.
      */
     private void setUpListeners() {
-
 
         // Listener nous permettant d'ajouter un point si on clique sur le marqueur.
         highlightCircle.setOnMouseClicked(e -> clickOnHighlightMarker());
