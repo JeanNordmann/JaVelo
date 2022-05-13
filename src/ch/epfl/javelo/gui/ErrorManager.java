@@ -2,6 +2,7 @@ package ch.epfl.javelo.gui;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -17,11 +18,14 @@ public final class ErrorManager {
 
     private boolean displayIfNeeded;
 
+    private SequentialTransition previousTransition;
+
     public ErrorManager() {
         vBox = new VBox();
         vBox.getStylesheets().add("error.css");
-        Text text = new Text();
+        vBox.getChildren().add(new Text());
         vBox.setMouseTransparent(true);
+        previousTransition = null;
     }
 
     public Pane pane() {
@@ -29,8 +33,8 @@ public final class ErrorManager {
     }
 
     public void displayError(String errorMessage) {
-        //TODO AFFICHER LE MESSAGE
-
+        vBox.getChildren().set(0, new Text(errorMessage));
+        errorAnimation();
         //Partie sonore
         java.awt.Toolkit.getDefaultToolkit().beep();
     }
@@ -39,6 +43,20 @@ public final class ErrorManager {
         FadeTransition fstFadeTransition = new FadeTransition(Duration.millis(200), vBox);
         fstFadeTransition.setFromValue(0);
         fstFadeTransition.setToValue(0.8);
-        FadeTransition sndFadeTransition = new FadeTransition(Duration.millis(500), vBox)
-        System    }*/
+        FadeTransition sndFadeTransition = new FadeTransition(Duration.millis(500),
+                vBox.getChildren().get(0));
+        sndFadeTransition.setFromValue(0.8);
+        sndFadeTransition.setToValue(0);
+
+        SequentialTransition transition = new SequentialTransition(fstFadeTransition,
+                new PauseTransition(Duration.seconds(2)), sndFadeTransition);
+
+        //Arrêter le précédent message s'il y en a déjà un.
+        if (previousTransition != null) previousTransition.stop();
+
+        //Afficher l'animation du nouveau message d'erreur.
+        transition.play();
+        previousTransition = transition;
+
+    }
 }

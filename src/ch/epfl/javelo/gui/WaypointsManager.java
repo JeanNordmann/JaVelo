@@ -70,6 +70,8 @@ public final class WaypointsManager {
      * Panneau auquel se rattachent tous les groupes.
      */
     private final Pane pane;
+    
+    private ErrorManager errorManager; 
     /**
      * Constructeur initialisant les attributs à leurs valeurs données, et sinon à leurs valeurs par défaut.
      * @param graph graph du réseau routier.
@@ -82,6 +84,7 @@ public final class WaypointsManager {
                             ObservableList<Waypoint> waypointList, Consumer<String> stringConsumer) {
         this.graph = graph;
         this.mapViewParameters = mapViewParameters;
+        errorManager = new ErrorManager(); 
         this.waypointList = waypointList;
         this.stringConsumer = stringConsumer;
         previousCoordsOnScreen = new Point2D(0, 0);
@@ -182,6 +185,8 @@ public final class WaypointsManager {
         if (idNodeClosestTo == -1) {
             //Pas de nœud trouvé dans la distance de recherche.
             stringConsumer.accept("Aucune route à proximité !");
+            //TODO AUCUNE IDEE DE COMMENT FAIRE
+            errorManager.displayError(stringConsumer.toString());
         } else {
             //Ajoute le point de passage trouvé à la liste de points de passage de la classe.
             Waypoint waypointToAdd = new Waypoint(pointCh, idNodeClosestTo);
