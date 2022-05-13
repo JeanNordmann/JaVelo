@@ -184,12 +184,8 @@ public final class WaypointsManager {
             stringConsumer.accept("Aucune route à proximité !");
         } else {
             //Ajoute le point de passage trouvé à la liste de points de passage de la classe.
-            Waypoint waypointToAdd = new Waypoint(graph.nodePoint(idNodeClosestTo), idNodeClosestTo);
-            if (!waypointList.contains(waypointToAdd)) {
+            Waypoint waypointToAdd = new Waypoint(pointCh, idNodeClosestTo);
                 waypointList.add(waypointToAdd);
-            } else {
-                stringConsumer.accept("Un point de passage est déjà présent à cet endroit !");
-            }
         }
         }
 
@@ -296,7 +292,7 @@ public final class WaypointsManager {
             updateWaypointsLocations();
         } else {
             int position = pane.getChildren().indexOf(pin);
-            waypointList.set(position, new Waypoint(graph.nodePoint(idNodeClosestTo), idNodeClosestTo));
+            waypointList.set(position, new Waypoint(pointCh, idNodeClosestTo));
         }
     }
  }

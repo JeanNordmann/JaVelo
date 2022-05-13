@@ -72,6 +72,7 @@ public final class MultiRoute implements Route {
         return 0;
     }
 
+
     /**
      * Retourne la longueur de l'itinéraire en mètres.
      * @return La longueur de l'itinéraire en mètres.

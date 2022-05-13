@@ -76,10 +76,6 @@ public final class BaseMapManager {
      */
     private final ObjectProperty<Point2D> previousCoordsOnScreen;
 
-    /**
-     * Attribut nous permettant de rendre moins sensible le zoom.
-     */
-    private double scrollValue;
 
     /**
      * Constructeur public du BaseMapManager gérant l'interaction avec le fond de carte, et initialisant

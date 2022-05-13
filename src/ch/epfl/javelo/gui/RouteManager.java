@@ -49,11 +49,6 @@ public final class RouteManager {
     private final ReadOnlyObjectProperty<MapViewParameters> mapViewParameters;
 
     /**
-     * Attribut représentant un consommateur d'erreurs, permettant de signaler une erreur.
-     */
-    private final Consumer<String> stringConsumer;
-
-    /**
      * Attribut représentant la polyline.
      */
     private final Polyline polyline;
@@ -76,14 +71,11 @@ public final class RouteManager {
      * @param routeBean Bean de l'itinéraire.
      * @param mapViewParameters Propriété JavaFX, en lecture seule, contenant
      *                          les paramètres de la carte affichée.
-     * @param stringConsumer Consommateur d'erreurs permettant de signaler une
-     *                       erreur.
      */
 
-    public RouteManager(RouteBean routeBean, ObjectProperty<MapViewParameters> mapViewParameters, Consumer<String> stringConsumer) {
+    public RouteManager(RouteBean routeBean, ObjectProperty<MapViewParameters> mapViewParameters) {
         this.routeBean = routeBean;
         this.mapViewParameters = mapViewParameters;
-        this.stringConsumer = stringConsumer;
         this.polyline = new Polyline();
         polyline.setId("route");
         this.highlightCircle = new Circle(RADIUS_HIGHLIGHTED_POINT);
@@ -150,32 +142,10 @@ public final class RouteManager {
                 routeBean.getRoute().nodeClosestTo(routeBean.getHighlightedPosition()));
         List<Waypoint> waypointList = routeBean.getWaypoints();
 
-        if (waypointList.contains(waypointToAdd)) {
-            stringConsumer.accept("Un point de passage est déjà présent à cet endroit !");
-        } else {
-            int indexOfNewWaypoint = routeBean.getRoute().indexOfSegmentAt(routeBean.getHighlightedPosition()) + 1;
+            int indexOfNewWaypoint =
+                    routeBean.indexOfNonEmptySegmentAt(routeBean.getHighlightedPosition()) + 1;
             waypointList.add(indexOfNewWaypoint, waypointToAdd);
 
-            /*
-
-
-            ObservableList<Waypoint> observableWaypointList = (FXCollections.observableArrayList());
-            List<Waypoint> waypointList = routeBean.getWaypoints();
-            //clear la liste de waypoint
-            routeBean.setWaypoints(FXCollections.observableArrayList());
-
-            boolean aClean = true;
-            for (int i = 0, waypointListSize = waypointList.size(); i < waypointListSize; i++) {
-                Waypoint value = waypointList.get(i);
-                observableWaypointList.add(value);
-                routeBean.setWaypoints(observableWaypointList);
-                if (routeBean.getRoute() != null && routeBean.getRoute().length() > routeBean.getHighlightedPosition() && aClean) {
-                    observableWaypointList.add(i, waypointToAdd);
-                    aClean = false;
-                }
-            }
-            routeBean.setWaypoints(observableWaypointList);*/
-        }
     }
 
 

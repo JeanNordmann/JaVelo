@@ -53,7 +53,7 @@ public final class Stage8Test extends Application {
                 new BaseMapManager(tileManager,
                         waypointsManager,
                         mapViewParametersP);
-        RouteManager routeManager = new RouteManager(routeBean, mapViewParametersP, errorConsumer);
+        RouteManager routeManager = new RouteManager(routeBean, mapViewParametersP);
         StackPane mainPane =
                 new StackPane(baseMapManager.pane(),
                         waypointsManager.pane(),
