@@ -172,31 +172,30 @@ public final class BaseMapManager {
      */
 
     private void addMouseScrolling() {
-        canvas.setOnScroll((e) -> {
-            // Temporisation nous permettant de rendre moins sensible le zoom.
-            scrollValue += e.getDeltaY();
-            if (Math.abs(scrollValue) >= 30) {
-                double xOnScreen = e.getX(), yOnScreen = e.getY();
+        SimpleLongProperty minScrollTime = new SimpleLongProperty();
+        pane.setOnScroll(e -> {
+            if (e.getDeltaY() == 0d) return;
+            long currentTime = System.currentTimeMillis();
+            if (currentTime < minScrollTime.get()) return;
+            minScrollTime.set(currentTime + 200);
+            int zoomDelta = (int) Math.signum(e.getDeltaY());
+            double xOnScreen = e.getX(), yOnScreen = e.getY();
+            // Récupération du point en PointWebMercator de la souris
+            PointWebMercator pointWebMercator = mapViewParameters.get().pointAt(xOnScreen, yOnScreen);
 
-                // Récupération du point en PointWebMercator de la souris
-                PointWebMercator pointWebMercator = mapViewParameters.get().pointAt(xOnScreen, yOnScreen);
+            // Calcul du nouveau niveau de zoom (+1 ou -1)
+            int newZoomLevel = Math2.clamp(MIN_ZOOM_LEVEL, mapViewParameters.get().zoomLevel()
+                    + (zoomDelta > 0 ? 1 : -1), MAX_ZOOM_LEVEL);
 
-                // Calcul du nouveau niveau de zoom (+1 ou -1)
-                int newZoomLevel = Math2.clamp(MIN_ZOOM_LEVEL, mapViewParameters.get().zoomLevel()
-                        + (scrollValue > 0 ? 1 : -1), MAX_ZOOM_LEVEL);
-
-                mapViewParameters.set(new MapViewParameters(newZoomLevel,
-                        pointWebMercator.xAtZoomLevel(newZoomLevel) - xOnScreen,
-                        pointWebMercator.yAtZoomLevel(newZoomLevel) - yOnScreen));
-                scrollValue = 0;
-            }
+            mapViewParameters.set(new MapViewParameters(newZoomLevel,
+                    pointWebMercator.xAtZoomLevel(newZoomLevel) - xOnScreen,
+                    pointWebMercator.yAtZoomLevel(newZoomLevel) - yOnScreen));
         });
     }
 
     /**
      * Méthode permettant de gérer l'interaction de déplacement de la carte.
      */
-
     private void addMouseDragging() {
         // Prise de la coordonnée au début du clic.
         canvas.setOnMousePressed((e) -> previousCoordsOnScreen.set(new Point2D(e.getX(), e.getY())));
@@ -220,7 +219,6 @@ public final class BaseMapManager {
     /**
      * Méthode nous permettant d'ajouter un Waypoint à la position du clic.
      */
-
     private void addMouseClicking() {
         canvas.setOnMouseClicked((e) -> {
             if (e.isStillSincePress()) {
@@ -234,7 +232,6 @@ public final class BaseMapManager {
      * Méthode nous permettant d'accéder à l'attribut panneau de BaseMapManager.
      * @return Le panneau servant de conteneur à ses nœuds enfants notamment le canevas.
      */
-
     public Pane pane() {
         return pane;
     }

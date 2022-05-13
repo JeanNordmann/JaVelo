@@ -236,8 +236,8 @@ public final class ElevationProfileManager {
     private void initializeGridAndLabels() {
 
         //Variables utilisées plusieurs fois plus bas.
-        int minElevation =  (int) elevationProfile.get().minElevation();
-        int maxElevation = (int) elevationProfile.get().maxElevation();
+        double minElevation = elevationProfile.get().minElevation();
+        double maxElevation = elevationProfile.get().maxElevation();
         double elevationLength = elevationProfile.get().length();
         int spaceBetween2HLines = computeHorizontalLinesSpacing();
         int spaceBetween2VLines = computeVerticalLinesSpacing();
@@ -245,8 +245,8 @@ public final class ElevationProfileManager {
         int numberOfVLines = numberOfVerticalLine();
 
         //Calculant le multiple de la valeur de la ligne initiale à dessiner.
-        int initialHLine = Math2.ceilDiv(minElevation, spaceBetween2HLines);
-
+        //int initialHLine = Math2.ceilDiv(minElevation, spaceBetween2HLines);
+        double initialHLine = Math.ceil(minElevation / spaceBetween2HLines);
         //Variable représentant la transformation passant des coordonnées du monde, à celles du
         //de JavaFX.
         Transform worldToScreen = worldToScreenTransform.get();
@@ -264,6 +264,8 @@ public final class ElevationProfileManager {
             Point2D point2DLineTo = worldToScreen.transform(elevationLength, minElevation);
             pathElementList.add(new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY()));
             pathElementList.add(new LineTo(point2DLineTo.getX(), point2DLineTo.getY()));
+        } else {
+            ++initialHLine;
         }
 
         //Ajout de la ligne à droite du rectangle bleu si elle ne nécessite pas d'étiquette.
@@ -282,20 +284,20 @@ public final class ElevationProfileManager {
             PathElement lineTo = new LineTo(point2DLineTo.getX(), point2DLineTo.getY());
             pathElementList.add(moveTo);
             pathElementList.add(lineTo);
-            Text text = new Text(Integer.toString(variable));
+            Text text = new Text(Integer.toString((int) variable));
             setUpVerticalLabel(text, point2DMoveTo);
             group.getChildren().add(text);
         }
 
         for (int i = 0; i < numberOfVLines; i++) {
-            int variable = i * spaceBetween2VLines;
+            double variable = i * spaceBetween2VLines;
             Point2D point2DMoveTo = worldToScreen.transform(variable, minElevation);
             Point2D point2DLineTo = worldToScreen.transform(variable, maxElevation);
             PathElement moveTo = new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY());
             PathElement lineTo = new LineTo(point2DLineTo.getX(), point2DLineTo.getY());
             pathElementList.add(moveTo);
             pathElementList.add(lineTo);
-            Text text = new Text(Integer.toString(variable / 1000));
+            Text text = new Text(Integer.toString((int) variable / 1000));
             setUpHorizontalLabel(text, point2DMoveTo);
             group.getChildren().add(text);
         }
@@ -375,6 +377,7 @@ public final class ElevationProfileManager {
      * @param y coordonnée y donnée.
      * @return true si et seulement si la paire de coordonnée est dans le rectangle bleu.
      */
+    //TODO CHANGER CA POUR LA METhODE CONTAINS
     private boolean isInBlueRectangle(double x, double y) {
         return x >= insets.getLeft() && x <= pane.getWidth() - insets.getRight()
                 && y >= insets.getTop() && y <= pane.getHeight() - insets.getBottom();
