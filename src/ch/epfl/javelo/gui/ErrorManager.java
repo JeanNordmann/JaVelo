@@ -35,7 +35,7 @@ public final class ErrorManager {
         java.awt.Toolkit.getDefaultToolkit().beep();
     }
 
-   /* public void errorAnimation() {
+    public void errorAnimation() {
         FadeTransition fstFadeTransition = new FadeTransition(Duration.millis(200), vBox);
         fstFadeTransition.setFromValue(0);
         fstFadeTransition.setToValue(0.8);
