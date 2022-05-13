@@ -25,8 +25,10 @@ public  final class Stage10Test extends Application {
         RouteComputer routeComputer =
                 new RouteComputer(graph, costFunction);
 
+        int coo1 = (int) (Math.random() * 212000);
+        int coo2 = (int) (Math.random() * 212000);
         Route route = routeComputer
-                .bestRouteBetween(159049, 117669);
+                .bestRouteBetween(coo1, coo2);
         ElevationProfile profile = ElevationProfileComputer
                 .elevationProfile(route, 5);
 

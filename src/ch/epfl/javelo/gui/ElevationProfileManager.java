@@ -224,8 +224,9 @@ public final class ElevationProfileManager {
         //Ajoute tous les nouveaux nœuds au panneau gérant l'affichage du profil.
         pane.getChildren().add(path);
         pane.getChildren().add(group);
-        pane.getChildren().add(polygon);
+
         pane.getChildren().add(line);
+        pane.getChildren().add(polygon);
     }
 
     /**
@@ -274,7 +275,7 @@ public final class ElevationProfileManager {
         }
 
         for (int i = 0; i < numberOfHLines; i++) {
-            int variable = (initialHLine + i) * spaceBetween2HLines;
+            double variable = (initialHLine + i) * spaceBetween2HLines;
             Point2D point2DMoveTo = worldToScreen.transform(0, variable);
             Point2D point2DLineTo = worldToScreen.transform(elevationLength, variable);
             PathElement moveTo = new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY());
@@ -385,9 +386,11 @@ public final class ElevationProfileManager {
     private void computePolygon() {
         //Le point du polygone à la coordonnée (0,0) est le coin haut gauche.
         //Taille de deux cases par point, un point par pixel javaFx + les deux coins inférieurs.
-        double[] coordinate = new double[2 * ((int) rectangle2D.get().getWidth() + 2)];
+        double[] coordinate = new double[2 * ((int) rectangle2D.get().getWidth() + 3)];
+        System.out.println(rectangle2D.get().getWidth());
+        System.out.println();
         //Coordonnées des points des points de l'itinéraire
-        for (int i = 0; i < (int) rectangle2D.get().getWidth(); i++) {
+        for (int i = 0; i <= (int) rectangle2D.get().getWidth(); i++) {
             double xOnScreen = insets.getLeft() + i;
             double xOnWorld = screenToWorldTransform.get().transform(xOnScreen, 0).getX();
             Point2D wayPointOnScreen = worldToScreenTransform.get().transform(xOnWorld,
@@ -396,10 +399,10 @@ public final class ElevationProfileManager {
             coordinate[2 * i + 1] = wayPointOnScreen.getY();
         }
         //Coordonnées des deux coins du bas.
-        coordinate[ 2 * (int) rectangle2D.get().getWidth()] = rectangle2D.get().getMaxX();
-        coordinate[ 2 * (int) rectangle2D.get().getWidth() + 1] = rectangle2D.get().getMaxY();
-        coordinate[ 2 * (int) rectangle2D.get().getWidth() + 2] = rectangle2D.get().getMinX();
-        coordinate[ 2 * (int) rectangle2D.get().getWidth() + 3] = rectangle2D.get().getMaxY();
+        coordinate[ 2 * ((int) rectangle2D.get().getWidth() + 1)] = rectangle2D.get().getMaxX();
+        coordinate[ 2 * ((int) rectangle2D.get().getWidth() + 1) + 1] = rectangle2D.get().getMaxY();
+        coordinate[ 2 * ((int) rectangle2D.get().getWidth() + 1) + 2] = rectangle2D.get().getMinX();
+        coordinate[ 2 * ((int) rectangle2D.get().getWidth() + 1) + 3] = rectangle2D.get().getMaxY();
 
         polygon = new Polygon(coordinate);
         polygon.setFill(Color.RED);
