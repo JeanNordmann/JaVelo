@@ -56,7 +56,20 @@ public final class AnnotatedMapManager {
 
         pane.setOnMouseExited(e -> mousePositionOnRouteProperty.set(Double.NaN));
         pane.setOnMouseMoved(e -> mousePosition.set(new Point2D(e.getX(), e.getY())));
-        mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> );
+
+        mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
+            //todo A CLEAN
+            PointCh mousePointCh = mapViewParametersP.get().
+                    pointAt(mousePosition.get().getX(), mousePosition.get().getY())
+                    .toPointCh();
+            PointCh closestMousePointCh = bean.getRoute().pointClosestTo(mousePointCh).point();
+            PointWebMercator closestMousePWM = PointWebMercator.ofPointCh(closestMousePointCh);
+            Point2D closestMousePoint2D = new Point2D(mapViewParametersP.get().viewX(closestMousePWM),
+                    mapViewParametersP.get().viewY(closestMousePWM));
+            return mousePosition.get().distance(closestMousePoint2D) <= 15
+                    ? bean.getRoute().pointClosestTo(closestMousePointCh).position()
+                    : Double.NaN;
+        }, mousePosition));
     }
 
     public StackPane pane() {
@@ -66,20 +79,5 @@ public final class AnnotatedMapManager {
     public DoubleProperty mousePositionOnRouteProperty() {
         return mousePositionOnRouteProperty;
     }
-
-    private SimpleDoubleProperty doubleMousePosition() {
-        PointCh mousePointCh = mapViewParametersP.get().
-                pointAt(mousePosition.get().getY(), mousePosition.get().getY())
-                .toPointCh();
-        PointCh closestMousePointCh = bean.getRoute().pointClosestTo(mousePointCh).point();
-        PointWebMercator closestMousePWM = PointWebMercator.ofPointCh(closestMousePointCh);
-        Point2D closestMousePoint2D = new Point2D(mapViewParametersP.get().viewX(closestMousePWM),
-                mapViewParametersP.get().viewY(closestMousePWM));
-
-
-
-
-    }
-
 
 }
