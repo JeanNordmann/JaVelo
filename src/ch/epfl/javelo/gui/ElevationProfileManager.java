@@ -228,12 +228,12 @@ public final class ElevationProfileManager {
         System.out.println("setUpProfileDisplay");
 
         setTransformation();
-        //Calcule le polygone représentant le profil.
-        computePolygon();
         //Calcule la grille servant de repère au graphe du profil, ainsi que les étiquettes
         //rattachées.
         initializeGridAndLabels();
 
+        //Calcule le polygone représentant le profil.
+        computePolygon();
         //Ajoute tous les nouveaux nœuds au panneau gérant l'affichage du profil.
         pane.getChildren().add(path);
         pane.getChildren().add(group);
@@ -403,6 +403,8 @@ public final class ElevationProfileManager {
      * Méthode privée calculant le polygone représentant le profil.
      */
     private void computePolygon() {
+
+        System.out.println("computePolygon");
         //Le point du polygone à la coordonnée (0,0) est le coin haut gauche.
         //Taille de deux cases par point, un point par pixel javaFx + les deux coins inférieurs.
         double[] coordinate = new double[2 * ((int) rectangle2D.get().getWidth() + 3)];
@@ -416,10 +418,10 @@ public final class ElevationProfileManager {
             coordinate[2 * i + 1] = wayPointOnScreen.getY();
         }
         //Coordonnées des deux coins du bas.
-        coordinate[ 2 * ((int) rectangle2D.get().getWidth() + 1)] = rectangle2D.get().getMaxX();
-        coordinate[ 2 * ((int) rectangle2D.get().getWidth() + 1) + 1] = rectangle2D.get().getMaxY();
-        coordinate[ 2 * ((int) rectangle2D.get().getWidth() + 1) + 2] = rectangle2D.get().getMinX();
-        coordinate[ 2 * ((int) rectangle2D.get().getWidth() + 1) + 3] = rectangle2D.get().getMaxY();
+        coordinate[2 * ((int) rectangle2D.get().getWidth() + 1)] = rectangle2D.get().getMaxX();
+        coordinate[2 * ((int) rectangle2D.get().getWidth() + 1) + 1] = rectangle2D.get().getMaxY();
+        coordinate[2 * ((int) rectangle2D.get().getWidth() + 1) + 2] = rectangle2D.get().getMinX();
+        coordinate[2 * ((int) rectangle2D.get().getWidth() + 1) + 3] = rectangle2D.get().getMaxY();
 
         Polygon polygon1 = new Polygon(coordinate);
         polygon = polygon1;
@@ -490,7 +492,7 @@ public final class ElevationProfileManager {
     private int computeHorizontalLinesSpacing() {
         for (int eleStep : ELE_STEPS) {
             double minPixel = rectangle2D.get().getHeight()
-                    / ((elevationProfile.get().maxElevation() - elevationProfile.get().minElevation())/ (double) eleStep);
+                    / ((elevationProfile.get().maxElevation() - elevationProfile.get().minElevation())/(double) eleStep);
             //Teste si on respecte la condition pour le l'espacement actuel.
             if (minPixel >= MIN_PIXEL_ELE) {
                 return eleStep;
@@ -537,6 +539,7 @@ public final class ElevationProfileManager {
      * Méthode privée initialisant tous les attributs non finaux de la classe.
      */
     private void createObject() {
+        System.out.println("createObject");
         polygon = new Polygon();
         path = new Path();
         group = new Group();

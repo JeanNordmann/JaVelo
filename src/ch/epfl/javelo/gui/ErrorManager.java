@@ -37,6 +37,8 @@ public final class ErrorManager {
                 new PauseTransition(Duration.seconds(2)), sndFadeTransition);
 
         previousTransition = null;
+        pane = new Pane(vBox);
+        pane.setPickOnBounds(false);
     }
 
     public Pane pane() {
@@ -46,6 +48,7 @@ public final class ErrorManager {
     public void displayError(String errorMessage) {
         vBox.getChildren().set(0, new Text(errorMessage));
         errorAnimation();
+        previousTransition = null;
         //Partie sonore
         java.awt.Toolkit.getDefaultToolkit().beep();
     }
