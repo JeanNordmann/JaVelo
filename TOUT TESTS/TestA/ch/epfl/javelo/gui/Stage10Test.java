@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.nio.file.Path;
 
 import static javafx.application.Application.launch;
@@ -45,9 +46,26 @@ public  final class Stage10Test extends Application {
         Pane pane = profileManager.pane();
         Scene scene = new Scene(pane);
 
+        //Pour attendre 1minute
+        Thread.sleep(600); // suspendu pendant 60 seconde (chiffre en millisecondes)
+        System.out.println("");
+        System.out.println(" juste avant de redéfinir la tailler de de la fenetre");
+        System.out.println("");
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(300);
+
+        //Pour attendre 1minute
+        Thread.sleep(600); // suspendu pendant 60 seconde (chiffre en millisecondes)
+        System.out.println("");
+        System.out.println(" juste après de redéfinir la tailler de de la fenetre");
+        System.out.println("");
         primaryStage.setScene(scene);
         primaryStage.show();
+        //Pour attendre 1minute
+        Thread.sleep(600); // suspendu pendant 60 seconde (chiffre en millisecondes)
+
+        System.out.println("");
+        System.out.println("fin test 10");
+        System.out.println("");
     }
 }

@@ -8,13 +8,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.time.temporal.Temporal;
-
 public final class ErrorManager {
 
     private Pane pane;
 
     private VBox vBox;
+
+    private static SequentialTransition transition;
 
     private boolean displayIfNeeded;
 
@@ -25,6 +25,17 @@ public final class ErrorManager {
         vBox.getStylesheets().add("error.css");
         vBox.getChildren().add(new Text());
         vBox.setMouseTransparent(true);
+        FadeTransition fstFadeTransition = new FadeTransition(Duration.millis(200), vBox);
+        fstFadeTransition.setFromValue(0);
+        fstFadeTransition.setToValue(0.8);
+        FadeTransition sndFadeTransition = new FadeTransition(Duration.millis(500),
+                vBox.getChildren().get(0));
+        sndFadeTransition.setFromValue(0.8);
+        sndFadeTransition.setToValue(0);
+
+        transition = new SequentialTransition(fstFadeTransition,
+                new PauseTransition(Duration.seconds(2)), sndFadeTransition);
+
         previousTransition = null;
     }
 
@@ -40,23 +51,10 @@ public final class ErrorManager {
     }
 
     public void errorAnimation() {
-        FadeTransition fstFadeTransition = new FadeTransition(Duration.millis(200), vBox);
-        fstFadeTransition.setFromValue(0);
-        fstFadeTransition.setToValue(0.8);
-        FadeTransition sndFadeTransition = new FadeTransition(Duration.millis(500),
-                vBox.getChildren().get(0));
-        sndFadeTransition.setFromValue(0.8);
-        sndFadeTransition.setToValue(0);
-
-        SequentialTransition transition = new SequentialTransition(fstFadeTransition,
-                new PauseTransition(Duration.seconds(2)), sndFadeTransition);
-
         //Arrêter le précédent message s'il y en a déjà un.
-        if (previousTransition != null) previousTransition.stop();
+        transition.stop();
 
         //Afficher l'animation du nouveau message d'erreur.
         transition.play();
-        previousTransition = transition;
-
     }
 }
