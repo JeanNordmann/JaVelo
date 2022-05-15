@@ -1,6 +1,8 @@
 package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.PointWebMercator;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -51,8 +53,10 @@ public final class AnnotatedMapManager {
         pane = new StackPane(baseMapManager.pane(), waypointsManager.pane(), routeManager.pane());
         mousePositionOnRouteProperty = new SimpleDoubleProperty(Double.NaN);
         mousePosition = new SimpleObjectProperty<>(new Point2D(Double.NaN, Double.NaN));
-        pane.setOnMouseMoved(e -> mousePosition.set(new Point2D(e.getX(), e.getY())));
+
         pane.setOnMouseExited(e -> mousePositionOnRouteProperty.set(Double.NaN));
+        pane.setOnMouseMoved(e -> mousePosition.set(new Point2D(e.getX(), e.getY())));
+        mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> );
     }
 
     public StackPane pane() {
@@ -60,11 +64,21 @@ public final class AnnotatedMapManager {
     }
 
     public DoubleProperty mousePositionOnRouteProperty() {
-        PointCh mousePointCh = mapViewParametersP.get().pointAt(mousePosition.get().getY(),
-                mousePosition.get().getY()).toPointCh();
-        PointCh closestMousePointCh =
-                graph.nodePoint(bean.getRoute().pointClosestTo(mousePointCh)).;
         return mousePositionOnRouteProperty;
+    }
+
+    private SimpleDoubleProperty doubleMousePosition() {
+        PointCh mousePointCh = mapViewParametersP.get().
+                pointAt(mousePosition.get().getY(), mousePosition.get().getY())
+                .toPointCh();
+        PointCh closestMousePointCh = bean.getRoute().pointClosestTo(mousePointCh).point();
+        PointWebMercator closestMousePWM = PointWebMercator.ofPointCh(closestMousePointCh);
+        Point2D closestMousePoint2D = new Point2D(mapViewParametersP.get().viewX(closestMousePWM),
+                mapViewParametersP.get().viewY(closestMousePWM));
+
+
+
+
     }
 
 
