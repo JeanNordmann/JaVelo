@@ -201,6 +201,7 @@ public final class ElevationProfileManager {
         //transformations et l'affichage du profil.
         //TODO idée mettre en attribut les steps et les actualiser...
         rectangle2D.addListener(e -> {
+            System.out.println("");
             System.out.println("rectangle 2d change");
             setUpProfileDisplay();
         });
@@ -236,7 +237,8 @@ public final class ElevationProfileManager {
         //Ajoute tous les nouveaux nœuds au panneau gérant l'affichage du profil.
         pane.getChildren().add(path);
         pane.getChildren().add(group);
-
+        polygon.setFill(Color.RED);
+        polygon.setId("profile");
         pane.getChildren().add(polygon);
         pane.getChildren().add(line);
     }
@@ -419,9 +421,8 @@ public final class ElevationProfileManager {
         coordinate[ 2 * ((int) rectangle2D.get().getWidth() + 1) + 2] = rectangle2D.get().getMinX();
         coordinate[ 2 * ((int) rectangle2D.get().getWidth() + 1) + 3] = rectangle2D.get().getMaxY();
 
-        polygon = new Polygon(coordinate);
-        polygon.setFill(Color.RED);
-        polygon.setId("profile");
+        Polygon polygon1 = new Polygon(coordinate);
+        polygon = polygon1;
 
     }
 
@@ -469,7 +470,6 @@ public final class ElevationProfileManager {
      * @return l'espacement des lignes verticales.
      */
     private int computeVerticalLinesSpacing() {
-        System.out.println("computeVerticalLineSpacing");
         for (int posStep : POS_STEPS) {
             double minPixel = rectangle2D.get().getWidth() /
                     (elevationProfile.get().length() / (double) posStep);
@@ -488,7 +488,6 @@ public final class ElevationProfileManager {
      * @return l'espacement des lignes horizontales.
      */
     private int computeHorizontalLinesSpacing() {
-        System.out.println("computeHorizontalLineSpacing");
         for (int eleStep : ELE_STEPS) {
             double minPixel = rectangle2D.get().getHeight()
                     / ((elevationProfile.get().maxElevation() - elevationProfile.get().minElevation())/ (double) eleStep);
@@ -508,7 +507,6 @@ public final class ElevationProfileManager {
      * @return le nombre de lignes horizontales ayant un texte d'altitude associé.
      */
     private int numberOfHorizontalLine() {
-        System.out.println("numberOfHorizontalLine");
         double minEle = elevationProfile.get().minElevation();
         double maxEle = elevationProfile.get().maxElevation();
         int step = computeHorizontalLinesSpacing();

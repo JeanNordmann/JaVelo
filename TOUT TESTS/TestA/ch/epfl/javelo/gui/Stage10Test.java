@@ -47,7 +47,6 @@ public  final class Stage10Test extends Application {
         Scene scene = new Scene(pane);
 
         //Pour attendre 1minute
-        Thread.sleep(600); // suspendu pendant 60 seconde (chiffre en millisecondes)
         System.out.println("");
         System.out.println(" juste avant de redéfinir la tailler de de la fenetre");
         System.out.println("");
@@ -55,14 +54,12 @@ public  final class Stage10Test extends Application {
         primaryStage.setMinHeight(300);
 
         //Pour attendre 1minute
-        Thread.sleep(600); // suspendu pendant 60 seconde (chiffre en millisecondes)
         System.out.println("");
         System.out.println(" juste après de redéfinir la tailler de de la fenetre");
         System.out.println("");
         primaryStage.setScene(scene);
         primaryStage.show();
         //Pour attendre 1minute
-        Thread.sleep(600); // suspendu pendant 60 seconde (chiffre en millisecondes)
 
         System.out.println("");
         System.out.println("fin test 10");
