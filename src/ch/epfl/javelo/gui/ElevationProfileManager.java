@@ -175,6 +175,7 @@ public final class ElevationProfileManager {
 
         //Lie les coordonnées du rectangle bleu, et celles de la ligne de mise en évidence.
         bindBlueRectangleDimensions();
+        mousePositionOnProfile.bindBidirectional((Property<Number>) highlightedPosition);
         bindHighlightedLine();
 
         //Configure l'affichage du profil, les auditeurs et les gestionnaires d'évènements.
@@ -352,7 +353,17 @@ public final class ElevationProfileManager {
         line.endYProperty().bind(Bindings.select(rectangle2D, "maxY"));
         line.visibleProperty().bind(highlightedPosition.greaterThanOrEqualTo(0));
 
-    }
+    }/*private void bindHighlightedLine() {
+        //TODO changer ça Jean a copié sa ligne de code, et nous on avait fait avec mousePosition
+        // quand ça marchait, il faut donc changer highlightedPosition et sa valeur.
+        line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> worldToScreenTransform.get()
+                .transform(highlightedPosition.get(), 0).getX(),
+                 highlightedPosition, worldToScreenTransform));
+        line.startYProperty().bind(Bindings.select(rectangle2D, "minY"));
+        line.endYProperty().bind(Bindings.select(rectangle2D, "maxY"));
+        line.visibleProperty().bind(highlightedPosition.greaterThanOrEqualTo(0));
+
+    }*/
 
     /**
      * Méthode privée configurant les gestionnaires d'évènements, pour obtenir la coordonnée X de

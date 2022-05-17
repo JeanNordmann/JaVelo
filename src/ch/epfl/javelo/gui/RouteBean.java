@@ -86,7 +86,7 @@ public final class RouteBean {
         route.addListener((observable, oldValue, newValue) -> {
             if (oldValue != null && newValue == null) setHighlightedPosition(Double.NaN);
             //TODO surtout pas dans la version final
-            if (oldValue == null && newValue != null) setHighlightedPosition(1000);
+            if (oldValue == null && newValue != null) setHighlightedPosition(3000);
         });
     }
 
