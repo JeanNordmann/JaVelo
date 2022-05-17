@@ -62,8 +62,7 @@ public final class AnnotatedMapManager {
             System.out.println(mousePosition);
         });
 
-        //mousePositionOnRouteProperty.bindBidirectional(bean.highlightedPositionProperty());
-
+        bean.highlightedPositionProperty().bind(mousePositionOnRouteProperty);
         mousePositionOnRouteProperty.addListener(e -> System.out.println(mousePositionOnRouteProperty.get()));
         mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
             if(bean.getRoute() == null) return Double.NaN ;
