@@ -3,16 +3,8 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.routing.CityBikeCF;
-import ch.epfl.javelo.routing.ElevationProfile;
-import ch.epfl.javelo.routing.ElevationProfileComputer;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
@@ -36,12 +28,14 @@ public class JaVelo extends Application {
         ErrorManager errorManager = new ErrorManager();
 
         RouteBean routeBean = new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
-
+        //création AnnotatedMapManager
         AnnotatedMapManager annotatedMapManager = new AnnotatedMapManager(graph, tileManager,
                 routeBean, errorManager::displayError);
+        //création ElevationProfileManager
         ElevationProfileManager elevationProfileManager =
                 new ElevationProfileManager(routeBean.elevationProfileProperty(),
                         routeBean.highlightedPositionProperty());
+
         SplitPane splitPane = new SplitPane(annotatedMapManager.pane());
         splitPane.setOrientation(Orientation.VERTICAL);
 
