@@ -84,7 +84,7 @@ public final class RouteManager {
         pane = new Pane();
         pane.setPickOnBounds(false);
 
-        constructPolyline();
+
         constructMarker();
         setUpListeners();
     }
@@ -101,6 +101,7 @@ public final class RouteManager {
      * Méthode privée construisant la polyline.
      */
     private void constructPolyline() {
+        System.out.println("polyline");
         pane.getChildren().remove(polyline);
         List<Double> coordinates = new ArrayList<>();
         try {
@@ -163,8 +164,7 @@ public final class RouteManager {
 
         // Listener nous permettant d'ajouter un point si on clique sur le marqueur.
         highlightCircle.setOnMouseClicked(e -> clickOnHighlightMarker());
-        // Listener nous permettant de redessiner la polyligne et le marqueur si on change le zoomLevel du mapViewParameter.
-        routeBean.routeProperty().addListener(e -> constructPolyline());
+
         mapViewParameters.addListener((p, oldS, newS) -> {
             if (oldS.zoomLevel() != newS.zoomLevel()) {
                 constructPolyline();
@@ -185,7 +185,9 @@ public final class RouteManager {
         // Listener nous permettant de d'actualiser la visibilité de la polyligne et du marqueur, affin qu'ils
         // deviennent invisibles s'il n'y a pas d'itinéraire.
         routeBean.routeProperty().addListener((observable, oldValue, newValue) -> {
+            constructPolyline();
             if (oldValue == null && newValue != null) {
+                System.out.println("je suis censé draw la line");
                 polyline.setVisible(true);
                 highlightCircle.setVisible(true);
             }

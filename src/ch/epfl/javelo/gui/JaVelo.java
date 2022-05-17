@@ -37,7 +37,6 @@ public class JaVelo extends Application {
 
         RouteBean routeBean = new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
 
-        //TODO BIND LA HIGHLIGHTED POSITION
         AnnotatedMapManager annotatedMapManager = new AnnotatedMapManager(graph, tileManager,
                 routeBean, errorManager::displayError);
         ElevationProfileManager elevationProfileManager =
@@ -49,18 +48,12 @@ public class JaVelo extends Application {
         routeBean.elevationProfileProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue != null && oldValue == null) {
                 splitPane.getItems().add(elevationProfileManager.pane());
+                SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
             }
             if (newValue == null) {
                 splitPane.getItems().remove(elevationProfileManager.pane());
             }
         });
-
-//TODO CREER UN SPLITPANE AVEC LA CARTE ET L ELEVATIONPROFILEMANAGER
-        //Après il faut ajouter le errorManager au STACKPANE (et pas splitpane)
-        //SPLIT --> diviser le panneau en 2, ce qu'on peut pour la carte et le profil
-        //STACK --> on empile un truc par dessus un autre, ce qu'on veut pour mettre les erreurs
-        // par dessus le reste de la carte/profil
-
 
         StackPane mainPane = new StackPane(splitPane, errorManager.pane());
         primaryStage.setMinWidth(800);

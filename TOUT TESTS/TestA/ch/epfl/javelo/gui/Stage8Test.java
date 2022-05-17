@@ -4,6 +4,7 @@ import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.routing.CityBikeCF;
 import ch.epfl.javelo.routing.ElevationProfile;
+import ch.epfl.javelo.routing.Route;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
@@ -58,6 +59,11 @@ public final class Stage8Test extends Application {
                 new StackPane(baseMapManager.pane(),
                         waypointsManager.pane(),
                         routeManager.pane());
+
+        RouteBean bean = new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
+
+        AnnotatedMapManager annotatedMapManager = new AnnotatedMapManager(graph, tileManager,
+                bean, null);
         mainPane.getStylesheets().add("map.css");
 
 
@@ -65,7 +71,7 @@ public final class Stage8Test extends Application {
 
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(300);
-        primaryStage.setScene(new Scene(mainPane));
+        primaryStage.setScene(new Scene(annotatedMapManager.pane()));
         primaryStage.show();
     }
 

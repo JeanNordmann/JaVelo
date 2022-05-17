@@ -343,6 +343,8 @@ public final class ElevationProfileManager {
      * rectangle bleu, et si elle est visible ou non en fonction de sa valeur (positive ou non).
      */
     private void bindHighlightedLine() {
+        //TODO changer ça Jean a copié sa ligne de code, et nous on avait fait avec mousePosition
+        // quand ça marchait, il faut donc changer highlightedPosition et sa valeur.
         line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> worldToScreenTransform.get()
                 .transform(highlightedPosition.get(), 0).getX(),
                  highlightedPosition, worldToScreenTransform));

@@ -46,8 +46,7 @@ public final class AnnotatedMapManager {
         this.consumer = consumer;
         mapViewParametersP =
                 new SimpleObjectProperty<>(new MapViewParameters(12, 543200, 370650));
-        ObservableList<Waypoint> waypoints =  FXCollections.observableArrayList();
-        waypointsManager = new WaypointsManager(graph, mapViewParametersP, waypoints, consumer);
+        waypointsManager = new WaypointsManager(graph, mapViewParametersP, bean.waypointsProperty(), consumer);
         baseMapManager = new BaseMapManager(tileManager, waypointsManager, mapViewParametersP);
         routeManager = new RouteManager(bean, mapViewParametersP);
         pane = new StackPane(baseMapManager.pane(), waypointsManager.pane(), routeManager.pane());
