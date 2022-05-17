@@ -108,7 +108,7 @@ public class GpxGenerator {
             transformer.transform(new DOMSource(doc),
                     new StreamResult(w));
         } catch (TransformerException e) {
-            throw new Error(e); // Ne dois jamais arriver.
+            throw new Error(e); // Cela ne doit jamais arriver.
         }
     }
 
