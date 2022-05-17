@@ -51,13 +51,17 @@ public final class AnnotatedMapManager {
         baseMapManager = new BaseMapManager(tileManager, waypointsManager, mapViewParametersP);
         routeManager = new RouteManager(bean, mapViewParametersP);
         pane = new StackPane(baseMapManager.pane(), waypointsManager.pane(), routeManager.pane());
+        pane.getStylesheets().add("map.css");
         mousePositionOnRouteProperty = new SimpleDoubleProperty(Double.NaN);
         mousePosition = new SimpleObjectProperty<>(new Point2D(Double.NaN, Double.NaN));
 
         pane.setOnMouseExited(e -> mousePositionOnRouteProperty.set(Double.NaN));
         pane.setOnMouseMoved(e -> mousePosition.set(new Point2D(e.getX(), e.getY())));
 
-        mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
+
+
+        /*mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
+            if(bean.getRoute() == null) return Double.NaN ;
             //todo A CLEAN
             PointCh mousePointCh = mapViewParametersP.get().
                     pointAt(mousePosition.get().getX(), mousePosition.get().getY())
@@ -70,6 +74,8 @@ public final class AnnotatedMapManager {
                     ? bean.getRoute().pointClosestTo(closestMousePointCh).position()
                     : Double.NaN;
         }, mousePosition));
+
+         */
     }
 
     public StackPane pane() {

@@ -76,7 +76,7 @@ public final class RouteBean {
     public RouteBean(RouteComputer routeComputer) {
         this.routeComputer = routeComputer;
         this.waypoints = FXCollections.observableArrayList();
-        this.highlightedPosition = new SimpleDoubleProperty(Double.NaN);
+        this.highlightedPosition = new SimpleDoubleProperty();
         this.route = new SimpleObjectProperty<>();
         this.elevationProfile = new SimpleObjectProperty<>();
         this.routeCacheMemory = new LinkedHashMap<>(MEMORY_CACHE_SIZE, 0.75f, true);

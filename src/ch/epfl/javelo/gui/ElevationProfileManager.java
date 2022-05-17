@@ -196,13 +196,10 @@ public final class ElevationProfileManager {
      * bleu et des changements du profil.
      */
     private void setUpListener() {
-        System.out.println("setUpListener");
         //Auditeur détectant les changements de dimensions du rectangle bleu et recalculant les
         //transformations et l'affichage du profil.
         //TODO idée mettre en attribut les steps et les actualiser...
         rectangle2D.addListener(e -> {
-            System.out.println("");
-            System.out.println("rectangle 2d change");
             setUpProfileDisplay();
         });
 
@@ -248,7 +245,6 @@ public final class ElevationProfileManager {
      * profil, ainsi que les étiquettes des valeurs le long des axes.
      */
     private void initializeGridAndLabels() {
-        System.out.println("initialiseGridAnsLabels");
         //Variables utilisées plusieurs fois plus bas.
         double minElevation = elevationProfile.get().minElevation();
         double maxElevation = elevationProfile.get().maxElevation();
@@ -356,7 +352,6 @@ public final class ElevationProfileManager {
      * rectangle bleu, et si elle est visible ou non en fonction de sa valeur (positive ou non).
      */
     private void bindHighlightedLine() {
-        System.out.println("bindHighlightedLine");
         line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> worldToScreenTransform.get()
                 .transform(mousePositionOnProfile.get(), elevationProfile.get().minElevation())
                 .getX(), mousePositionOnProfile));
@@ -372,7 +367,6 @@ public final class ElevationProfileManager {
      * rectangle bleu ou du panneau.
      */
     private void setUpEventHandlers() {
-        System.out.println("setUpEventHandler");
         pane.setOnMouseMoved(event -> {
             if (isInBlueRectangle(event.getX(), event.getY())) {
                 Point2D worldCoordinates = screenToWorldTransform.get().transform(event.getX(),
@@ -404,7 +398,6 @@ public final class ElevationProfileManager {
      */
     private void computePolygon() {
 
-        System.out.println("computePolygon");
         //Le point du polygone à la coordonnée (0,0) est le coin haut gauche.
         //Taille de deux cases par point, un point par pixel javaFx + les deux coins inférieurs.
         double[] coordinate = new double[2 * ((int) rectangle2D.get().getWidth() + 3)];
@@ -433,7 +426,6 @@ public final class ElevationProfileManager {
      * lequel le rectangle bleu se trouve.
      */
     private void bindBlueRectangleDimensions() {
-        System.out.println("bindBlueRectangleDimmension");
         rectangle2D.bind(Bindings.createObjectBinding(() -> {
             //Si les dimensions du panneau sont suffisantes pour accueillir un rectangle bleu,
             //alors on le renvoie.
@@ -454,7 +446,6 @@ public final class ElevationProfileManager {
      * qu'elles s'affichent en ligne en dessous du profil.
      */
     private void formatStatistics() {
-        System.out.println("formateStatistics");
         statisticsText.setText(String.format("Longueur : %.1f km" +
                         "     Montée : %.0f m" +
                         "     Descente : %.0f m" +
@@ -539,7 +530,6 @@ public final class ElevationProfileManager {
      * Méthode privée initialisant tous les attributs non finaux de la classe.
      */
     private void createObject() {
-        System.out.println("createObject");
         polygon = new Polygon();
         path = new Path();
         group = new Group();
@@ -576,7 +566,6 @@ public final class ElevationProfileManager {
      * coordonnées du monde "réel", et la transformation inverse.
      */
     private void setTransformation() {
-        System.out.println("setTransformation");
         Affine affine = new Affine();
         //Décale au coin au gauche du rectangle.
         affine.prependTranslation(-insets.getLeft(), -insets.getTop());

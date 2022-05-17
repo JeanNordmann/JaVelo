@@ -44,6 +44,7 @@ public final class ElevationProfileComputer {
         for (int i = 0; i < nbrEchantillons; i++) {
             floatsProfile[i] = (float) route.elevationAt(maxStepLength * i);
         }
+
         //Remplir les trous du début du tableau.
         for (int i = 0; i < nbrEchantillons; i++) {
             if (!Float.isNaN(floatsProfile[i])) {

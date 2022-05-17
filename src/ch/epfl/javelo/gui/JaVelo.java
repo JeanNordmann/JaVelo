@@ -14,7 +14,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -31,34 +30,27 @@ public class JaVelo extends Application {
         String tileServerHost = "tile.openstreetmap.org";
         TileManager tileManager =
                 new TileManager(cacheBasePath, tileServerHost);
-
-        MapViewParameters mapViewParameters =
-                new MapViewParameters(12, 543200, 370650);
-        ObjectProperty<MapViewParameters> mapViewParametersP =
-                new SimpleObjectProperty<>(mapViewParameters);
-        ObservableList<Waypoint> waypoints =
-                FXCollections.observableArrayList();
         ErrorManager errorManager = new ErrorManager();
 
         RouteBean routeBean = new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
-        routeBean.setWaypoints(waypoints);
-        routeBean.setHighlightedPosition(1000);
 
-        WaypointsManager waypointsManager =
-                new WaypointsManager(graph,
-                        mapViewParametersP,
-                        routeBean.waypointsProperty(),
-                        errorManager::displayError);
-        BaseMapManager baseMapManager =
-                new BaseMapManager(tileManager,
-                        waypointsManager,
-                        mapViewParametersP);
-        RouteManager routeManager = new RouteManager(routeBean, mapViewParametersP);
-        StackPane mapPane =
-                new StackPane(baseMapManager.pane(),
-                        waypointsManager.pane(),
-                        routeManager.pane());
-        mapPane.getStylesheets().add("map.css");
+        //TODO BIND LA HIGHLIGHTED POSITION
+        AnnotatedMapManager annotatedMapManager = new AnnotatedMapManager(graph, tileManager,
+                routeBean, errorManager::displayError);
+        ElevationProfileManager elevationProfileManager =
+                new ElevationProfileManager(routeBean.elevationProfileProperty(),
+                        routeBean.highlightedPositionProperty());
+        SplitPane splitPane = new SplitPane(annotatedMapManager.pane());
+        splitPane.setOrientation(Orientation.VERTICAL);
+
+        routeBean.elevationProfileProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue != null && oldValue == null) {
+                splitPane.getItems().add(elevationProfileManager.pane());
+            }
+            if (newValue == null) {
+                splitPane.getItems().remove(elevationProfileManager.pane());
+            }
+        });
 
 //TODO CREER UN SPLITPANE AVEC LA CARTE ET L ELEVATIONPROFILEMANAGER
         //Après il faut ajouter le errorManager au STACKPANE (et pas splitpane)
@@ -134,9 +126,6 @@ public class JaVelo extends Application {
 
         primaryStage.show();
     }
-
-
-
 
 }
 private computeValideRoute() {
