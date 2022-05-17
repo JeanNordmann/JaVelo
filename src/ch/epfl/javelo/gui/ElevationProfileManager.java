@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -21,7 +22,7 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -154,7 +155,6 @@ public final class ElevationProfileManager {
      */
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfile,
                                    ReadOnlyDoubleProperty highlightedPosition) {
-        System.out.println("j'apelle le constructeur");
         this.elevationProfile = elevationProfile;
         this.highlightedPosition = highlightedPosition;
         pane = new Pane();
@@ -178,16 +178,12 @@ public final class ElevationProfileManager {
         bindHighlightedLine();
 
         //Configure l'affichage du profil, les auditeurs et les gestionnaires d'évènements.
-        setUpProfileDisplay();
         setUpListener();
         setUpEventHandlers();
         //Calcule les nouvelles statistiques du profil.
         vBox.getChildren().clear();
-        formatStatistics();
         vBox.getChildren().add(statisticsText);
-        System.out.println("");
-        System.out.println("fin du constructeur");
-        System.out.println("");
+
     }
 
 
@@ -208,7 +204,7 @@ public final class ElevationProfileManager {
         //l'affichage du profil.
         elevationProfile.addListener((p,oldV,newV) -> {
             if (oldV.minElevation() != newV.minElevation() || oldV.maxElevation() != newV.maxElevation() || oldV.length() != newV.length()) {
-                setUpProfileDisplay();
+                if(elevationProfile.get() != null) setUpProfileDisplay();
             }
 
             //Calcule les nouvelles statistiques du profil.
@@ -222,24 +218,19 @@ public final class ElevationProfileManager {
      * Méthode privée configurant l'affichage du profil.
      */
     private void setUpProfileDisplay() {
-        System.out.println("setUpProfileDisplay");
+
 
         setTransformation();
+        //Calcule le polygone représentant le profil.
+        computePolygon();
+
         //Calcule la grille servant de repère au graphe du profil, ainsi que les étiquettes
         //rattachées.
         initializeGridAndLabels();
 
-        //Calcule le polygone représentant le profil.
-        computePolygon();
         //Ajoute tous les nouveaux nœuds au panneau gérant l'affichage du profil.
-        pane.getChildren().add(path);
-        pane.getChildren().add(group);
-        polygon.setFill(Color.RED);
-        polygon.setId("profile");
-        pane.getChildren().add(polygon);
-        pane.getChildren().add(line);
+        pane.getChildren().setAll(group, path, polygon, line);
     }
-
     /**
      * Méthode privée calculant les positions des lignes de la grille du graphe représentant le
      * profil, ainsi que les étiquettes des valeurs le long des axes.
@@ -262,11 +253,12 @@ public final class ElevationProfileManager {
         Transform worldToScreen = worldToScreenTransform.get();
 
         List<PathElement> pathElementList = new ArrayList<>();
+        List<Text> textList = new ArrayList<>();
 
         //Supprimant les anciens enfants du groupe représentant la grille, et du panneau gérant
         //l'affichage du profil.
-        group.getChildren().clear();
-        pane.getChildren().clear();
+        //group.getChildren().clear();
+        //pane.getChildren().clear();
 
         //Ajout de la ligne en bas du rectangle bleu si elle ne nécessite pas d'étiquette.
         if (minElevation % spaceBetween2HLines != 0) {
@@ -296,7 +288,7 @@ public final class ElevationProfileManager {
             pathElementList.add(lineTo);
             Text text = new Text(Integer.toString((int) variable));
             setUpVerticalLabel(text, point2DMoveTo);
-            group.getChildren().add(text);
+            textList.add(text);
         }
 
         for (int i = 0; i < numberOfVLines; i++) {
@@ -309,11 +301,10 @@ public final class ElevationProfileManager {
             pathElementList.add(lineTo);
             Text text = new Text(Integer.toString((int) variable / 1000));
             setUpHorizontalLabel(text, point2DMoveTo);
-            group.getChildren().add(text);
+            textList.add(text);
         }
-
-        path = new Path(pathElementList);
-        path.setId("grid");
+        group.getChildren().setAll(textList);
+        path.getElements().setAll(pathElementList);
     }
 
     /**
@@ -353,8 +344,8 @@ public final class ElevationProfileManager {
      */
     private void bindHighlightedLine() {
         line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> worldToScreenTransform.get()
-                .transform(mousePositionOnProfile.get(), elevationProfile.get().minElevation())
-                .getX(), mousePositionOnProfile));
+                .transform(highlightedPosition.get(), 0).getX(),
+                 highlightedPosition, worldToScreenTransform));
         line.startYProperty().bind(Bindings.select(rectangle2D, "minY"));
         line.endYProperty().bind(Bindings.select(rectangle2D, "maxY"));
         line.visibleProperty().bind(highlightedPosition.greaterThanOrEqualTo(0));
@@ -399,26 +390,23 @@ public final class ElevationProfileManager {
     private void computePolygon() {
 
         //Le point du polygone à la coordonnée (0,0) est le coin haut gauche.
-        //Taille de deux cases par point, un point par pixel javaFx + les deux coins inférieurs.
-        double[] coordinate = new double[2 * ((int) rectangle2D.get().getWidth() + 3)];
+        List<Double> coordinate = new LinkedList<>();
         //Coordonnées des points des points de l'itinéraire
         for (int i = 0; i <= (int) rectangle2D.get().getWidth(); i++) {
             double xOnScreen = insets.getLeft() + i;
             double xOnWorld = screenToWorldTransform.get().transform(xOnScreen, 0).getX();
             Point2D wayPointOnScreen = worldToScreenTransform.get().transform(xOnWorld,
                     elevationProfile.get().elevationAt(xOnWorld));
-            coordinate[2 * i] = wayPointOnScreen.getX();
-            coordinate[2 * i + 1] = wayPointOnScreen.getY();
+            coordinate.add(wayPointOnScreen.getX());
+            coordinate.add(wayPointOnScreen.getY());
         }
         //Coordonnées des deux coins du bas.
-        coordinate[2 * ((int) rectangle2D.get().getWidth() + 1)] = rectangle2D.get().getMaxX();
-        coordinate[2 * ((int) rectangle2D.get().getWidth() + 1) + 1] = rectangle2D.get().getMaxY();
-        coordinate[2 * ((int) rectangle2D.get().getWidth() + 1) + 2] = rectangle2D.get().getMinX();
-        coordinate[2 * ((int) rectangle2D.get().getWidth() + 1) + 3] = rectangle2D.get().getMaxY();
+        coordinate.add(rectangle2D.get().getMaxX());
+        coordinate.add(rectangle2D.get().getMaxY());
+        coordinate.add(rectangle2D.get().getMinX());
+        coordinate.add(rectangle2D.get().getMaxY());
 
-        Polygon polygon1 = new Polygon(coordinate);
-        polygon = polygon1;
-
+        polygon.getPoints().setAll(coordinate);
     }
 
     /**
@@ -531,7 +519,10 @@ public final class ElevationProfileManager {
      */
     private void createObject() {
         polygon = new Polygon();
+        polygon.setId("profile");
+        polygon.setFill(Color.RED);
         path = new Path();
+        path.setId("grid");
         group = new Group();
         line = new Line();
         statisticsText = new Text();
@@ -558,6 +549,7 @@ public final class ElevationProfileManager {
      * @return la propriété en lecture seule contenant la position de la souris sur le profil.
      */
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
+        if (elevationProfile != null) return new SimpleDoubleProperty(Double.NaN);
         return mousePositionOnProfile;
     }
 

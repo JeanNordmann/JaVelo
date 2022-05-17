@@ -8,6 +8,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -33,6 +34,8 @@ public  final class Stage10Test extends Application {
         ElevationProfile profile = ElevationProfileComputer
                 .elevationProfile(route, 5);
 
+
+    ;
         ObjectProperty<ElevationProfile> profileProperty =
                 new SimpleObjectProperty<>(profile);
         DoubleProperty highlightProperty =
@@ -58,6 +61,8 @@ public  final class Stage10Test extends Application {
         System.out.println("");
         primaryStage.setScene(scene);
         primaryStage.show();
+        //primaryStage.getIcons().add(new Image("icon.png"));
+        //primaryStage.getIcons().add(new Image())
         //Pour attendre 1minute
 
         System.out.println("");
