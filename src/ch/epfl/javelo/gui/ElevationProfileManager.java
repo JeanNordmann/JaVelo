@@ -175,7 +175,6 @@ public final class ElevationProfileManager {
 
         //Lie les coordonnées du rectangle bleu, et celles de la ligne de mise en évidence.
         bindBlueRectangleDimensions();
-        mousePositionOnProfile.bindBidirectional((Property<Number>) highlightedPosition);
         bindHighlightedLine();
 
         //Configure l'affichage du profil, les auditeurs et les gestionnaires d'évènements.

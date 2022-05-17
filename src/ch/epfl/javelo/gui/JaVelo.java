@@ -50,6 +50,8 @@ public class JaVelo extends Application {
         SplitPane splitPane = new SplitPane(annotatedMapManager.pane());
         splitPane.setOrientation(Orientation.VERTICAL);
 
+        routeBean.highlightedPositionProperty().bind(elevationProfileManager.mousePositionOnProfileProperty());
+        routeBean.highlightedPositionProperty().bind(annotatedMapManager.mousePositionOnRouteProperty());
 
         routeBean.elevationProfileProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue != null && oldValue == null) {
