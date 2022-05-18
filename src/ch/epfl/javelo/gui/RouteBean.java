@@ -82,12 +82,7 @@ public final class RouteBean {
         this.routeCacheMemory = new LinkedHashMap<>(MEMORY_CACHE_SIZE, 0.75f, true);
 
         waypoints.addListener((ListChangeListener<? super Waypoint>) e -> computeNewRouteAndProfile());
-        //TODO pas sur
-        route.addListener((observable, oldValue, newValue) -> {
-            // TODO je pense qu'il faut supprimer if (oldValue != null && newValue == null)
-            //  highlightedPosition.set
-            //  (Double.NaN);
-        });
+
     }
 
     private void computeNewRouteAndProfile() {

@@ -64,8 +64,6 @@ public class JaVelo extends Application {
         }
         },elevationProfileManager.mousePositionOnProfileProperty(),annotatedMapManager.mousePositionOnRouteProperty()));
 
-        //routeBean.highlightedPositionProperty().bind(annotatedMapManager
-        //.mousePositionOnRouteProperty());
         // listener permettant d'ajouter ou enlever le profil
         routeBean.elevationProfileProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue != null && oldValue == null) {

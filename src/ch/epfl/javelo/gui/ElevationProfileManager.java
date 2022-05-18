@@ -354,12 +354,7 @@ public final class ElevationProfileManager {
         line.endYProperty().bind(Bindings.select(rectangle2D, "maxY"));
         line.visibleProperty().bind(highlightedPosition.greaterThanOrEqualTo(0));
 
-    }/*private void bindHighlightedLine() {
-        //TODO changer ça Jean a copié sa ligne de code, et nous on avait fait avec mousePosition
-
-
-    }*/
-
+    }
     /**
      * Méthode privée configurant les gestionnaires d'évènements, pour obtenir la coordonnée X de
      * la souris si elle se situe sur le rectangle bleu, et sinon à NaN, lorsqu'elle sort du

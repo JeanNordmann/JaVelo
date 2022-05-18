@@ -56,13 +56,14 @@ public final class AnnotatedMapManager {
         mousePositionOnRouteProperty = new SimpleDoubleProperty(Double.NaN);
         mousePosition = new SimpleObjectProperty<>(new Point2D(Double.NaN, Double.NaN));
 
-        //pane.setOnMouseExited(e -> mousePositionOnRouteProperty.set(Double.NaN));
+        pane.setOnMouseExited(e -> mousePosition.set(null));
         pane.setOnMouseMoved(e-> mousePosition.set(new Point2D(e.getX(), e.getY())));
 
          mousePosition.addListener((a,b,c) -> System.out.println(mousePosition));
 
         mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
             if(bean.getRoute() == null) return Double.NaN ;
+            if (mousePosition.get() == null) return Double.NaN;
             //todo A CLEAN
             PointCh mousePointCh = mapViewParametersP.get().
                     pointAt(mousePosition.get().getX(), mousePosition.get().getY())
