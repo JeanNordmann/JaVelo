@@ -356,13 +356,7 @@ public final class ElevationProfileManager {
 
     }/*private void bindHighlightedLine() {
         //TODO changer ça Jean a copié sa ligne de code, et nous on avait fait avec mousePosition
-        // quand ça marchait, il faut donc changer highlightedPosition et sa valeur.
-        line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> worldToScreenTransform.get()
-                .transform(highlightedPosition.get(), 0).getX(),
-                 highlightedPosition, worldToScreenTransform));
-        line.startYProperty().bind(Bindings.select(rectangle2D, "minY"));
-        line.endYProperty().bind(Bindings.select(rectangle2D, "maxY"));
-        line.visibleProperty().bind(highlightedPosition.greaterThanOrEqualTo(0));
+
 
     }*/
 
