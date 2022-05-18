@@ -38,6 +38,8 @@ public final class AnnotatedMapManager {
 
     private ObjectProperty<Point2D> mousePosition;
 
+    //private static final ObjectProperty<Point2D> NAN_POINT_2D = new Point2D(D);
+
     public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean bean,
                                Consumer<String> consumer) {
         this.graph = graph;
@@ -54,15 +56,11 @@ public final class AnnotatedMapManager {
         mousePositionOnRouteProperty = new SimpleDoubleProperty(Double.NaN);
         mousePosition = new SimpleObjectProperty<>(new Point2D(Double.NaN, Double.NaN));
 
-        pane.setOnMouseExited(e -> mousePositionOnRouteProperty.set(Double.NaN));
-        pane.setOnMouseMoved(e -> {
-            System.out.println(mousePositionOnRouteProperty.get());
-            System.out.println("met à jour la position dans anotade map mannager");
-            mousePosition.set(new Point2D(e.getX(), e.getY()));
-            System.out.println(mousePosition);
-        });
+        //pane.setOnMouseExited(e -> mousePositionOnRouteProperty.set(Double.NaN));
+        pane.setOnMouseMoved(e-> mousePosition.set(new Point2D(e.getX(), e.getY())));
 
-        mousePositionOnRouteProperty.addListener(e -> System.out.println(mousePositionOnRouteProperty.get()));
+         mousePosition.addListener((a,b,c) -> System.out.println(mousePosition));
+
         mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
             if(bean.getRoute() == null) return Double.NaN ;
             //todo A CLEAN
@@ -73,8 +71,6 @@ public final class AnnotatedMapManager {
             PointWebMercator closestMousePWM = PointWebMercator.ofPointCh(closestMousePointCh);
             Point2D closestMousePoint2D = new Point2D(mapViewParametersP.get().viewX(closestMousePWM),
                     mapViewParametersP.get().viewY(closestMousePWM));
-            System.out.println("a bind mousePositionOnRouteProperty à la position sur la route");
-            System.out.println(mousePosition.get().distance(closestMousePoint2D));
             return mousePosition.get().distance(closestMousePoint2D) <= 15
                     ? bean.getRoute().pointClosestTo(closestMousePointCh).position()
                     : Double.NaN;

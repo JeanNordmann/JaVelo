@@ -203,7 +203,7 @@ public final class ElevationProfileManager {
         //Auditeur détectant les changements du profil et recalculant les transformations et
         //l'affichage du profil.
         elevationProfile.addListener((p,oldV,newV) -> {
-            if (oldV.minElevation() != newV.minElevation() || oldV.maxElevation() != newV.maxElevation() || oldV.length() != newV.length()) {
+            if (oldV != newV) {
                 if(elevationProfile.get() != null) setUpProfileDisplay();
             }
 
@@ -212,6 +212,7 @@ public final class ElevationProfileManager {
             formatStatistics();
             vBox.getChildren().add(statisticsText);
             });
+
     }
 
     /**
@@ -343,14 +344,15 @@ public final class ElevationProfileManager {
      * rectangle bleu, et si elle est visible ou non en fonction de sa valeur (positive ou non).
      */
     private void bindHighlightedLine() {
+        mousePositionOnProfileProperty().addListener((a,b,c) -> System.out.println("   ererer   " + mousePositionOnProfileProperty().get()));
         //TODO changer ça Jean a copié sa ligne de code, et nous on avait fait avec mousePosition
         // quand ça marchait, il faut donc changer highlightedPosition et sa valeur.
         line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> worldToScreenTransform.get()
-                .transform(highlightedPosition.get(), 0).getX(),
-                 highlightedPosition, worldToScreenTransform));
+                .transform(mousePositionOnProfileProperty().get(), 0).getX(),
+                 mousePositionOnProfileProperty(), worldToScreenTransform));
         line.startYProperty().bind(Bindings.select(rectangle2D, "minY"));
         line.endYProperty().bind(Bindings.select(rectangle2D, "maxY"));
-        line.visibleProperty().bind(highlightedPosition.greaterThanOrEqualTo(0));
+        line.visibleProperty().bind(mousePositionOnProfileProperty().greaterThanOrEqualTo(0));
 
     }/*private void bindHighlightedLine() {
         //TODO changer ça Jean a copié sa ligne de code, et nous on avait fait avec mousePosition
@@ -561,7 +563,6 @@ public final class ElevationProfileManager {
      * @return la propriété en lecture seule contenant la position de la souris sur le profil.
      */
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
-        if (elevationProfile != null) return new SimpleDoubleProperty(Double.NaN);
         return mousePositionOnProfile;
     }
 

@@ -4,6 +4,7 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.routing.*;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -21,10 +22,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-import javax.script.Bindings;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
+
+import static javafx.beans.binding.Bindings.createDoubleBinding;
 
 
 public class JaVelo extends Application {
@@ -39,7 +41,7 @@ public class JaVelo extends Application {
         TileManager tileManager =
                 new TileManager(cacheBasePath, tileServerHost);
         ErrorManager errorManager = new ErrorManager();
-
+/*TODO Pour que le panneau contenant le profil ne soit pas redimensionné verticalement lorsque la fenêtre l'est, la méthode statique (!) setResizableWithParent peut être utilisée.*/
         RouteBean routeBean = new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
 
         AnnotatedMapManager annotatedMapManager = new AnnotatedMapManager(graph, tileManager,
@@ -50,9 +52,21 @@ public class JaVelo extends Application {
         SplitPane splitPane = new SplitPane(annotatedMapManager.pane());
         splitPane.setOrientation(Orientation.VERTICAL);
 
-        routeBean.highlightedPositionProperty().bind(elevationProfileManager.mousePositionOnProfileProperty());
-        routeBean.highlightedPositionProperty().bind(annotatedMapManager.mousePositionOnRouteProperty());
+        routeBean.highlightedPositionProperty().bind(createDoubleBinding(() ->{
+        if (annotatedMapManager.mousePositionOnRouteProperty().get() >= 0) {
+            System.out.println(annotatedMapManager.mousePositionOnRouteProperty().get());
+            return
+            annotatedMapManager.mousePositionOnRouteProperty().get();
+        } else {
+            System.out.println(elevationProfileManager.mousePositionOnProfileProperty().get());
 
+            return elevationProfileManager.mousePositionOnProfileProperty().get();
+        }
+        },elevationProfileManager.mousePositionOnProfileProperty(),annotatedMapManager.mousePositionOnRouteProperty()));
+
+        //routeBean.highlightedPositionProperty().bind(annotatedMapManager
+        //.mousePositionOnRouteProperty());
+        // listener permettant d'ajouter ou enlever le profil
         routeBean.elevationProfileProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue != null && oldValue == null) {
                 splitPane.getItems().add(elevationProfileManager.pane());

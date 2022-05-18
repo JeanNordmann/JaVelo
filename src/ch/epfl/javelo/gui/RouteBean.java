@@ -84,9 +84,9 @@ public final class RouteBean {
         waypoints.addListener((ListChangeListener<? super Waypoint>) e -> computeNewRouteAndProfile());
         //TODO pas sur
         route.addListener((observable, oldValue, newValue) -> {
-            if (oldValue != null && newValue == null) setHighlightedPosition(Double.NaN);
-            //TODO surtout pas dans la version final
-            if (oldValue == null && newValue != null) setHighlightedPosition(3000);
+            // TODO je pense qu'il faut supprimer if (oldValue != null && newValue == null)
+            //  highlightedPosition.set
+            //  (Double.NaN);
         });
     }
 
