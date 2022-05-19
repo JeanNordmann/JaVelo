@@ -54,11 +54,9 @@ public class JaVelo extends Application {
 
         routeBean.highlightedPositionProperty().bind(createDoubleBinding(() ->{
         if (annotatedMapManager.mousePositionOnRouteProperty().get() >= 0) {
-            System.out.println(annotatedMapManager.mousePositionOnRouteProperty().get());
             return
             annotatedMapManager.mousePositionOnRouteProperty().get();
         } else {
-            System.out.println(elevationProfileManager.mousePositionOnProfileProperty().get());
 
             return elevationProfileManager.mousePositionOnProfileProperty().get();
         }

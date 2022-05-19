@@ -203,15 +203,15 @@ public final class ElevationProfileManager {
         //Auditeur détectant les changements du profil et recalculant les transformations et
         //l'affichage du profil.
         elevationProfile.addListener((p,oldV,newV) -> {
-            if (oldV != newV) {
-                if(elevationProfile.get() != null) setUpProfileDisplay();
-            }
+            if (oldV != newV && newV != null) {
+                if (elevationProfile.get() != null) setUpProfileDisplay();
 
-            //Calcule les nouvelles statistiques du profil.
-            vBox.getChildren().clear();
-            formatStatistics();
-            vBox.getChildren().add(statisticsText);
-            });
+                //Calcule les nouvelles statistiques du profil.
+                vBox.getChildren().clear();
+                formatStatistics();
+                vBox.getChildren().add(statisticsText);
+            }
+        });
 
     }
 
@@ -344,7 +344,6 @@ public final class ElevationProfileManager {
      * rectangle bleu, et si elle est visible ou non en fonction de sa valeur (positive ou non).
      */
     private void bindHighlightedLine() {
-        mousePositionOnProfileProperty().addListener((a,b,c) -> System.out.println("   ererer   " + mousePositionOnProfileProperty().get()));
         //TODO changer ça Jean a copié sa ligne de code, et nous on avait fait avec mousePosition
         // quand ça marchait, il faut donc changer highlightedPosition et sa valeur.
         line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> worldToScreenTransform.get()

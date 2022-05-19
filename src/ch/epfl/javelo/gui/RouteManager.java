@@ -101,7 +101,6 @@ public final class RouteManager {
      * Méthode privée construisant la polyline.
      */
     private void constructPolyline() {
-        System.out.println("polyline");
         pane.getChildren().remove(polyline);
         List<Double> coordinates = new ArrayList<>();
         try {
@@ -187,7 +186,6 @@ public final class RouteManager {
         routeBean.routeProperty().addListener((observable, oldValue, newValue) -> {
             constructPolyline();
             if (oldValue == null && newValue != null) {
-                System.out.println("je suis censé draw la line");
                 polyline.setVisible(true);
                 highlightCircle.setVisible(true);
             }

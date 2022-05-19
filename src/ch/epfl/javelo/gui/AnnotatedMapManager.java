@@ -2,6 +2,7 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
+import ch.epfl.javelo.projection.SwissBounds;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -59,7 +60,8 @@ public final class AnnotatedMapManager {
         pane.setOnMouseExited(e -> mousePosition.set(null));
         pane.setOnMouseMoved(e-> mousePosition.set(new Point2D(e.getX(), e.getY())));
 
-         mousePosition.addListener((a,b,c) -> System.out.println(mousePosition));
+        // NE PAS SUPRMIé sinon ne marche pas ! car le binding ne se fais pas !
+         mousePosition.addListener((a,b,c) -> mousePosition.get());
 
         mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
             if(bean.getRoute() == null) return Double.NaN ;
@@ -68,6 +70,7 @@ public final class AnnotatedMapManager {
             PointCh mousePointCh = mapViewParametersP.get().
                     pointAt(mousePosition.get().getX(), mousePosition.get().getY())
                     .toPointCh();
+            if (mousePointCh == null) return Double.NaN;
             PointCh closestMousePointCh = bean.getRoute().pointClosestTo(mousePointCh).point();
             PointWebMercator closestMousePWM = PointWebMercator.ofPointCh(closestMousePointCh);
             Point2D closestMousePoint2D = new Point2D(mapViewParametersP.get().viewX(closestMousePWM),

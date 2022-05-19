@@ -181,18 +181,25 @@ public final class WaypointsManager {
 
     public void addWaypoint(final double x, final double y) {
         PointCh pointCh = mapViewParameters.get().pointAt(x, y).toPointCh();
-        int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
-        if (idNodeClosestTo == -1) {
-            //Pas de nœud trouvé dans la distance de recherche.
-            stringConsumer.accept("Aucune route à proximité !");
+        if (pointCh == null) {
+            stringConsumer.accept("Point hors de la Suisse !");
+            System.out.println("point en dehors de la suisse ");
             //TODO AUCUNE IDEE DE COMMENT FAIRE
             errorManager.displayError(stringConsumer.toString());
         } else {
-            //Ajoute le point de passage trouvé à la liste de points de passage de la classe.
-            Waypoint waypointToAdd = new Waypoint(pointCh, idNodeClosestTo);
+            int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
+            if (idNodeClosestTo == -1) {
+                //Pas de nœud trouvé dans la distance de recherche.
+                stringConsumer.accept("Aucune route à proximité !");
+                //TODO AUCUNE IDEE DE COMMENT FAIRE
+                errorManager.displayError(stringConsumer.toString());
+            } else {
+                //Ajoute le point de passage trouvé à la liste de points de passage de la classe.
+                Waypoint waypointToAdd = new Waypoint(pointCh, idNodeClosestTo);
                 waypointList.add(waypointToAdd);
+            }
         }
-        }
+    }
 
     /**
      * Méthode permettant de déplacer un marqueur lorsqu'un évènement de souris a été détecté.
@@ -290,14 +297,24 @@ public final class WaypointsManager {
 
     private void relocateWaypoint(final Point2D actualPosition, Node pin) {
         PointCh pointCh = mapViewParameters.get().pointAt(actualPosition.getX(), actualPosition.getY()).toPointCh();
-        int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
-        if (idNodeClosestTo == -1) {
-            stringConsumer.accept("Aucune route à proximité !");
+        if (pointCh == null) {
+            stringConsumer.accept("impossible de relocaliser un point de passage en dehors de la " +
+                    "suisse");
+            System.out.println("impossible de relocaliser un point de passage en dehors de la " +
+                    "suisse");
             //La liste de points de passage n'est pas modifiée, mais doit malgré tout être redessinée.
             updateWaypointsLocations();
         } else {
-            int position = pane.getChildren().indexOf(pin);
-            waypointList.set(position, new Waypoint(pointCh, idNodeClosestTo));
+
+            int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
+            if (idNodeClosestTo == -1) {
+                stringConsumer.accept("Aucune route à proximité !");
+                //La liste de points de passage n'est pas modifiée, mais doit malgré tout être redessinée.
+                updateWaypointsLocations();
+            } else {
+                int position = pane.getChildren().indexOf(pin);
+                waypointList.set(position, new Waypoint(pointCh, idNodeClosestTo));
+            }
         }
     }
  }
