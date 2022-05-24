@@ -244,7 +244,6 @@ public final class BaseMapManager {
             }
         });
     }
-        setUpListeners();
 
     /**
      * Méthode nous permettant d'accéder à l'attribut panneau de BaseMapManager.
