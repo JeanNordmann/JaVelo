@@ -206,6 +206,6 @@ public final class RouteManager {
         // Listener nous permettant de redessiner le marqueur si sa position sur l'itinéraire change.
         routeBean.highlightedPositionProperty().addListener((v,ov,nv) -> constructMarker());
         // Listener nous permettant de redessiner le marqueur si la route change.
-        routeBean.routeProperty().addListener(e -> constructMarker());
+        routeBean.routeProperty().addListener((p, oldS, newS) -> constructMarker());
     }
 }

@@ -102,8 +102,10 @@ public final class BaseMapManager {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
+        //Configure les auditeurs.
+        setUpListeners();
 
-
+        //Configure les gestionnaires d'évènements.
         eventHandler();
     }
 

@@ -91,6 +91,6 @@ public record PointWebMercator(double x, double y) {
 
     public PointCh toPointCh() {
         if (!SwissBounds.containsEN(Ch1903.e(lon(),lat()),Ch1903.n(lon(),lat()))) return null;
-        return new PointCh(Ch1903.e(lon(),lat()),Ch1903.n(lon(),lat()));
+        return new PointCh(Ch1903.e(lon(),lat()), Ch1903.n(lon(),lat()));
     }
 }

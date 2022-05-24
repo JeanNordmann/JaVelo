@@ -150,7 +150,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 //Nombre de shorts à lire après le premier short, sachant qu'un short contient
                 //4 nibble.
                 int shortsToRead4 = (numberSamples + 2) / OFFSET_CASE_3;
-                toReturn[0] = asFloat16(elevations.get(firstAltiId));
+                toReturn[0] = asFloat16(Short.toUnsignedInt(elevations.get(firstAltiId)));
+
                 for (int i = 1; i <= shortsToRead4; i++) {
                     int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
 
