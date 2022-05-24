@@ -130,7 +130,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                     int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
 
                     float firstShift = asFloat16(Bits.extractSigned(extractShort, 8, 8));
-                    toReturn[OFFSET_CASE_2 * i - 1] = toReturn[OFFSET_CASE_2 * (i - 1)] + firstShift;
+                    toReturn[OFFSET_CASE_2 * i - 1] = toReturn[OFFSET_CASE_2 * (i - 1)]
+                            + firstShift;
 
                     //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles.
                     if (numberSamples - 1 < OFFSET_CASE_2 * i) break;
@@ -142,7 +143,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 break;
 
             case (byte) 3:
-                //Nombre de shorts à lire après le premier short, sachant qu'un short contient 4 nibble.
+                //Nombre de shorts à lire après le premier short, sachant qu'un short contient
+                //4 nibble.
                 int shortsToRead4 = (numberSamples + 2) / OFFSET_CASE_3;
                 toReturn[0] = asFloat16(elevations.get(firstAltiId));
                 for (int i = 1; i <= shortsToRead4; i++) {
@@ -212,6 +214,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
 
     public int attributesIndex(int edgeId) {
-        return Short.toUnsignedInt(edgesBuffer.getShort(edgeId * EDGE_INTS + OFFSET_ID_OSM_ATTRIBUTE));
+        return Short.toUnsignedInt(edgesBuffer.getShort(
+                edgeId * EDGE_INTS + OFFSET_ID_OSM_ATTRIBUTE));
     }
 }

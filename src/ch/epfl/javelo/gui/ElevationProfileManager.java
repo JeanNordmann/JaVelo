@@ -195,11 +195,9 @@ public final class ElevationProfileManager {
         //Auditeur détectant les changements de dimensions du rectangle bleu et recalculant les
         //transformations et l'affichage du profil.
         //TODO idée mettre en attribut les steps et les actualiser...
-        rectangle2D.addListener(e -> {
-            setUpProfileDisplay();
-        });
+        rectangle2D.addListener(e -> setUpProfileDisplay());
 
-// faire mieux
+// TODO faire mieux
         //Auditeur détectant les changements du profil et recalculant les transformations et
         //l'affichage du profil.
         elevationProfile.addListener((p,oldV,newV) -> {
@@ -219,8 +217,6 @@ public final class ElevationProfileManager {
      * Méthode privée configurant l'affichage du profil.
      */
     private void setUpProfileDisplay() {
-
-
         setTransformation();
         //Calcule le polygone représentant le profil.
         computePolygon();

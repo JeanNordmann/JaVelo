@@ -4,13 +4,6 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.routing.*;
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -41,7 +34,6 @@ public class JaVelo extends Application {
         TileManager tileManager =
                 new TileManager(cacheBasePath, tileServerHost);
         ErrorManager errorManager = new ErrorManager();
-/*TODO Pour que le panneau contenant le profil ne soit pas redimensionné verticalement lorsque la fenêtre l'est, la méthode statique (!) setResizableWithParent peut être utilisée.*/
         RouteBean routeBean = new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
 
         AnnotatedMapManager annotatedMapManager = new AnnotatedMapManager(graph, tileManager,
@@ -91,11 +83,11 @@ public class JaVelo extends Application {
             }
         });
 
-
         StackPane pane = new StackPane(splitPane, errorManager.pane());
         BorderPane mainPane = new BorderPane();
         mainPane.setTop(menuBar);
         mainPane.setCenter(pane);
+
         primaryStage.getIcons().add(new Image("icon.jpg"));
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);

@@ -80,7 +80,6 @@ public final class BaseMapManager {
     /**
      * Constructeur public du BaseMapManager gérant l'interaction avec le fond de carte, et initialisant
      * les attributs à leurs valeurs données ou par défaut.
-     *
      * @param tileManager       Gestionnaire de tuile : nous permet de récupérer les tuiles.
      * @param waypointsManager  Gestionnaire de l'affichage et de l'interaction avec les points de passage.
      * @param mapViewParameters MapViewParameters observable dans une ObjectProperty → observable et permet la mise
@@ -95,19 +94,15 @@ public final class BaseMapManager {
         this.canvas = new Canvas();
         this.pane = new Pane(canvas);
 
+        //Initialise ces attributs à leurs valeurs par défaut.
         previousCoordsOnScreen = new SimpleObjectProperty<>(new Point2D(0, 0));
         redrawNeeded = false;
 
+        //Lie les propriétés des largeurs et des hauteurs du canvas à celles du panneau.
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
-        canvas.sceneProperty().addListener((p, oldS, newS) -> {
-            assert oldS == null;
-            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
-        });
 
-        canvas.heightProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
-        canvas.widthProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
-        mapViewParameters.addListener((p, oldS, newS) -> redrawOnNextPulse());
+
 
         eventHandler();
     }
@@ -166,12 +161,33 @@ public final class BaseMapManager {
         addMouseScrolling();
     }
 
+    private void setUpListeners() {
+
+        //Ajoute un auditeur pour redessiner la carte que lorsque cela est nécessaire (donné par
+        //le professeur).
+        canvas.sceneProperty().addListener((p, oldS, newS) -> {
+            assert oldS == null;
+            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
+        });
+
+        //Ajoute les auditeurs demandant un nouveau dessin du canevas si ses dimensions changent.
+        canvas.heightProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
+        canvas.widthProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
+
+        //Ajoute l'auditeur demandant un nouveau dessin si les paramètres de vue de la carte
+        //changent.
+        mapViewParameters.addListener((p, oldS, newS) -> redrawOnNextPulse());
+    }
+
     /**
      * Méthode permettant de gérer l'interaction de zoom de la carte affichée.
      * Elle adapte le zoom si la souris ou le trackpad zoom ou dézoome.
      */
 
     private void addMouseScrolling() {
+        //Gestionnaire d'évènements concertant le zoom et dé-zoom de la carte, à l'aide du
+        //glissement de la roulette ou du trackpad. (Un changement possible toutes les 0,2
+        //seconde).
         SimpleLongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(e -> {
             if (e.getDeltaY() == 0d) return;
@@ -249,8 +265,8 @@ public final class BaseMapManager {
 
     /**
      * Méthode changeant la valeur du booléen chargé de savoir si un nouveau dessin est nécessaire à
-     * true, et demandant une nouvelle pulsation à la plateforme. Dans le but qu'on redessine la carte
-     * au maximum à une fréquence prédéfini, pour économiser des ressources.
+     * true, et demandant une nouvelle pulsation à la plateforme. Dans le but qu'on redessine
+     * la carte au maximum à une fréquence prédéfinie, pour économiser des ressources.
      */
 
     private void redrawOnNextPulse() {

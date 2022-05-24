@@ -51,10 +51,14 @@ public record GraphSectors(ByteBuffer buffer) {
 
     public List<Sector> sectorsInArea(PointCh center, double distance) {
         //Calcul et clamp de la zone de recherche
-        int xMin = Math2.clamp(MIN_SECTOR, (int) ((center.e() - distance - SwissBounds.MIN_E) / SECTOR_WIDTH), MAX_SECTOR);
-        int xMax = Math2.clamp(MIN_SECTOR, (int) ((center.e() + distance - SwissBounds.MIN_E) / SECTOR_WIDTH), MAX_SECTOR);
-        int yMin = Math2.clamp(MIN_SECTOR, (int) ((center.n() - distance - SwissBounds.MIN_N) / SECTOR_HEIGHT), MAX_SECTOR);
-        int yMax = Math2.clamp(MIN_SECTOR, (int) ((center.n() + distance - SwissBounds.MIN_N) / SECTOR_HEIGHT), MAX_SECTOR);
+        int xMin = Math2.clamp(MIN_SECTOR, (int) ((center.e() - distance - SwissBounds.MIN_E)
+                / SECTOR_WIDTH), MAX_SECTOR);
+        int xMax = Math2.clamp(MIN_SECTOR, (int) ((center.e() + distance - SwissBounds.MIN_E)
+                / SECTOR_WIDTH), MAX_SECTOR);
+        int yMin = Math2.clamp(MIN_SECTOR, (int) ((center.n() - distance - SwissBounds.MIN_N)
+                / SECTOR_HEIGHT), MAX_SECTOR);
+        int yMax = Math2.clamp(MIN_SECTOR, (int) ((center.n() + distance - SwissBounds.MIN_N)
+                / SECTOR_HEIGHT), MAX_SECTOR);
 
         //ajout des secteurs
         List<Sector> sectorList = new ArrayList<>();

@@ -8,10 +8,27 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+/**
+ * 11.3.3
+ * ErrorManager
+ * <p>
+ * Classe gérant l'affichage des messages d'erreur.
+ *
+ * @author Jean Nordmann (344692)
+ * @author Maxime Ducourau (329544)
+ */
+
+
 public final class ErrorManager {
 
+    /**
+     * Attribut représentant le panneau sur lequel apparaissent les messages d'erreur.
+     */
     private Pane pane;
 
+    /**
+     * Attribut représentant un panneau de type VBox pour afficher les erreurs. 
+     */
     private VBox vBox;
 
     private static SequentialTransition transition;

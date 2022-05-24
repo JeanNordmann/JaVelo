@@ -15,38 +15,66 @@ import javafx.scene.layout.StackPane;
 
 import java.util.function.Consumer;
 
+/**
+ * 11.3.2
+ * AnnotatedMapManager
+ * <p>
+ * Classe gérant l'affichage de la carte "annotée", soit le fond de carte au-dessus duquel sont
+ * superposés l'itinéraire et les points de passage.
+ *
+ * @author Jean Nordmann (344692)
+ * @author Maxime Ducourau (329544)
+ */
+
 public final class AnnotatedMapManager {
 
+    /**
+     * Attribut représentant le panneau de la carte annotée.
+     */
     private final StackPane pane;
 
+    /**
+     * Attribut représentant un gestionnaire de fond de carte.
+     */
     private BaseMapManager baseMapManager;
 
+    /**
+     * Attribut représentant un gestionnaire de points de passage.
+     */
     private WaypointsManager waypointsManager;
 
+    /**
+     * Attribut représentant un gestionnaire d'itinéraire.
+     */
     private RouteManager routeManager;
 
-    private Graph graph;
-
-    private TileManager tileManager;
-
-    private RouteBean bean;
-
-    private Consumer<String> consumer;
-
+    /**
+     * Attribut représentant une propriété sur les paramètres de vue de la carte.
+     */
     private final ObjectProperty<MapViewParameters> mapViewParametersP;
 
+    /**
+     * Attribut représentant une propriété sur la position de la souris sur la route.
+     */
     private DoubleProperty mousePositionOnRouteProperty;
 
+    /**
+     * Attribut représentant une propriété sur la position de la souris.
+     */
     private ObjectProperty<Point2D> mousePosition;
 
     //private static final ObjectProperty<Point2D> NAN_POINT_2D = new Point2D(D);
 
+    /**
+     * Constructeur public prenant en arguments un graphe, un gestionnaire de tuiles, le bean de
+     * l'itinéraire, et un consommateur d'erreurs.
+     * @param graph Graphe donné.
+     * @param tileManager Gestionnaire de tuiles OpenStreetMap donné.
+     * @param bean Bean donné de l'itinéraire.
+     * @param consumer Consommateur d'erreurs donné.
+     */
     public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean bean,
                                Consumer<String> consumer) {
-        this.graph = graph;
-        this.tileManager = tileManager;
-        this.bean = bean;
-        this.consumer = consumer;
         mapViewParametersP =
                 new SimpleObjectProperty<>(new MapViewParameters(12, 543200, 370650));
         waypointsManager = new WaypointsManager(graph, mapViewParametersP, bean.waypointsProperty(), consumer);
@@ -82,10 +110,20 @@ public final class AnnotatedMapManager {
 
     }
 
+    /**
+     * Méthode publique retournant le panneau contenant la carte annotée.
+     * @return le panneau contenant la carte annotée.
+     */
     public StackPane pane() {
         return pane;
     }
 
+    /**
+     * Méthode publique retournant la propriété contenant la position du pointeur de la souris le
+     * long de l'itinéraire.
+     * @return Retourne la propriété contenant la position du pointeur de la souris le long de
+     * l'itinéraire.
+     */
     public DoubleProperty mousePositionOnRouteProperty() {
         return mousePositionOnRouteProperty;
     }

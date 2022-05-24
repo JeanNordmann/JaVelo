@@ -30,13 +30,23 @@ public final class Graph {
 
 
     /**
-     * Divers attributs représentants les nœuds, les secteurs, les arêtes et les
-     * ensembles d'attributs du graphe.
+     * Attribut représentant les nœuds du graphe.
      */
-
     private final GraphNodes nodes;
+
+    /**
+     * Attribut représentant les secteurs du graphe.
+     */
     private final GraphSectors sectors;
+
+    /**
+     * Attribut représentant les arêtes du graphe.
+     */
     private final GraphEdges edges;
+
+    /**
+     * Attribut représentant la liste des ensembles d'attributs donnés.
+     */
     private final List<AttributeSet> attributeSets;
 
     /**
@@ -170,7 +180,8 @@ public final class Graph {
             int endNode = sector.endNodeId();
             for (int j = startNode; j < endNode; j++) {
                 //Compare les distances au carré au lieu des distances pour gagner de l'efficacité.
-                double squaredDistance = point.squaredDistanceTo(new PointCh(nodes.nodeE(j), nodes.nodeN(j)));
+                double squaredDistance = point.squaredDistanceTo(new PointCh(nodes.nodeE(j),
+                        nodes.nodeN(j)));
                 if (squaredDistance < min && squaredDistance <= searchDistance * searchDistance) {
                     min = squaredDistance;
                     nodeId = j;
