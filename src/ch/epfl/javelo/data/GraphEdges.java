@@ -124,7 +124,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
             case (byte) 2:
                 int shortsToRead2 = numberSamples / OFFSET_CASE_2;
-                toReturn[0] = asFloat16(elevations.get(firstAltiId));
+                toReturn[0] = asFloat16(Short.toUnsignedInt(elevations.get(firstAltiId)));
                 for (int i = 1; i <= shortsToRead2; i++) {
                     //Première altitude.
                     int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
