@@ -106,7 +106,7 @@ public final class AnnotatedMapManager {
             Point2D closestMousePoint2D = new Point2D(mapViewParametersP.get().viewX(closestMousePWM),
                     mapViewParametersP.get().viewY(closestMousePWM));
             return mousePosition.get().distance(closestMousePoint2D) <= 15
-                    ? bean.getRoute().pointClosestTo(closestMousePointCh).position()
+                ? bean.getRoute().pointClosestTo(closestMousePointCh).position()
                     : Double.NaN;
         }, mousePosition, bean.routeProperty()));
 
