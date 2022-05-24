@@ -1,5 +1,6 @@
 package ch.epfl.javelo.gui;
 
+import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -25,7 +26,7 @@ public final class ErrorManager {
     /**
      * Attribut représentant le panneau sur lequel apparaissent les messages d'erreur.
      */
-    private Pane pane;
+    private StackPane pane;
 
     /**
      * Attribut représentant un panneau de type VBox pour afficher les erreurs. 
@@ -43,23 +44,13 @@ public final class ErrorManager {
         vBox.getStylesheets().add("error.css");
         vBox.getChildren().add(new Text());
         vBox.setMouseTransparent(true);
-        FadeTransition fstFadeTransition = new FadeTransition(Duration.millis(200), vBox);
-        fstFadeTransition.setFromValue(0);
-        fstFadeTransition.setToValue(0.8);
-        FadeTransition sndFadeTransition = new FadeTransition(Duration.millis(500),
-                vBox.getChildren().get(0));
-        sndFadeTransition.setFromValue(0.8);
-        sndFadeTransition.setToValue(0);
-
-        transition = new SequentialTransition(fstFadeTransition,
-                new PauseTransition(Duration.seconds(2)), sndFadeTransition);
 
         previousTransition = null;
-        pane = new Pane(vBox);
+        pane = new StackPane(vBox);
         pane.setPickOnBounds(false);
     }
 
-    public Pane pane() {
+    public StackPane pane() {
         return pane;
     }
 
@@ -80,6 +71,9 @@ public final class ErrorManager {
         previousTransition = null;
         //Partie sonore
         java.awt.Toolkit.getDefaultToolkit().beep();
+        System.out.println(vBox.getHeight());
+        System.out.println(vBox.getWidth());
+
     }
 
     public void errorAnimation() {
