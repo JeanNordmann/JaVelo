@@ -119,12 +119,14 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
             case (byte) 1:
                 for (int i = 0; i < numberSamples; i++) {
                     toReturn[i] = asFloat16(Short.toUnsignedInt(elevations.get(firstAltiId + i)));
+
                 }
                 break;
 
             case (byte) 2:
                 int shortsToRead2 = numberSamples / OFFSET_CASE_2;
-                toReturn[0] = asFloat16(elevations.get(firstAltiId));
+                toReturn[0] = asFloat16(Short.toUnsignedInt(elevations.get(firstAltiId)));
+
                 for (int i = 1; i <= shortsToRead2; i++) {
                     //Première altitude.
                     int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
@@ -139,7 +141,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                     //Remplit les valeurs en fonction de la précédente, et du shift.
                     float secondShift = asFloat16(Bits.extractSigned(extractShort, 0, 8));
                     toReturn[OFFSET_CASE_2 * i] = toReturn[OFFSET_CASE_2 * i - 1] + secondShift;
+
                 }
+
                 break;
 
             case (byte) 3:

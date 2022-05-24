@@ -43,6 +43,7 @@ public final class ElevationProfileComputer {
         float[] floatsProfile = new float[nbrEchantillons];
         for (int i = 0; i < nbrEchantillons; i++) {
             floatsProfile[i] = (float) route.elevationAt(maxStepLength * i);
+
         }
 
         //Remplir les trous du début du tableau.

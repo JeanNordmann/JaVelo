@@ -37,8 +37,8 @@ public final class Stage8Test extends Application {
                 new SimpleObjectProperty<>(mapViewParameters);
         ObservableList<Waypoint> waypoints =
                 FXCollections.observableArrayList(
-                        new Waypoint(new PointCh(2532697, 1152350), 159049),
-                        new Waypoint(new PointCh(2538659, 1154350), 117669));
+                        new Waypoint(new PointCh(2581506, 1100769), 590576),
+                        new Waypoint(new PointCh(2581286, 1098396), 593609));
         Consumer<String> errorConsumer = new ErrorConsumer();
 
         RouteBean routeBean = new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));

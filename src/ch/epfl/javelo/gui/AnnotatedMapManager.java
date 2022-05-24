@@ -85,8 +85,9 @@ public final class AnnotatedMapManager {
         mousePositionOnRouteProperty = new SimpleDoubleProperty(Double.NaN);
         mousePosition = new SimpleObjectProperty<>(new Point2D(Double.NaN, Double.NaN));
 
+        //TODO
         pane.setOnMouseExited(e -> mousePosition.set(null));
-        pane.setOnMouseMoved(e-> mousePosition.set(new Point2D(e.getX(), e.getY())));
+        pane.setOnMouseMoved(e -> mousePosition.set(new Point2D(e.getX(), e.getY())));
 
         // NE PAS SUPRMIé sinon ne marche pas ! car le binding ne se fais pas !
          mousePosition.addListener((a,b,c) -> mousePosition.get());
@@ -100,13 +101,14 @@ public final class AnnotatedMapManager {
                     .toPointCh();
             if (mousePointCh == null) return Double.NaN;
             PointCh closestMousePointCh = bean.getRoute().pointClosestTo(mousePointCh).point();
+            if (closestMousePointCh == null) return Double.NaN;
             PointWebMercator closestMousePWM = PointWebMercator.ofPointCh(closestMousePointCh);
             Point2D closestMousePoint2D = new Point2D(mapViewParametersP.get().viewX(closestMousePWM),
                     mapViewParametersP.get().viewY(closestMousePWM));
             return mousePosition.get().distance(closestMousePoint2D) <= 15
                     ? bean.getRoute().pointClosestTo(closestMousePointCh).position()
                     : Double.NaN;
-        }, mousePosition));
+        }, mousePosition, bean.routeProperty()));
 
     }
 

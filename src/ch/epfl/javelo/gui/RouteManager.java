@@ -204,7 +204,7 @@ public final class RouteManager {
             if (!oldValue.equals(Double.NaN) && newValue.equals(Double.NaN)) highlightCircle.setVisible(false);
         });
         // Listener nous permettant de redessiner le marqueur si sa position sur l'itinéraire change.
-        routeBean.highlightedPositionProperty().addListener(e -> constructMarker());
+        routeBean.highlightedPositionProperty().addListener((v,ov,nv) -> constructMarker());
         // Listener nous permettant de redessiner le marqueur si la route change.
         routeBean.routeProperty().addListener(e -> constructMarker());
     }

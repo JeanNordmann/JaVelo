@@ -2,8 +2,11 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.routing.*;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -95,7 +98,6 @@ public class JaVelo extends Application {
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.show();
     }
-
 }
 
 
