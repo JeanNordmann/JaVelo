@@ -89,9 +89,6 @@ public final class AnnotatedMapManager {
         pane.setOnMouseExited(e -> mousePosition.set(null));
         pane.setOnMouseMoved(e -> mousePosition.set(new Point2D(e.getX(), e.getY())));
 
-        // NE PAS SUPRMIé sinon ne marche pas ! car le binding ne se fais pas !
-         mousePosition.addListener((a,b,c) -> mousePosition.get());
-
         mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
             if(bean.getRoute() == null) return Double.NaN ;
             if (mousePosition.get() == null) return Double.NaN;

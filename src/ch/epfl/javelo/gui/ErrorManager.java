@@ -4,6 +4,7 @@ import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -63,6 +64,17 @@ public final class ErrorManager {
     }
 
     public void displayError(String errorMessage) {
+        FadeTransition fstFadeTransition = new FadeTransition(Duration.millis(200), vBox);
+        fstFadeTransition.setFromValue(0);
+        fstFadeTransition.setToValue(0.8);
+        FadeTransition sndFadeTransition = new FadeTransition(Duration.millis(500),
+                vBox);
+        sndFadeTransition.setFromValue(0.8);
+        sndFadeTransition.setToValue(0);
+
+        transition = new SequentialTransition(fstFadeTransition,
+                new PauseTransition(Duration.seconds(2)), sndFadeTransition);
+
         vBox.getChildren().set(0, new Text(errorMessage));
         errorAnimation();
         previousTransition = null;
