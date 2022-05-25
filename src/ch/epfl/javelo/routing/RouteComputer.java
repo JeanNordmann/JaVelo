@@ -19,7 +19,17 @@ import java.util.*;
 
 public class RouteComputer {
 
+    //Valeur assignée à un nœud qui a déjà été vérifié.
+    public final static float NODE_ALREADY_CHECKED_VALUE = Float.NEGATIVE_INFINITY;
+
+    /**
+     * Attribut représentant le graphe du calculateur d'itinéraire.
+     */
     private final Graph graph;
+
+    /**
+     * Attribut représentant la fonction de coût du calculateur d'itinéraire.
+     */
     private final CostFunction costFunction;
 
     /**
@@ -34,16 +44,19 @@ public class RouteComputer {
     }
 
     /**
-     * Retourne l'itinéraire de coût total minimal allant du nœud d'identité startNodeId au nœud d'identité endNodeId
-     * dans le graphe passé au constructeur, ou null si aucun itinéraire n'existe. Si le nœud de départ et d'arrivée
-     * sont identiques, lèves IllegalArgumentException. Si plusieurs itinéraires de coût total minimal existent,
-     * bestRouteBetween retourne n'importe lequel d'entre eux.
-     * @param startNodeId Nœud de départ
-     * @param endNodeId Nœud de fin
-     * @return L'itinéraire de coût total minimal allant du nœud d'identité startNodeId au nœud d'identité endNodeId
-     * dans le graphe passé au constructeur, ou null si aucun itinéraire n'existe.
+     * Retourne l'itinéraire de coût total minimal allant du nœud d'identité startNodeId au nœud
+     * d'identité endNodeId dans le graphe passé au constructeur, ou null si aucun itinéraire
+     * n'existe. Si le nœud de départ et d'arrivée sont identiques, lève IllegalArgumentException.
+     * Si plusieurs itinéraires de coût total minimal existent, bestRouteBetween retourne
+     * n'importe lequel d'entre eux.
+     * @param startNodeId Nœud de départ.
+     * @param endNodeId Nœud de fin.
+     * @return L'itinéraire de coût total minimal allant du nœud d'identité startNodeId au nœud
+     * d'identité endNodeId dans le graphe passé au constructeur, ou null si aucun itinéraire
+     * n'existe.
      * Si le nœud de départ et d'arrivée sont identiques, lève IllegalArgumentException.
-     * Si plusieurs itinéraires de coût total minimal existent, bestRouteBetween retourne n'importe lequel d'entre eux.
+     * Si plusieurs itinéraires de coût total minimal existent, bestRouteBetween retourne
+     * n'importe lequel d'entre eux.
      */
 
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
@@ -99,13 +112,13 @@ public class RouteComputer {
             actNodeId = actualWeightNode.nodeId;
 
             //Condition permettant de passer tous les nœuds déjà explorés.
-            if (actualWeightNode.distance == Float.NEGATIVE_INFINITY) continue;
+            if (actualWeightNode.distance == NODE_ALREADY_CHECKED_VALUE) continue;
 
             //Vérification si le nœud en exploration actuellement est endNode.
             //Si oui, on commence à construire l'itinéraire.
             if (actNodeId == endNodeId) {
                 //Initialisation de la liste d'arête utile à la création de la route à retourner
-                List<Edge> edgeList = new LinkedList<>();
+                LinkedList<Edge> edgeList = new LinkedList<>();
                 int previousNodeId = previousNodeIds[actNodeId];
 
                 //Construction de l'itinéraire dans l'ordre inverse.
@@ -116,7 +129,7 @@ public class RouteComputer {
                         //Ajout de l'arête à la liste si il s'agit de l'arête trouvée par le reste de
                         //l'algorithme.
                         if (graph.edgeTargetNodeId(graph.nodeOutEdgeId(previousNodeId, j)) == actNodeId) {
-                            edgeList.add(Edge.of(graph, graph.nodeOutEdgeId(
+                            edgeList.addFirst(Edge.of(graph, graph.nodeOutEdgeId(
                                     previousNodeId, j), previousNodeId, actNodeId));
                             break;
                         }
@@ -125,8 +138,6 @@ public class RouteComputer {
                     actNodeId = previousNodeId;
                     previousNodeId = previousNodeIds[previousNodeId];
                 }
-                //Inversion de l'ordre des éléments de la liste puis retour de la route construite.
-                Collections.reverse(edgeList);
                 return new SingleRoute(edgeList);
             }
 
@@ -159,7 +170,7 @@ public class RouteComputer {
                 }
             }
             //Marquage des nœuds explorés, pour ne pas les explorer à nouveau.
-            lengthAStar[actNodeId] = Float.NEGATIVE_INFINITY;
+            lengthAStar[actNodeId] = NODE_ALREADY_CHECKED_VALUE;
         }
         //Return une route nulle si aucun itinéraire n'a été trouvé.
         return null;

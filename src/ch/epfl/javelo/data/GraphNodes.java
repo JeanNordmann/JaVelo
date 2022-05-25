@@ -2,7 +2,6 @@ package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Q28_4;
 import java.nio.*;
-import java.util.Objects;
 
 import static ch.epfl.javelo.Bits.extractUnsigned;
 
@@ -32,6 +31,12 @@ public record GraphNodes(IntBuffer buffer) {
     private static final int OFFSET_OUT_EDGES = OFFSET_N + 1;
     private static final int NODE_INTS = OFFSET_OUT_EDGES + 1;
 
+    //Premier indice à extraire.
+    private static final int FIRST_INDEX_TO_EXTRACT = 28;
+
+    //Longueur à extraire.
+    private static final int LENGTH_TO_EXTRACT = 4;
+
     /**
      * @return Le nombre total de nœuds présents dans le Buffer.
      */
@@ -41,7 +46,7 @@ public record GraphNodes(IntBuffer buffer) {
     }
 
     /**
-     *
+     * Méthode publique retournant la coordonnée E du nœud d'identité donné.
      * @param nodeId Identité du nœud dont on souhaite connaître la coordonnée E.
      * @return La coordonnée E du nœud d'identité donné.
      */
@@ -51,7 +56,7 @@ public record GraphNodes(IntBuffer buffer) {
     }
 
     /**
-     *
+     * Méthode publique retournant la coordonnée N du nœud d'identité donné.
      * @param nodeId Identité du nœud dont on souhaite connaître la coordonnée N.
      * @return La coordonnée N du nœud d'identité donnée.
      */
@@ -61,17 +66,19 @@ public record GraphNodes(IntBuffer buffer) {
     }
 
     /**
-     *
+     * Méthode publique retournant le nombre d'arêtes sortant du nœud d'identité donné.
      * @param nodeId Nœud dont on souhaite le nombre d'arêtes sortant de celui-ci.
      * @return Le nombre d'arêtes sortant du nœud d'identité donné.
      */
 
     public int outDegree(int nodeId) {
         int contraction = buffer.get((nodeId) * NODE_INTS + OFFSET_OUT_EDGES);
-        return extractUnsigned(contraction, 28, 4);
+        return extractUnsigned(contraction, FIRST_INDEX_TO_EXTRACT, LENGTH_TO_EXTRACT);
     }
 
     /**
+     * Méthode publique retournant l'identité de la edgeIndex-ième arête sortant du nœud d'identité
+     * nodeId.
      * @param nodeId Nœud dont on souhaite l'identité de la edgeIndex-ième arête.
      * @param edgeIndex Index de l'arête vis-à-vis de la première arête du nœud.
      * @return L'identité de la edgeIndex-ième arête sortant du nœud d'identité nodeId.
@@ -81,14 +88,5 @@ public record GraphNodes(IntBuffer buffer) {
         assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
         int contraction = buffer.get((nodeId) * NODE_INTS + OFFSET_OUT_EDGES);
         return extractUnsigned(contraction, 0, 28) + edgeIndex;
-    }
-
-    //Pour comparer des graphNodes dans les tests
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GraphNodes that = (GraphNodes) o;
-        return Objects.equals(buffer, that.buffer);
     }
 }

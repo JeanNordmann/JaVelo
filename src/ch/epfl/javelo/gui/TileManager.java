@@ -26,15 +26,27 @@ import java.util.LinkedHashMap;
 
 public final class TileManager {
 
+    //Constante représentant la taille du cache mémoire.
     public static final int MEMORY_CACHE_SIZE = 100;
 
-
+    /**
+     * Attribut représentant le chemin d'accès au cache disque.
+     */
     private final Path path;
+
+    /**
+     * Attribut représentant le nom du serveur de tuiles.
+     */
     private final String name;
+
+    /**
+     * Attribut représentant le cache mémoire des tuiles.
+     */
     private final LinkedHashMap<TileId, Image> memoryCache;
 
     /**
-     * Record contenant une unique méthode statique nous permettant de vérifier si la tuile OSM est valide.
+     * Record contenant une unique méthode statique nous permettant de vérifier si la tuile OSM
+     * est valide.
      */
 
     public record TileId(int zoomLevel, int xTile, int yTile) {
@@ -71,7 +83,8 @@ public final class TileManager {
     }
 
     /**
-     * Constructeur fabriquant un TileManager.
+     * Constructeur fabriquant un TileManager, et initialisant ses attributs aux valeurs passés
+     * en paramètres ou par défaut.
      * @param path Chemin d'accès au répertoire, contenant le cache disque, de type Path.
      * @param name Le nom du serveur de tuile (sous forme de String).
      */
@@ -129,8 +142,8 @@ public final class TileManager {
     }
 
     /**
-     * Ajoute la TileId et l'image données au cache-mémoire, tout en supprimant la paire least recently used
-     * (LRU).
+     * Ajoute la TileId et l'image données au cache-mémoire, tout en supprimant la paire utilisée
+     * la moins récemment (LRU).
      * @param tileId Identité de la tuile donnée.
      * @param image Image donnée.
      */
@@ -145,8 +158,8 @@ public final class TileManager {
     }
 
     /**
-     * Méthode utile pour ajouter le suffixe à une tuile donnée, notamment pour avoir plus facilement l'URL où
-     * il faut chercher pour une tuile donnée.
+     * Méthode utile pour ajouter le suffixe à une tuile donnée, notamment pour avoir plus
+     * facilement l'URL où il faut chercher pour une tuile donnée.
      * @param tileId Identité de la tuile donnée.
      * @return Le suffixe propre à chaque tuile, sous forme de chaîne de caractère.
      */
@@ -157,22 +170,24 @@ public final class TileManager {
     }
 
     /**
-     * Retourne le chemin sous forme de Path, du fichier correspondant à une tuile. (Utile pour créer ce fichier).
+     * Retourne le chemin sous forme de Path, du fichier correspondant à une tuile. (Utile
+     * pour créer ce fichier).
      * @param tileId Identité de la tuile donnée.
      * @return Retourne le chemin sous forme de Path, du fichier correspondant à une tuile.
      */
 
     private Path pathOfTileId(TileId tileId) {
-        return Path.of(path.toString()).resolve("osm-cache").resolve(Integer.toString(tileId.zoomLevel)).
-                resolve(Integer.toString(tileId.xTile));
+        return Path.of(path.toString()).resolve("osm-cache").resolve(Integer
+                        .toString(tileId.zoomLevel))
+                        .resolve(Integer.toString(tileId.xTile));
     }
 
     /**
      * Retourne le lien sous forme de String correspondant à la tuile, avec le serveur donné à la
      * construction du TileManager.
      * @param tileId Identité de la tuile donnée.
-     * @return Retourne le lien sous forme de String correspondant à la tuile, avec le serveur donné à la
-     * construction du TileManager.
+     * @return Retourne le lien sous forme de String correspondant à la tuile, avec le serveur
+     * donné à la construction du TileManager.
      */
 
     private String linkOfTileId(TileId tileId) {

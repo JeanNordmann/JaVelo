@@ -2,11 +2,8 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.routing.*;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -46,18 +43,17 @@ public class JaVelo extends Application {
                         routeBean.highlightedPositionProperty());
         SplitPane splitPane = new SplitPane(annotatedMapManager.pane());
         splitPane.setOrientation(Orientation.VERTICAL);
-
+        //TODO essayer de modifier avec :
+        //Bindings.when et .then c'est hyper stylé.
         routeBean.highlightedPositionProperty().bind(createDoubleBinding(() ->{
         if (annotatedMapManager.mousePositionOnRouteProperty().get() >= 0) {
-            return
-            annotatedMapManager.mousePositionOnRouteProperty().get();
+            return annotatedMapManager.mousePositionOnRouteProperty().get();
         } else {
-
             return elevationProfileManager.mousePositionOnProfileProperty().get();
-        }
-        },elevationProfileManager.mousePositionOnProfileProperty(),annotatedMapManager.mousePositionOnRouteProperty()));
+        }}, elevationProfileManager.mousePositionOnProfileProperty(),
+                annotatedMapManager.mousePositionOnRouteProperty()));
 
-        // listener permettant d'ajouter ou enlever le profil
+        //Auditeur permettant d'ajouter ou enlever le profil
         routeBean.elevationProfileProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue != null && oldValue == null) {
                 splitPane.getItems().add(elevationProfileManager.pane());
@@ -80,7 +76,8 @@ public class JaVelo extends Application {
 
         menuItem.setOnAction(event -> {
             try {
-                GpxGenerator.writeGpx("javelo.gpx", routeBean.getRoute(), routeBean.getElevationProfile());
+                GpxGenerator.writeGpx("javelo.gpx", routeBean.getRoute(),
+                        routeBean.getElevationProfile());
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }

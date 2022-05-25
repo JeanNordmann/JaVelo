@@ -28,7 +28,6 @@ import java.util.function.DoubleUnaryOperator;
 
 public final class Graph {
 
-
     /**
      * Attribut représentant les nœuds du graphe.
      */
@@ -50,10 +49,16 @@ public final class Graph {
     private final List<AttributeSet> attributeSets;
 
     /**
-     * Constructeur initialisant les attributs de la classe Graph.
+     * Constructeur public initialisant les attributs de la classe à leurs valeurs passées en
+     * paramètres.
+     * @param nodes Nœuds donnés.
+     * @param sectors Secteurs donnés.
+     * @param edges Arêtes données.
+     * @param attributeSets Ensemble d'attributs donnés.
      */
 
-    public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets) {
+    public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges,
+                 List<AttributeSet> attributeSets) {
         this.nodes = nodes;
         this.sectors = sectors;
         this.edges = edges;
@@ -76,7 +81,6 @@ public final class Graph {
         }
     }
 
-
     /**
      * Retourne le graphe Javelo obtenu à partir des fichiers se trouvant dans le répertoire, ou
      * bien lance une exception en cas d'erreur d'entrée ou de sortie.
@@ -84,7 +88,6 @@ public final class Graph {
      * @return Le graphe Javelo obtenu à partir des fichiers se trouvant dans le répertoire.
      * @throws IOException En cas d'erreur d'entrée/sortie.
      */
-
 
     public static Graph loadFrom(Path basePath) throws IOException {
         //Chargement des différents attributs du graph
@@ -180,8 +183,7 @@ public final class Graph {
             int endNode = sector.endNodeId();
             for (int j = startNode; j < endNode; j++) {
                 //Compare les distances au carré au lieu des distances pour gagner de l'efficacité.
-                double squaredDistance = point.squaredDistanceTo(new PointCh(nodes.nodeE(j),
-                        nodes.nodeN(j)));
+                double squaredDistance = point.squaredDistanceTo(nodePoint(j));
                 if (squaredDistance < min && squaredDistance <= searchDistance * searchDistance) {
                     min = squaredDistance;
                     nodeId = j;
@@ -254,10 +256,7 @@ public final class Graph {
      */
 
     public DoubleUnaryOperator edgeProfile(int edgeId) {
-        if (edges.hasProfile(edgeId)) {
-            return Functions.sampled(edges.profileSamples(edgeId), edgeLength(edgeId));
-        } else {
-            return Functions.constant(Double.NaN);
-        }
+        return edges.hasProfile(edgeId) ? Functions.sampled(edges.profileSamples(edgeId),
+                edgeLength(edgeId)) : Functions.constant(Double.NaN);
     }
 }

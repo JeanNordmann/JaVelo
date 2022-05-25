@@ -7,7 +7,8 @@ import ch.epfl.javelo.Math2;
  * WebMercator
  * <p>
  * Classe utile pour convertir entre les coordonnées WGS 84 et les coordonnées Web Mercator.
- * (WebMercator ne valident pas leurs arguments, ce travail étant laissé aux classes représentant les points.)
+ * (WebMercator ne valident pas leurs arguments, ce travail étant laissé aux classes
+ * représentant les points).
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
@@ -19,22 +20,25 @@ public final class WebMercator {
      * Constructeur privé, car cette classe n'est pas censée être instantiable.
      */
 
-    private WebMercator() {
-    }
+    private WebMercator() {}
 
     /**
-     * Retourne la coordonnée x de la projection d'un point se trouvant à la longitude lon, donnée en radians.
+     * Retourne la coordonnée x de la projection d'un point se trouvant à la longitude lon,
+     * donnée en radians.
      * @param lon Longitude en radians.
-     * @return la coordonnée x de la projection d'un point se trouvant à la longitude lon, donnée en radians.
+     * @return La coordonnée x de la projection d'un point se trouvant à la longitude lon,
+     * donnée en radians.
      */
     public static double x(double lon) {
         return (1 / (2 * Math.PI)) * (lon + Math.PI);
     }
 
     /**
-     * Retourne la coordonnée y de la projection d'un point se trouvant à la latitude lat, donnée en radians.
+     * Retourne la coordonnée y de la projection d'un point se trouvant à la latitude lat,
+     * donnée en radians.
      * @param lat Latitude en radians.
-     * @return la coordonnée y de la projection d'un point se trouvant à la latitude lat, donnée en radians.
+     * @return La coordonnée y de la projection d'un point se trouvant à la latitude lat,
+     * donnée en radians.
      */
 
     public static double y(double lat) {
@@ -42,18 +46,22 @@ public final class WebMercator {
     }
 
     /**
-     * Retourne la longitude, en radians, d'un point dont la projection se trouve à la coordonnée x donnée.
+     * Retourne la longitude, en radians, d'un point dont la projection se trouve à la coordonnée
+     * x donnée.
      * @param x Coordonnée x du point.
-     * @return la longitude, en radians, d'un point dont la projection se trouve à la coordonnée x donnée.
+     * @return La longitude, en radians, d'un point dont la projection se trouve à la coordonnée
+     * x donnée.
      */
     public static double lon(double x) {
         return 2 * Math.PI * x - Math.PI;
     }
 
     /**
-     * Retourne la latitude, en radians, d'un point dont la projection se trouve à la coordonnée y donnée.
+     * Retourne la latitude, en radians, d'un point dont la projection se trouve à la coordonnée
+     * y donnée.
      * @param y Coordonnée y du point.
-     * @return la latitude, en radians, d'un point dont la projection se trouve à la coordonnée y donnée.
+     * @return La latitude, en radians, d'un point dont la projection se trouve à la coordonnée
+     * y donnée.
      */
 
     public static double lat(double y) {

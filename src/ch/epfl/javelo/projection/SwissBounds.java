@@ -18,23 +18,30 @@ public final class SwissBounds {
 
     private SwissBounds() {}
 
-    /**
-     * Diverses constantes liées aux limites géographiques de la Suisse
-     */
 
+    //Coordonnée Est minimale de la Suisse.
     public static final double MIN_E = 2485000;
+
+    //Coordonnée Est maximale de la Suisse.
     public static final double MAX_E = 2834000;
+
+    //Coordonnée Nord minimale de la Suisse.
     public static final double MIN_N = 1075000;
+
+    //Coordonnée Nord maximale de la Suisse.
     public static final double MAX_N = 1296000;
+
+    //Largeur de la Suisse.
     public static final double WIDTH = MAX_E - MIN_E;
+
+    //Hauteur de la Suisse.
     public static final double HEIGHT = MAX_N - MIN_N;
 
     /**
      * Retourne si les coordonnées sont bien dans les bordures suisses ou non.
-     * @param e Coordonnée E dans le système suisse
-     * @param n Coordonnée N dans le système suisse
+     * @param e Coordonnée E dans le système suisse.
+     * @param n Coordonnée N dans le système suisse.
      * @return si les coordonnées sont bien dans les bordures suisses ou non.
-     *
      */
 
     public static boolean containsEN(double e, double n) {

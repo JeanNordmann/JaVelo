@@ -17,8 +17,9 @@ import java.util.List;
  * 7.3.5
  * GpxGenerator
  * <p>
- * Class permettant d'écrire dans un fichier un itinéraire au format GPX à partir d'une Route, et de son profil, qu'on
- * obtient facilement via : ElevationProfileComputer.elevationProfile(route, ...)
+ * Class permettant d'écrire dans un fichier un itinéraire au format GPX à partir d'une Route,
+ * et de son profil, qu'on obtient facilement via : ElevationProfileComputer.elevationProfile
+ * (route, ...)
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
@@ -34,6 +35,7 @@ public class GpxGenerator {
      * @param elevationProfile Profile altimétrique de l'itinéraire.
      * @return Un Document contenant l'itinéraire au format GPX.
      */
+
     public static Document createGpx(Route route, ElevationProfile elevationProfile) {
         // Création du document qu'on va rendre
         Document doc = newDocument();
@@ -94,13 +96,15 @@ public class GpxGenerator {
      * @param elevationProfilef Profil altimétrique de notre itinéraire.
      * @throws IOException Exception liée à une erreur dûe au FileWriter.
      */
+
     public static void writeGpx(String name, Route route, ElevationProfile elevationProfilef) throws IOException {
         // Création du document et du fichier dans lequel on veut écrire.
         Document doc = createGpx(route, elevationProfilef);
         Writer w = new FileWriter(name);
 
         try {
-            // Creation du Transformer qui adapte le document GPX en Writer qui est ensuite écrit dans le fichier
+            //Création du Transformer qui adapte le document GPX en Writer qui est ensuite
+            //écrit dans le fichier
             Transformer transformer = TransformerFactory
                     .newDefaultInstance()
                     .newTransformer();

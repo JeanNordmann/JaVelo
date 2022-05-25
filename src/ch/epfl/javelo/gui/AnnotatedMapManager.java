@@ -36,7 +36,7 @@ public final class AnnotatedMapManager {
     /**
      * Attribut représentant un gestionnaire de fond de carte.
      */
-    private BaseMapManager baseMapManager;
+    private final BaseMapManager baseMapManager;
 
     /**
      * Attribut représentant un gestionnaire de points de passage.

@@ -10,7 +10,8 @@ import static java.lang.Double.POSITIVE_INFINITY;
  * 4.3.5
  * ElevationProfile
  * <p>
- * Enregistrement offrant une gestion du profil des arêtes avec un tableau de float et la longueur du segment.
+ * Enregistrement offrant une gestion du profil des arêtes avec un tableau de float et la
+ * longueur du segment.
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
@@ -19,6 +20,8 @@ import static java.lang.Double.POSITIVE_INFINITY;
 
 public record RoutePoint(PointCh point, double position, double distanceToReference) {
 
+    //Constante représentant un RoutePoint nul. (Placé nulle part, à une distance n'existant
+    //pas, et avec une distance vers la référence infinie).
     public static final RoutePoint NONE = new RoutePoint(null, Double.NaN, POSITIVE_INFINITY);
 
     /**
@@ -30,7 +33,8 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      */
 
     public RoutePoint withPositionShiftedBy(double positionDifference) {
-        return new RoutePoint(this.point, position + positionDifference, distanceToReference);
+        return positionDifference == 0 ? this : new RoutePoint(this.point,
+                position + positionDifference, distanceToReference);
     }
 
     /**
@@ -44,31 +48,19 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
     }
 
     /**
-     * Retourne this si sa distance à la référence est inférieure ou égale à thatDistanceToReference,
-     * et une nouvelle instance de RoutePoint dont les attributs sont les arguments passés à min
-     * sinon.
-     * @param thatPoint pointCh à comparer
-     * @param thatPosition position
-     * @param thatDistanceToReference distance de reference
+     * Retourne this si sa distance à la référence est inférieure ou égale à
+     * thatDistanceToReference, et une nouvelle instance de RoutePoint dont les attributs sont
+     * les arguments passés à min sinon.
+     * @param thatPoint PointCh à comparer.
+     * @param thatPosition Position.
+     * @param thatDistanceToReference Distance de référence.
      * @return this si sa distance à la référence est inférieure ou égale à thatDistanceToReference,
-     * et une nouvelle instance de RoutePoint dont les attributs sont les arguments passés à min sinon.
+     * et une nouvelle instance de RoutePoint dont les attributs sont les arguments passés à
+     * min sinon.
      */
 
     public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference) {
         return this.distanceToReference <= thatDistanceToReference ? this :
                 new RoutePoint(thatPoint, thatPosition, thatDistanceToReference);
     }
-
-
-    //Pour comparer des RoutePoint dans les tests
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RoutePoint that = (RoutePoint) o;
-        return Double.compare(that.position, position) == 0
-                && Double.compare(that.distanceToReference, distanceToReference) == 0
-                && Objects.equals(point, that.point);
-    }
-
 }

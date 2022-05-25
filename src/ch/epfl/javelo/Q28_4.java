@@ -11,12 +11,13 @@ package ch.epfl.javelo;
  */
 public final class Q28_4 {
 
+    public final static int NUMBER_OF_DECIMAL_DIGITS = 4;
+
     /**
      * Constructeur privé, car cette classe n'est pas censée être instantiable.
      */
 
-    private Q28_4() {
-    }
+    private Q28_4() {}
 
     /**
      * Retourne la valeur en Q28.4 correspondant à l'entier donné.
@@ -25,7 +26,7 @@ public final class Q28_4 {
      */
 
     public static int ofInt(int i) {
-        return i << 4;
+        return i << NUMBER_OF_DECIMAL_DIGITS;
     }
 
     /**
@@ -35,7 +36,7 @@ public final class Q28_4 {
      */
 
     public static double asDouble(int q28_4) {
-        return Math.scalb((double) q28_4, -4);
+        return Math.scalb((double) q28_4, -NUMBER_OF_DECIMAL_DIGITS);
     }
 
     /**
@@ -45,6 +46,6 @@ public final class Q28_4 {
      */
 
     public static float asFloat(int q28_4) {
-        return Math.scalb((float) q28_4, -4);
+        return Math.scalb(q28_4, -NUMBER_OF_DECIMAL_DIGITS);
     }
 }

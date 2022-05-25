@@ -19,11 +19,10 @@ public final class Functions {
      * Constructeur privé vide, car la classe n'est pas instantiable.
      */
 
-    private Functions() {
-    }
+    private Functions() {}
 
     /**
-     * Retourne une fonction constance, dont la valeur est toujours y.
+     * Retourne une fonction constante, dont la valeur est toujours y.
      * @param y Valeur constante désirée.
      * @return Une fonction constante, dont la valeur est toujours y.
      */
@@ -33,21 +32,23 @@ public final class Functions {
     }
 
     /**
-     * Retourne une fonction obtenue par interpolation linéaire entre les échantillons samples, espacés
-     * régulièrement et couvrant la plage allant de 0 à xMax ; lève IllegalArgumentException si le tableau
-     * samples contient moins de deux éléments, ou si xMax est inférieur ou égal à 0.
+     * Retourne une fonction obtenue par interpolation linéaire entre les échantillons samples,
+     * espacés régulièrement et couvrant la plage allant de 0 à xMax ; lève
+     * IllegalArgumentException si le tableau samples contient moins de deux éléments, ou si xMax
+     * est inférieur ou égal à 0.
      * @param samples Tableau d'échantillons desquels on veut faire l'interpolation.
      * @param xMax Valeur jusqu'à laquelle la plage est couverte.
-     * @return une fonction obtenue par interpolation linéaire entre les échantillons samples, espacés
-     * régulièrement
+     * @return Une fonction obtenue par interpolation linéaire entre les échantillons samples,
+     * espacés régulièrement.
      */
 
-    public static DoubleUnaryOperator sampled(float[] samples, double xMax) throws IllegalArgumentException {
+    public static DoubleUnaryOperator sampled(float[] samples, double xMax)
+            throws IllegalArgumentException {
         return new Sampled(samples, xMax);
     }
 
     /**
-     * Classe privée Constant imbriquée dans la classe Functions
+     * Classe privée Constant imbriquée dans la classe Functions.
      */
 
     private static final class Constant implements DoubleUnaryOperator {
@@ -63,9 +64,11 @@ public final class Functions {
         }
 
         /**
-         * Retourne la valeur y correspondant à l'abscisse x de la fonction, dans ce cas une constante.
+         * Retourne la valeur y correspondant à l'abscisse x de la fonction, dans ce cas une
+         * constante.
          * @param x Valeur en abscisse de laquelle on souhaite obtenir l'ordonnée.
-         * @return La valeur y correspondant à l'abscisse x de la fonction, dans ce cas une constante.
+         * @return La valeur y correspondant à l'abscisse x de la fonction, dans ce cas une
+         * constante.
          */
 
         @Override
@@ -73,18 +76,10 @@ public final class Functions {
             return constant;
         }
 
-        //Pour comparer des Constants dans les tests
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Constant constant1 = (Constant) o;
-            return Double.compare(constant1.constant, constant) == 0;
-        }
     }
 
     /**
-     * Classe privée Sampled imbriquée dans la classe Functions
+     * Classe privée Sampled imbriquée dans la classe Functions.
      */
 
     private static final class Sampled implements DoubleUnaryOperator {
@@ -105,10 +100,10 @@ public final class Functions {
 
         /**
          * Retourne l'interpolation linéaire voulue, en fonction des points échantillonnés, répartis
-         * régulièrement entre 0 et xMax.
+         * régulièrement entre zéro et xMax.
          * @param x Valeur en abscisse de laquelle on souhaite l'interpolation linéaire.
          * @return L'interpolation linéaire voulue, en fonction des points échantillonnés, répartis
-         * régulièrement entre 0 et xMax.
+         * régulièrement entre zéro et xMax.
          */
 
         @Override
@@ -117,29 +112,17 @@ public final class Functions {
             if(x >= xMax) return samples[samples.length-1];
             if(x <= 0) return samples[0];
 
-            //Calcule l'espacement entre les points, ainsi que les bornes
-            //d'interpolation.
+            //Calcule l'espacement entre les points, ainsi que les bornes d'interpolation
             double spaceBetween2Points = xMax / (samples.length - 1);
             int firstPoint = (int)Math.floor(x/spaceBetween2Points);
             int secondPoint = (int)Math.ceil(x/spaceBetween2Points);
 
-            //Cas particulier ou les points sont égaux.
+            //Cas particulier où les points sont égaux.
             if (firstPoint == secondPoint) return samples[firstPoint];
 
-            return Math2.interpolate(samples[firstPoint], samples[secondPoint], x/spaceBetween2Points - firstPoint);
+            return Math2.interpolate(samples[firstPoint], samples[secondPoint],
+                    x / spaceBetween2Points - firstPoint);
 
-        }
-
-        //Pour comparer des Sampled dans les tests
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Sampled sampled = (Sampled) o;
-            return Double.compare(sampled.xMax, xMax) == 0 && Arrays.equals(samples, sampled.samples);
         }
     }
-
-
-
 }

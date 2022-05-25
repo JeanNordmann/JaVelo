@@ -3,7 +3,7 @@ package ch.epfl.javelo;
  * 1.3.3
  * Math2
  *
- * Fonctions mathématiques utiles pour la suite (essentiellement relatives à la géométrie 2D)
+ * Fonctions mathématiques utiles pour la suite (essentiellement relatives à la géométrie 2D).
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
@@ -53,7 +53,7 @@ public final class Math2 {
 
     public static int clamp(int min, int v, int max){
         Preconditions.checkArgument(max >= min);
-        if (min < v & v < max) return v;
+        if (min < v && v < max) return v;
         if (min >= v) {
             return min;
         } else return max;
@@ -80,8 +80,8 @@ public final class Math2 {
      * @return arcsin hyperbolique inverse de X
      */
 
-    public static double asinh(double x){
-        return (Math.log(x+Math.pow((1+x*x),1.0/2.0)));
+    public static double asinh(double x) {
+        return Math.log(x + Math.sqrt(1+x*x));
     }
 
     /**
@@ -105,11 +105,11 @@ public final class Math2 {
      */
 
     public static double squaredNorm(double uX, double uY) {
-        return Math.pow(norm(uX,uY),2);
+        return dotProduct(uX, uY, uX, uY);
     }
 
     /**
-     * méthode retournant la norme d'un vecteur 2d.
+     * Méthode retournant la norme d'un vecteur 2d.
      * @param uX coordonnée X.
      * @param uY coordonnée Y.
      * @return La norme.
@@ -120,20 +120,21 @@ public final class Math2 {
     }
 
     /**
-     * Méthode qui retourne la longueur de la projection du vecteur allant du point A (de coordonnées aX et aY)
-     * au point P (de coordonnées pX et pY) sur le vecteur allant du point A au point B (de composantes bX et bY).
-     * @param aX coordonnée X de A
-     * @param aY coordonnée Y de A
-     * @param bX coordonnée X de B
-     * @param bY coordonnée Y de B
-     * @param pX coordonnée X de P
-     * @param pY coordonnée Y de P
+     * Méthode qui retourne la longueur de la projection du vecteur allant du point A (de
+     * coordonnées aX et aY) au point P (de coordonnées pX et pY) sur le vecteur allant du point
+     * A au point B (de composantes bX et bY).
+     * @param aX Coordonnée X de A.
+     * @param aY Coordonnée Y de A.
+     * @param bX Coordonnée X de B.
+     * @param bY Coordonnée Y de B.
+     * @param pX Coordonnée X de P.
+     * @param pY Coordonnée Y de P.
      * @return Longueur/norme de la projection.
      */
 
     public static double projectionLength(double aX, double aY,
                   double bX, double bY, double pX, double pY) {
-        return (dotProduct(aX - pX, aY - pY, aX - bX, aY - bY)/norm(aX - bX, aY - bY));
+        return dotProduct(pX - aX, pY - aY, bX - aX, bY - aY) / norm(aX - bX, aY - bY);
     }
 }
 

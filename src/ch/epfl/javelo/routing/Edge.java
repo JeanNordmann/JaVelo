@@ -46,7 +46,8 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      */
 
     public double positionClosestTo(PointCh point) {
-        return Math2.projectionLength(fromPoint.e(), fromPoint.n(), toPoint.e(), toPoint.n(), point.e(), point.n());
+        return Math2.projectionLength(fromPoint.e(), fromPoint.n(), toPoint.e(),
+                toPoint.n(), point.e(), point.n());
     }
 
     /**

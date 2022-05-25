@@ -78,12 +78,13 @@ public final class BaseMapManager {
 
 
     /**
-     * Constructeur public du BaseMapManager gérant l'interaction avec le fond de carte, et initialisant
-     * les attributs à leurs valeurs données ou par défaut.
+     * Constructeur public du BaseMapManager gérant l'interaction avec le fond de carte, et
+     * initialisant les attributs à leurs valeurs données ou par défaut.
      * @param tileManager       Gestionnaire de tuile : nous permet de récupérer les tuiles.
-     * @param waypointsManager  Gestionnaire de l'affichage et de l'interaction avec les points de passage.
-     * @param mapViewParameters MapViewParameters observable dans une ObjectProperty → observable et permet la mise
-     *                          à jour du fond de carte.
+     * @param waypointsManager  Gestionnaire de l'affichage et de l'interaction avec les points
+     *                          de passage.
+     * @param mapViewParameters MapViewParameters observable dans une ObjectProperty → observable
+     *                          et permet la mise à jour du fond de carte.
      */
 
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointsManager,
@@ -151,8 +152,8 @@ public final class BaseMapManager {
     }
 
     /**
-     * Méthode privée ajoutant les gestionnaires d'évènements correspondants au zoom, au glissement de la carte,
-     * et à l'ajout d'un point de passage sur la carte.
+     * Méthode privée ajoutant les gestionnaires d'évènements correspondants au zoom, au glissement
+     * de la carte, et à l'ajout d'un point de passage sur la carte.
      */
 
     private void eventHandler() {
@@ -199,7 +200,8 @@ public final class BaseMapManager {
             int zoomDelta = (int) Math.signum(e.getDeltaY());
             double xOnScreen = e.getX(), yOnScreen = e.getY();
             // Récupération du point en PointWebMercator de la souris
-            PointWebMercator pointWebMercator = mapViewParameters.get().pointAt(xOnScreen, yOnScreen);
+            PointWebMercator pointWebMercator = mapViewParameters.get().pointAt(xOnScreen,
+                    yOnScreen);
 
             // Calcul du nouveau niveau de zoom (+1 ou -1)
             int newZoomLevel = Math2.clamp(MIN_ZOOM_LEVEL, mapViewParameters.get().zoomLevel()

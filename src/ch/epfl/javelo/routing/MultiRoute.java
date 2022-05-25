@@ -100,7 +100,7 @@ public final class MultiRoute implements Route {
             edgeList.addAll(segment.edges());
         }
         //Renvoie une copie de la liste d'arêtes pour protéger l'immuabilité.
-        return List.copyOf(edgeList);
+        return edgeList;
     }
 
     /**
@@ -120,8 +120,9 @@ public final class MultiRoute implements Route {
             pointChList.remove(pointChList.size() - 1);
         }
         //On rajoute le dernier point de l'itinéraire.
-        pointChList.add(segments.get(segments.size() - 1).pointAt(segments.get(segments.size() - 1).length()));
-        return List.copyOf(pointChList);
+        pointChList.add(segments.get(segments.size() - 1).pointAt(segments
+                .get(segments.size() - 1).length()));
+        return pointChList;
     }
 
     /**
@@ -218,15 +219,5 @@ public final class MultiRoute implements Route {
             actualPosition += segment.length();
         }
         return routePoint;
-    }
-
-    //Pour comparer des MultiRoute dans nos tests.
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MultiRoute that = (MultiRoute) o;
-        return Objects.equals(segments, that.segments);
     }
 }

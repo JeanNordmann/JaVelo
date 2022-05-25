@@ -18,8 +18,8 @@ import static ch.epfl.javelo.Math2.squaredNorm;
 public record PointCh(double e, double n) {
 
     /**
-     * Constructeur compact levant une exception si les coordonnées fournies ne sont pas dans les limites suisses,
-     * définies par SwissBounds.
+     * Constructeur compact levant une exception si les coordonnées fournies ne sont pas dans
+     * les limites suisses, définies par SwissBounds.
      */
 
     public PointCh {
@@ -28,7 +28,8 @@ public record PointCh(double e, double n) {
 
     /**
      * Retourne le carré de la distance en mètres séparant le récepteur (this) de l'argument that.
-     * @param that Deuxième point avec lequel il faut calculer la distance au carré depuis l'instance courante (this).
+     * @param that Deuxième point avec lequel il faut calculer la distance au carré depuis
+     *             l'instance courante (this).
      * @return La distance au carré entre les deux points.
      */
 
@@ -38,7 +39,8 @@ public record PointCh(double e, double n) {
 
     /**
      * Retourne la distance en mètres séparant le récepteur (this) de l'argument that.
-     * @param that Deuxième point avec lequel il faut calculer la distance depuis l'instance courante (this).
+     * @param that Deuxième point avec lequel il faut calculer la distance depuis
+     *             l'instance courante (this).
      * @return La distance entre les deux points.
      */
 

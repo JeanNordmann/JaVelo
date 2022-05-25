@@ -7,7 +7,6 @@ import ch.epfl.javelo.Q28_4;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.Arrays;
 
 import static java.lang.Math.scalb;
 
@@ -174,6 +173,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 }
         }
         //Inverse le tableau si l'arête est inversée.
+        //TODO Parcourir jusqu'au milieu et switch
         if (isInverted(edgeId)) {
             float[] inverted = new float[numberSamples];
             for (int i = 0; i < numberSamples; i++) {

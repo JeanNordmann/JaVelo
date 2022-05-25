@@ -41,7 +41,8 @@ public record CityBikeCF(Graph graph) implements CostFunction {
 
     // Tags indicating that cyclists can travel against traffic along a one-way street.
     private static final AttributeSet ONEWAY_DOES_NOT_APPLY_TO_CYCLISTS =
-            AttributeSet.of(ONEWAY_BICYCLE_NO, CYCLEWAY_OPPOSITE, CYCLEWAY_OPPOSITE_LANE, CYCLEWAY_OPPOSITE_TRACK);
+            AttributeSet.of(ONEWAY_BICYCLE_NO, CYCLEWAY_OPPOSITE, CYCLEWAY_OPPOSITE_LANE,
+                    CYCLEWAY_OPPOSITE_TRACK);
 
     // Tags indicating some kind of residential street.
     private static final AttributeSet RESIDENTIAL_STREET =

@@ -73,11 +73,7 @@ public final class SingleRoute implements Route {
 
     @Override
     public double length() {
-        double totalLength = 0;
-        for (Edge edge : edges) {
-            totalLength += edge.length();
-        }
-        return totalLength;
+        return positionsTab[edges.size()];
     }
 
     /**
@@ -90,15 +86,11 @@ public final class SingleRoute implements Route {
      */
 
     @Override
-    public List<Edge> edges() {
-        return new ArrayList<>(edges);
-    }
+    public List<Edge> edges() { return edges; }
 
     /**
-     * Retourne la totalité des points situés aux
-     * extrémités des arêtes de l'itinéraire.
-     * @return La totalité des points situés aux
-     * extrémités des arêtes de l'itinéraire.
+     * Retourne la totalité des points situés aux extrémités des arêtes de l'itinéraire.
+     * @return La totalité des points situés aux extrémités des arêtes de l'itinéraire.
      */
 
     @Override
@@ -106,19 +98,17 @@ public final class SingleRoute implements Route {
         List<PointCh> pointChList = new ArrayList<>();
         for (Edge edge : edges) {
             //Ajout pour chaque arête du point à la distance 0 => point de départ de l'arête.
-            pointChList.add(edge.pointAt(0));
+            pointChList.add(edge.fromPoint());
         }
         //Ajout du dernier point
-        pointChList.add(edges.get(edges.size() - 1).pointAt(edges.get(edges.size() - 1).length()));
+        pointChList.add(edges.get(edges.size() - 1).toPoint());
         return pointChList;
     }
 
     /**
-     * Retourne le point se trouvant à la position donnée le
-     * long de l'itinéraire.
+     * Retourne le point se trouvant à la position donnée le long de l'itinéraire.
      * @param position Position donnée.
-     * @return Le point se trouvant à la position
-     * donnée le long de l'itinéraire.
+     * @return Le point se trouvant à la position donnée le long de l'itinéraire.
      */
 
     @Override
@@ -217,7 +207,8 @@ public final class SingleRoute implements Route {
             //Calcul de la distance avec chaque arête.
             position = edge.positionClosestTo(point);
             clampedPosition = Math2.clamp(0, position, edge.length());
-            PointCh pointCh = new PointCh(edge.pointAt(clampedPosition).e(), edge.pointAt(clampedPosition).n());
+            PointCh pointChAt = edge.pointAt(clampedPosition);
+            PointCh pointCh = new PointCh(pointChAt.e(), pointChAt.n());
             routePointTemp = new RoutePoint(pointCh, clampedPosition
                     + previousLengths, pointCh.distanceTo(point));
             //Utilisation de la méthode min qui nous permet de garder dans "routePoint" le RoutePoint le plus proche.
@@ -225,15 +216,5 @@ public final class SingleRoute implements Route {
             previousLengths += edge.length();
         }
         return routePoint;
-    }
-
-
-    //Pour comparer des SingleRoute dans les tests.
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SingleRoute that = (SingleRoute) o;
-        return Objects.equals(edges, that.edges) && Arrays.equals(positionsTab, that.positionsTab);
     }
 }

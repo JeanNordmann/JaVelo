@@ -183,7 +183,6 @@ public final class WaypointsManager {
         PointCh pointCh = mapViewParameters.get().pointAt(x, y).toPointCh();
         if (pointCh == null) {
             stringConsumer.accept("Point hors de la Suisse !");
-            System.out.println("point en dehors de la suisse ");
             //TODO AUCUNE IDEE DE COMMENT FAIRE
             errorManager.displayError(stringConsumer.toString());
         } else {

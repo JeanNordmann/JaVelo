@@ -20,7 +20,7 @@ public final class Preconditions {
     private Preconditions() {}
 
     /**
-     * Lève une IllegalArgumentException si shouldBeTrue est faux
+     * Lève une IllegalArgumentException si shouldBeTrue est faux.
      *
      * @param shouldBeTrue
      * si faux => throw exception

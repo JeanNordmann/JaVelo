@@ -68,10 +68,10 @@ public final class RouteBean {
     private final LinkedHashMap<Pair<Integer, Integer>, Route> routeCacheMemory;
 
     /**
-     * Constructeur initialisant le calcul d'itinéraire à celui passé en paramètres, et les autres attributs à leurs
-     * valeurs de base.
-     * @param routeComputer calculateur d'itinéraire, de type RouteComputer, utilisé pour déterminer le meilleur
-     *                      itinéraire reliant deux points de passage.
+     * Constructeur initialisant le calcul d'itinéraire à celui passé en paramètres et les autres
+     * attributs à leurs valeurs de base.
+     * @param routeComputer calculateur d'itinéraire, de type RouteComputer, utilisé pour déterminer
+     *                      le meilleur itinéraire reliant deux points de passage.
      */
     public RouteBean(RouteComputer routeComputer) {
         this.routeComputer = routeComputer;
@@ -125,7 +125,8 @@ public final class RouteBean {
         if (routeCacheMemory.containsKey(pair)) {
             return routeCacheMemory.get(pair);
         } else {
-            Route route = routeComputer.bestRouteBetween(firstWaypoint.nodeId(), secondWaypoint.nodeId());
+            Route route = routeComputer.bestRouteBetween(firstWaypoint.nodeId(),
+                    secondWaypoint.nodeId());
             routeCacheMemory.put(pair, route);
             return route;
         }

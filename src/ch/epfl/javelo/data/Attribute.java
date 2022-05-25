@@ -6,7 +6,6 @@ import java.util.List;
  * 2.3.6
  * Attribute
  * <p>
- * <p>
  * Type énuméré fourni dans une archive.
  *
  * @author CS-108

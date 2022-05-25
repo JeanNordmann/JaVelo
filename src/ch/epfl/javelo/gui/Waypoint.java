@@ -8,11 +8,10 @@ import ch.epfl.javelo.projection.PointCh;
  * Enregistrement nous permettant de représenter un point de passage. Ses deux attributs sont :
  *
  * La position du point de passage dans le système de coordonnées suisse (PointCh).
- *  L'identité du nœud JaVelo le plus proche de ce point de passage.
+ * L'identité du nœud JaVelo le plus proche de ce point de passage.
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
  */
 
-public record Waypoint (PointCh pointCh, int nodeId) {
-}
+public record Waypoint (PointCh pointCh, int nodeId) {}

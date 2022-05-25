@@ -16,6 +16,7 @@ import java.util.List;
  */
 
 public interface Route {
+
     /**
      * Retourne l'index du segment à la position donnée (en mètres).
      * @param position Position donnée.

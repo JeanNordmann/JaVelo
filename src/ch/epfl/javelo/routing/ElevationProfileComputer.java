@@ -18,11 +18,10 @@ import java.util.Arrays;
 public final class ElevationProfileComputer {
 
     /**
-     * Constructeur privé car cette classe n'est pas censée être instantiable.
+     * Constructeur privé, car cette classe n'est pas censée être instantiable.
      */
 
-    private ElevationProfileComputer() {
-    }
+    private ElevationProfileComputer() {}
 
     /**
      * Retourne le profil en long de l'itinéraire route, en garantissant que l'espacement
@@ -38,37 +37,37 @@ public final class ElevationProfileComputer {
 
     public static ElevationProfile elevationProfile(Route route, double maxStepLength) {
         Preconditions.checkArgument(maxStepLength > 0);
-        int nbrEchantillons = (int) Math.ceil(route.length() / maxStepLength) + 1;
-        maxStepLength = route.length() / (nbrEchantillons - 1.0);
-        float[] floatsProfile = new float[nbrEchantillons];
-        for (int i = 0; i < nbrEchantillons; i++) {
+        int samplesNumber = (int) Math.ceil(route.length() / maxStepLength) + 1;
+        maxStepLength = route.length() / (samplesNumber - 1.0);
+        float[] floatsProfile = new float[samplesNumber];
+        for (int i = 0; i < samplesNumber; i++) {
             floatsProfile[i] = (float) route.elevationAt(maxStepLength * i);
 
         }
 
         //Remplir les trous du début du tableau.
-        for (int i = 0; i < nbrEchantillons; i++) {
+        for (int i = 0; i < samplesNumber; i++) {
             if (!Float.isNaN(floatsProfile[i])) {
                 Arrays.fill(floatsProfile, 0, i, floatsProfile[i]);
                 break;
             }
-            if (i == nbrEchantillons - 1) Arrays.fill(floatsProfile, 0, i + 1, 0);
+            if (i == samplesNumber - 1) Arrays.fill(floatsProfile, 0, i + 1, 0);
         }
 
         //Remplir les trous de la fin du tableau.
-        for (int i = nbrEchantillons - 1; i >= 0; i--) {
+        for (int i = samplesNumber - 1; i >= 0; i--) {
             if (!Float.isNaN(floatsProfile[i])) {
-                Arrays.fill(floatsProfile, i + 1, nbrEchantillons, floatsProfile[i]);
+                Arrays.fill(floatsProfile, i + 1, samplesNumber, floatsProfile[i]);
                 break;
             }
         }
 
         //Remplir les trous intermédiaires.
-        for (int i = 1; i < nbrEchantillons; i++) {
+        for (int i = 1; i < samplesNumber; i++) {
             if (Float.isNaN(floatsProfile[i])) {
                 float interpolationLimit = 0.f;
                 int endIndex = 0;
-                for (int j = i + 1; j < nbrEchantillons; j++) {
+                for (int j = i + 1; j < samplesNumber; j++) {
                     //Pour la première valeur à partir de la i-ème qui n'est pas un NaN
                     //On interpole toutes les valeurs entre deux valeurs "sûres", et
                     //non entre une valeur sûre et une valeur déjà interpolée, donc

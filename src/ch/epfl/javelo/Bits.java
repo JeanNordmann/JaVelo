@@ -12,6 +12,8 @@ package ch.epfl.javelo;
 
 public final class Bits {
 
+    public final static int INTEGER_SIZE = Integer.SIZE;
+
     /**
      * Constructeur privé, car cette classe n'est pas instantiable.
      */
@@ -19,9 +21,10 @@ public final class Bits {
     private Bits() {}
 
     /**
-     * Méthode qui extrait du vecteur de 32 bits donné la plage de length bits commençant au bit d'index start,
-     * qu'elle interprète comme une VALEUR SIGNEE en complément à deux, ou lève une exception si la plage
-     * est invalide.
+     * Méthode qui extrait du vecteur de 32 bits donné la plage de length bits commençant au bit
+     * d'index start, qu'elle interprète comme une valeur signée en complément à deux, ou lève
+     * une exception si la plage est invalide.
+     *
      * @param value Vecteur de 32 bits initial
      * @param start Position du bit de début
      * @param length Longueur à extraire
@@ -29,16 +32,17 @@ public final class Bits {
      */
 
     public static int extractSigned(int value, int start, int length) {
-        Preconditions.checkArgument((0 <= start && start <= 31 &&
-                0 <= length && length <= 32 && (start + length) <= 32));
-        int shiftValue = 32 - length - start;
-        return value << shiftValue >> 32 - length;
+        Preconditions.checkArgument((0 <= start && start <= (INTEGER_SIZE - 1) &&
+                0 <= length && length <= INTEGER_SIZE && (start + length) <= INTEGER_SIZE));
+        int shiftValue = INTEGER_SIZE - length - start;
+        return value << shiftValue >> INTEGER_SIZE - length;
     }
 
     /**
-     * Méthode qui extrait du vecteur de 32 bits donné la plage de length bits commençant au bit d'index start,
-     * qu'elle interprète comme une VALEUR NON-SIGNEE en complément à deux, ou lève une exception si la plage
-     * est invalide.
+     * Méthode qui extrait du vecteur de 32 bits donné la plage de length bits commençant au bit
+     * d'index start, qu'elle interprète comme une valeur non signée en complément à deux, ou
+     * lève une exception si la plage est invalide.
+     *
      * @param value Vecteur de 32 bits initial
      * @param start Position du bit de début
      * @param length Longueur à extraire
@@ -46,9 +50,9 @@ public final class Bits {
      */
 
     public static int extractUnsigned(int value, int start, int length) {
-        Preconditions.checkArgument((0 <= start && start <= 31 &&
-                0 <= length && length <= 31 && (start + length) <= 32));
-        int shiftValue = 32 - length - start;
-        return value << shiftValue >>> 32 - length;
+        Preconditions.checkArgument((0 <= start && start <= (INTEGER_SIZE - 1) &&
+                0 <= length && length <= 31 && (start + length) <= INTEGER_SIZE));
+        int shiftValue = INTEGER_SIZE - length - start;
+        return value << shiftValue >>> INTEGER_SIZE - length;
     }
 }

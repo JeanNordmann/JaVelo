@@ -2,23 +2,13 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
-import ch.epfl.javelo.routing.Route;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableListValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
-import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.geometry.Point2D;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 /**
  * 9.3.2
@@ -31,6 +21,7 @@ import java.util.function.Consumer;
  */
 
 public final class RouteManager {
+
     /**
      * Constante définissant le rayon du disque représentant la position mise
      * en évidence.
@@ -80,12 +71,15 @@ public final class RouteManager {
         polyline.setId("route");
         this.highlightCircle = new Circle(RADIUS_HIGHLIGHTED_POINT);
         highlightCircle.setId("highlight");
-
         pane = new Pane();
+
+        //Permet d'éviter de bloquer l'interaction avec les panneaux en arrière-plan.
         pane.setPickOnBounds(false);
 
-
+        //Construit le marqueur une première fois.
         constructMarker();
+
+        //Configure les auditeurs.
         setUpListeners();
     }
 
@@ -122,30 +116,38 @@ public final class RouteManager {
         } catch (NullPointerException ignored) {}
     }
 
+    /**
+     * Méthode privée construisant le marqueur.
+     */
     private void constructMarker() {
         if (routeBean.getRoute() != null) {
             pane.getChildren().remove(highlightCircle);
             MapViewParameters actualMVP = mapViewParameters.get();
-            PointWebMercator highlightedPWM = PointWebMercator.ofPointCh(routeBean.getRoute().pointAt(routeBean.getHighlightedPosition()));
+            PointWebMercator highlightedPWM = PointWebMercator.ofPointCh(routeBean.getRoute()
+                    .pointAt(routeBean.getHighlightedPosition()));
             highlightCircle.setLayoutX(actualMVP.viewX(highlightedPWM));
             highlightCircle.setLayoutY(actualMVP.viewY(highlightedPWM));
             pane.getChildren().add(highlightCircle);
         }
     }
 
+    /**
+     * Méthode privée permettant d'ajouter un point de passage sur le marqueur surligné.
+     */
     private void clickOnHighlightMarker() {
         //TODO pas supprimé : Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY()); et Point2D highlightCirclePosition = new Point2D(highlightCircle.getLayoutX(), highlightCircle.getLayoutY());
         // Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY());
         // Point2D highlightCirclePosition = new Point2D(highlightCircle.getLayoutX(), highlightCircle.getLayoutY());
 //TODO idéalement (lu sur piazza) devrait pas prendre coordonné centre cercle, mais ou on a cliqué exactement
-        Waypoint waypointToAdd = new Waypoint(routeBean.getRoute().pointAt(routeBean.getHighlightedPosition()),
+        Waypoint waypointToAdd = new Waypoint(routeBean.getRoute()
+                .pointAt(routeBean.getHighlightedPosition()),
                 routeBean.getRoute().nodeClosestTo(routeBean.getHighlightedPosition()));
+
         List<Waypoint> waypointList = routeBean.getWaypoints();
+        int indexOfNewWaypoint = routeBean.indexOfNonEmptySegmentAt(routeBean
+                    .getHighlightedPosition()) + 1;
 
-            int indexOfNewWaypoint =
-                    routeBean.indexOfNonEmptySegmentAt(routeBean.getHighlightedPosition()) + 1;
             waypointList.add(indexOfNewWaypoint, waypointToAdd);
-
     }
 
 
@@ -161,7 +163,7 @@ public final class RouteManager {
      */
     private void setUpListeners() {
 
-        // Listener nous permettant d'ajouter un point si on clique sur le marqueur.
+        //Auditeur nous permettant d'ajouter un point si on clique sur le marqueur.
         highlightCircle.setOnMouseClicked(e -> clickOnHighlightMarker());
 
         mapViewParameters.addListener((p, oldS, newS) -> {
@@ -170,42 +172,55 @@ public final class RouteManager {
                 constructMarker();
             }
         });
-        // Listener nous permettant de déplacer la polyligne et le marqueur si on bouge la carte (mais pas le zoom level,
-        // car s'il est aussi modifié l'itinéraire est de toute façon redessiner.)
+        //Auditeur nous permettant de déplacer la polyline et le marqueur si on bouge la carte
+        //(mais pas le niveau de zoom, car s'il est aussi modifié l'itinéraire est de toute façon
+        //redessiné).
         mapViewParameters.addListener((p, oldS, newS) -> {
             if (!oldS.topLeft().equals(newS.topLeft()) && oldS.zoomLevel() == newS.zoomLevel()) {
-                polyline.setLayoutX(polyline.getLayoutX() + oldS.topLeft().getX() - newS.topLeft().getX());
-                polyline.setLayoutY(polyline.getLayoutY() + oldS.topLeft().getY() - newS.topLeft().getY());
-                highlightCircle.setLayoutX(highlightCircle.getLayoutX() + oldS.topLeft().getX() - newS.topLeft().getX());
-                highlightCircle.setLayoutY(highlightCircle.getLayoutY() + oldS.topLeft().getY() - newS.topLeft().getY());
+                polyline.setLayoutX(polyline.getLayoutX() + oldS.topLeft().getX()
+                        - newS.topLeft().getX());
+                polyline.setLayoutY(polyline.getLayoutY() + oldS.topLeft().getY()
+                        - newS.topLeft().getY());
+                highlightCircle.setLayoutX(highlightCircle.getLayoutX() + oldS.topLeft().getX()
+                        - newS.topLeft().getX());
+                highlightCircle.setLayoutY(highlightCircle.getLayoutY() + oldS.topLeft().getY()
+                        - newS.topLeft().getY());
             }
         });
 
-        // Listener nous permettant de d'actualiser la visibilité de la polyligne et du marqueur, affin qu'ils
-        // deviennent invisibles s'il n'y a pas d'itinéraire.
+        //Auditeur nous permettant de d'actualiser la visibilité de la polyline et du marqueur,
+        //afin qu'ils deviennent invisibles s'il n'y a pas d'itinéraire.
         routeBean.routeProperty().addListener((observable, oldValue, newValue) -> {
             constructPolyline();
             if (oldValue == null && newValue != null) {
+                //Permet de rendre visible la ligne et le marqueur si le nouvel itinéraire n'est
+                //plus nul.
                 polyline.setVisible(true);
                 highlightCircle.setVisible(true);
             }
             if (oldValue != null && newValue == null) {
+                //Permet de rendre invisible la ligne et le marqueur si le nouvel itinéraire est
+                //devenu nul.
                 polyline.setVisible(false);
                 highlightCircle.setVisible(false);
             }
         });
 
-        // Listener nous permettant de rendre la route invisible si sa valeur est Nan
+        //Auditeur nous permettant de rendre la route invisible si sa valeur est Nan
         routeBean.highlightedPositionProperty().addListener((observable, oldValue, newValue) -> {
             //TODO demander à jean P s'ils ont réussi à utiliser la méthode isNan qui est plus clean !
-            if (oldValue.equals(Double.NaN) && !newValue.equals(Double.NaN)) highlightCircle.setVisible(true);
+            if (oldValue.equals(Double.NaN) && !newValue.equals(Double.NaN))
+                highlightCircle.setVisible(true);
             // TODO maxime j'ai un doute jsp si ça fait sens de check aussi l'ancienne valeur, de plus on set la visibilité
             // du higlighted dans 2 listeners ducoup jsp si ça peut faire de la merde
-            if (!oldValue.equals(Double.NaN) && newValue.equals(Double.NaN)) highlightCircle.setVisible(false);
+            if (!oldValue.equals(Double.NaN) && newValue.equals(Double.NaN))
+                highlightCircle.setVisible(false);
         });
-        // Listener nous permettant de redessiner le marqueur si sa position sur l'itinéraire change.
+
+        //Auditeur nous permettant de redessiner le marqueur si sa position sur l'itinéraire change.
         routeBean.highlightedPositionProperty().addListener((v,ov,nv) -> constructMarker());
-        // Listener nous permettant de redessiner le marqueur si la route change.
+
+        //Auditeur nous permettant de redessiner le marqueur si la route change.
         routeBean.routeProperty().addListener((p, oldS, newS) -> constructMarker());
     }
 }

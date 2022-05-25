@@ -1,4 +1,3 @@
-
 package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Preconditions;
@@ -13,9 +12,6 @@ import java.util.StringJoiner;
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
- *
- * Le constructeur compact de AttributeSet lève une IllegalArgumentException si la valeur passée
- * au constructeur contient un bit à 1 qui ne correspond à aucun attribut valide.
  */
 
 
@@ -70,10 +66,10 @@ public record AttributeSet(long bits) {
     }
 
     /**
-     * Retourne une châine composée de la représentation textuelle des éléments de l'ensemble entourés
-     * d'accolades et séparés par des virgules.
-     * @return Une chaîne composée de la représentation textuelle des éléments de l'ensemble entourés
-     * d'accolades et séparés par des virgules.
+     * Retourne une chaine composée de la représentation textuelle des éléments de l'ensemble
+     * entourés d'accolades et séparés par des virgules.
+     * @return Une chaîne composée de la représentation textuelle des éléments de l'ensemble
+     * entourés d'accolades et séparés par des virgules.
      */
 
     @Override

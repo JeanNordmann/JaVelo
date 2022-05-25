@@ -14,6 +14,8 @@ import ch.epfl.javelo.Preconditions;
 
 public record PointWebMercator(double x, double y) {
 
+    public final static int INITIAL_POWER_OF_TWO = 8;
+
     /**
      * Constructeur vérifiant si les valeurs passées sont bien comprises entre 0 et 1.
      */
@@ -31,12 +33,12 @@ public record PointWebMercator(double x, double y) {
      */
 
     public static PointWebMercator of(int zoomLevel, double x, double y) {
-        Preconditions.checkArgument(0 <= zoomLevel && zoomLevel <= 20);
-        return new PointWebMercator(Math.scalb(x, -8 - zoomLevel), Math.scalb(y, -8 - zoomLevel));
+        return new PointWebMercator(Math.scalb(x, -INITIAL_POWER_OF_TWO - zoomLevel),
+                Math.scalb(y, -INITIAL_POWER_OF_TWO - zoomLevel));
     }
 
     /**
-     * Retourne le point Web Mercartor correspondant au point du système de coordonnées suisse donné.
+     * Retourne le point Web Mercator correspondant au point du système de coordonnées suisse donné.
      * @param pointCh point dans le système de coordonnées suisse
      * @return le point Web Mercator correspondant au point du système de coordonnées suisse donné.
      */
@@ -53,7 +55,7 @@ public record PointWebMercator(double x, double y) {
 
     public double xAtZoomLevel(int zoomLevel) {
         Preconditions.checkArgument(0 <= zoomLevel && zoomLevel <= 20);
-        return Math.scalb(x, 8 + zoomLevel);
+        return Math.scalb(x, INITIAL_POWER_OF_TWO + zoomLevel);
     }
 
     /**
@@ -63,7 +65,7 @@ public record PointWebMercator(double x, double y) {
      */
     public double yAtZoomLevel(int zoomLevel) {
         Preconditions.checkArgument(0 <= zoomLevel && zoomLevel <= 20);
-        return Math.scalb(y, 8 + zoomLevel);
+        return Math.scalb(y, INITIAL_POWER_OF_TWO + zoomLevel);
     }
 
     /**
@@ -90,7 +92,12 @@ public record PointWebMercator(double x, double y) {
      */
 
     public PointCh toPointCh() {
-        if (!SwissBounds.containsEN(Ch1903.e(lon(),lat()),Ch1903.n(lon(),lat()))) return null;
-        return new PointCh(Ch1903.e(lon(),lat()), Ch1903.n(lon(),lat()));
+        double longitude = lon();
+        double latitude = lat();
+
+        if (!SwissBounds.containsEN(Ch1903.e(longitude, latitude),
+                Ch1903.n(longitude, latitude))) return null;
+
+        return new PointCh(Ch1903.e(longitude, latitude), Ch1903.n(longitude, latitude));
     }
 }

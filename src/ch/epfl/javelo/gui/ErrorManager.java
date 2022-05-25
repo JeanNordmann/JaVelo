@@ -78,8 +78,7 @@ public final class ErrorManager {
 
     public void errorAnimation() {
         //Arrêter le précédent message s'il y en a déjà un.
-        transition.stop();
-
+//TODO REGLER LES ANIMATIONS EN MEME TEMPS
         //Afficher l'animation du nouveau message d'erreur.
         transition.play();
     }
