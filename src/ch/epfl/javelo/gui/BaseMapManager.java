@@ -242,7 +242,9 @@ public final class BaseMapManager {
     private void addMouseClicking() {
         canvas.setOnMouseClicked((e) -> {
             if (e.isStillSincePress()) {
+                System.out.println("je veut ajouter un waypoint");
                 waypointsManager.addWaypoint(e.getX(), e.getY());
+                System.out.println("j'ai ajouté un waypoint");
             }
         });
     }

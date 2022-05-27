@@ -195,7 +195,9 @@ public final class WaypointsManager {
             } else {
                 //Ajoute le point de passage trouvé à la liste de points de passage de la classe.
                 Waypoint waypointToAdd = new Waypoint(pointCh, idNodeClosestTo);
+                System.out.println("(l'exception n'est toujours pas lancé");
                 waypointList.add(waypointToAdd);
+                System.out.println("(l'exception est lancé");
             }
         }
     }

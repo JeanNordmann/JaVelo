@@ -71,9 +71,6 @@ public final class ErrorManager {
         previousTransition = null;
         //Partie sonore
         java.awt.Toolkit.getDefaultToolkit().beep();
-        System.out.println(vBox.getHeight());
-        System.out.println(vBox.getWidth());
-
     }
 
     public void errorAnimation() {
