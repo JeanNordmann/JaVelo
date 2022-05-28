@@ -183,14 +183,12 @@ public final class WaypointsManager {
         PointCh pointCh = mapViewParameters.get().pointAt(x, y).toPointCh();
         if (pointCh == null) {
             stringConsumer.accept("Point hors de la Suisse !");
-            //TODO AUCUNE IDEE DE COMMENT FAIRE
             errorManager.displayError(stringConsumer.toString());
         } else {
             int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
             if (idNodeClosestTo == -1) {
                 //Pas de nœud trouvé dans la distance de recherche.
                 stringConsumer.accept("Aucune route à proximité !");
-                //TODO AUCUNE IDEE DE COMMENT FAIRE
                 errorManager.displayError(stringConsumer.toString());
             } else {
                 //Ajoute le point de passage trouvé à la liste de points de passage de la classe.

@@ -166,7 +166,7 @@ public final class ElevationProfileManager {
         borderPane.getStylesheets().add("elevation_profile.css");
 
         //Lie les dimensions du "petit" panneau aux dimensions du panneau "général".
-        //TODO MagicNumber 40
+        //TODO MagicNumber 40 je crois qu'il faut faire avec le insert mais jsp comment
         pane.prefHeightProperty().bind(borderPane.heightProperty().subtract(40));
         pane.prefWidthProperty().bind(borderPane.widthProperty());
 
@@ -191,10 +191,8 @@ public final class ElevationProfileManager {
     private void setUpListener() {
         //Auditeur détectant les changements de dimensions du rectangle bleu et recalculant les
         //transformations et l'affichage du profil.
-        //TODO idée mettre en attribut les steps et les actualiser...
         rectangle2D.addListener(e -> setUpProfileDisplay());
 
-// TODO faire mieux
         //Auditeur détectant les changements du profil et recalculant les transformations et
         //l'affichage du profil.
         elevationProfile.addListener((p,oldV,newV) -> {
@@ -337,8 +335,6 @@ public final class ElevationProfileManager {
      * rectangle bleu, et si elle est visible ou non en fonction de sa valeur (positive ou non).
      */
     private void bindHighlightedLine() {
-        //TODO changer ça Jean a copié sa ligne de code, et nous on avait fait avec mousePosition
-        // quand ça marchait, il faut donc changer highlightedPosition et sa valeur.
         line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> worldToScreenTransform.get()
                 .transform(highlightedPosition.get(), 0).getX(),
                  highlightedPosition, worldToScreenTransform));

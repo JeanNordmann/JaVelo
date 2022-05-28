@@ -135,10 +135,6 @@ public final class RouteManager {
      * Méthode privée permettant d'ajouter un point de passage sur le marqueur surligné.
      */
     private void clickOnHighlightMarker() {
-        //TODO pas supprimé : Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY()); et Point2D highlightCirclePosition = new Point2D(highlightCircle.getLayoutX(), highlightCircle.getLayoutY());
-        // Point2D eventPosition = highlightCircle.localToParent(e.getX(), e.getY());
-        // Point2D highlightCirclePosition = new Point2D(highlightCircle.getLayoutX(), highlightCircle.getLayoutY());
-//TODO idéalement (lu sur piazza) devrait pas prendre coordonné centre cercle, mais ou on a cliqué exactement
         Waypoint waypointToAdd = new Waypoint(routeBean.getRoute()
                 .pointAt(routeBean.getHighlightedPosition()),
                 routeBean.getRoute().nodeClosestTo(routeBean.getHighlightedPosition()));
@@ -211,7 +207,6 @@ public final class RouteManager {
             //TODO demander à jean P s'ils ont réussi à utiliser la méthode isNan qui est plus clean !
             if (oldValue.equals(Double.NaN) && !newValue.equals(Double.NaN))
                 highlightCircle.setVisible(true);
-            // TODO maxime j'ai un doute jsp si ça fait sens de check aussi l'ancienne valeur, de plus on set la visibilité
             // du higlighted dans 2 listeners ducoup jsp si ça peut faire de la merde
             if (!oldValue.equals(Double.NaN) && newValue.equals(Double.NaN))
                 highlightCircle.setVisible(false);

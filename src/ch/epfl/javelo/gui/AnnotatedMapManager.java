@@ -83,21 +83,17 @@ public final class AnnotatedMapManager {
         mousePositionOnRouteProperty = new SimpleDoubleProperty(Double.NaN);
         mousePosition = new SimpleObjectProperty<>(new Point2D(Double.NaN, Double.NaN));
 
-        //TODO
+        //TODO, pas très beaux nan ?
         pane.setOnMouseExited(e -> mousePosition.set(null));
         pane.setOnMouseMoved(e -> mousePosition.set(new Point2D(e.getX(), e.getY())));
 
         mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
             if(bean.getRoute() == null) return Double.NaN ;
             if (mousePosition.get() == null) return Double.NaN;
-            //todo A CLEAN
             PointCh mousePointCh = mapViewParametersP.get().
                     pointAt(mousePosition.get().getX(), mousePosition.get().getY())
                     .toPointCh();
             if (mousePointCh == null) return Double.NaN;
-            //TODO
-            //peut être un problème car la route n'as pas, ou a été mise à jours avant et dans ce
-            // listener ça bug car le point retourné à la ligne suivante n'est pas cohérents
 
             PointCh closestMousePointCh = bean.getRoute().pointClosestTo(mousePointCh).point();
             if (closestMousePointCh == null) return Double.NaN;

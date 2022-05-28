@@ -146,7 +146,6 @@ public final class RouteBean {
     // accesseur et modicateur
     // PS check si on n'a pas utilisé le mot get/ set dans des commentaires en français
 
-    //TODO ask jean : normal violer l'immuabilité ?
     /**
      * Accesseur retournant la propriété de la liste observable de points de passage.
      * @return la propriété de la liste observable de points de passage.
