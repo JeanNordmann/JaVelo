@@ -26,12 +26,12 @@ public final class ErrorManager {
     /**
      * Attribut représentant le panneau sur lequel apparaissent les messages d'erreur.
      */
-    private StackPane pane;
+    private final StackPane pane;
 
     /**
      * Attribut représentant un panneau de type VBox pour afficher les erreurs. 
      */
-    private VBox vBox;
+    private final VBox vBox;
 
     private static SequentialTransition transition;
 

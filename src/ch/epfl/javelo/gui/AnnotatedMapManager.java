@@ -39,12 +39,12 @@ public final class AnnotatedMapManager {
     /**
      * Attribut représentant un gestionnaire de points de passage.
      */
-    private WaypointsManager waypointsManager;
+    private final WaypointsManager waypointsManager;
 
     /**
      * Attribut représentant un gestionnaire d'itinéraire.
      */
-    private RouteManager routeManager;
+    private final RouteManager routeManager;
 
     /**
      * Attribut représentant une propriété sur les paramètres de vue de la carte.
@@ -54,12 +54,12 @@ public final class AnnotatedMapManager {
     /**
      * Attribut représentant une propriété sur la position de la souris sur la route.
      */
-    private DoubleProperty mousePositionOnRouteProperty;
+    private final DoubleProperty mousePositionOnRouteProperty;
 
     /**
      * Attribut représentant une propriété sur la position de la souris.
      */
-    private ObjectProperty<Point2D> mousePosition;
+    private final ObjectProperty<Point2D> mousePosition;
 
     //private static final ObjectProperty<Point2D> NAN_POINT_2D = new Point2D(D);
 

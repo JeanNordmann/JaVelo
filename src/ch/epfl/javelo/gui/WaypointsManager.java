@@ -71,7 +71,7 @@ public final class WaypointsManager {
      */
     private final Pane pane;
     
-    private ErrorManager errorManager; 
+    private final ErrorManager errorManager;
     /**
      * Constructeur initialisant les attributs à leurs valeurs données, et sinon à leurs valeurs par défaut.
      * @param graph graph du réseau routier.
