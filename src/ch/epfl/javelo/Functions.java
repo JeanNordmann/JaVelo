@@ -1,6 +1,5 @@
 package ch.epfl.javelo;
 
-import java.util.Arrays;
 import java.util.function.DoubleUnaryOperator;
 
 /**

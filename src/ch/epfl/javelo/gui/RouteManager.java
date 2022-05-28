@@ -7,8 +7,9 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
-import java.util.List;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 9.3.2

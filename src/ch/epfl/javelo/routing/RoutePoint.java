@@ -2,8 +2,6 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.projection.PointCh;
 
-import java.util.Objects;
-
 import static java.lang.Double.POSITIVE_INFINITY;
 
 /**

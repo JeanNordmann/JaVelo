@@ -1,6 +1,7 @@
 package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Preconditions;
+
 import java.util.StringJoiner;
 
 /**

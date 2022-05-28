@@ -1,7 +1,8 @@
 package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Q28_4;
-import java.nio.*;
+
+import java.nio.IntBuffer;
 
 import static ch.epfl.javelo.Bits.extractUnsigned;
 

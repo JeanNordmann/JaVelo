@@ -2,7 +2,9 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.routing.*;
+import ch.epfl.javelo.routing.CityBikeCF;
+import ch.epfl.javelo.routing.GpxGenerator;
+import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
