@@ -91,7 +91,6 @@ public final class AnnotatedMapManager {
             if(bean.getRoute() == null) return Double.NaN ;
             if (mousePosition.get() == null) return Double.NaN;
             //todo A CLEAN
-            System.out.println("ok1");
             PointCh mousePointCh = mapViewParametersP.get().
                     pointAt(mousePosition.get().getX(), mousePosition.get().getY())
                     .toPointCh();
@@ -100,18 +99,11 @@ public final class AnnotatedMapManager {
             //peut être un problème car la route n'as pas, ou a été mise à jours avant et dans ce
             // listener ça bug car le point retourné à la ligne suivante n'est pas cohérents
 
-            System.out.println("ok2");
-            if (bean.getRoute()==null) System.out.println("route nul (jamais lancé)");
-            RoutePoint closestfeMousePointCh = bean.getRoute().pointClosestTo(mousePointCh);
-            System.out.println("ok2.2");
             PointCh closestMousePointCh = bean.getRoute().pointClosestTo(mousePointCh).point();
             if (closestMousePointCh == null) return Double.NaN;
-            System.out.println("ok3");
             PointWebMercator closestMousePWM = PointWebMercator.ofPointCh(closestMousePointCh);
-            System.out.println("ok4");
             Point2D closestMousePoint2D = new Point2D(mapViewParametersP.get().viewX(closestMousePWM),
                     mapViewParametersP.get().viewY(closestMousePWM));
-            System.out.println("ok5");
             return mousePosition.get().distance(closestMousePoint2D) <= 15
                 ? bean.getRoute().pointClosestTo(closestMousePointCh).position()
                     : Double.NaN;

@@ -195,9 +195,7 @@ public final class WaypointsManager {
             } else {
                 //Ajoute le point de passage trouvé à la liste de points de passage de la classe.
                 Waypoint waypointToAdd = new Waypoint(pointCh, idNodeClosestTo);
-                System.out.println("(l'exception n'est toujours pas lancé");
                 waypointList.add(waypointToAdd);
-                System.out.println("(l'exception est lancé");
             }
         }
     }
@@ -300,8 +298,6 @@ public final class WaypointsManager {
         PointCh pointCh = mapViewParameters.get().pointAt(actualPosition.getX(), actualPosition.getY()).toPointCh();
         if (pointCh == null) {
             stringConsumer.accept("impossible de relocaliser un point de passage en dehors de la " +
-                    "suisse");
-            System.out.println("impossible de relocaliser un point de passage en dehors de la " +
                     "suisse");
             //La liste de points de passage n'est pas modifiée, mais doit malgré tout être redessinée.
             updateWaypointsLocations();

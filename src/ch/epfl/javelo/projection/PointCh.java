@@ -23,10 +23,6 @@ public record PointCh(double e, double n) {
      */
 
     public PointCh {
-        if (!SwissBounds.containsEN(e, n)) {
-            //TODO breakPoint
-            System.out.println("e");
-        }
         Preconditions.checkArgument(SwissBounds.containsEN(e, n));
     }
 

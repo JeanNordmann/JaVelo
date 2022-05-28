@@ -59,6 +59,9 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      */
 
     public PointCh pointAt(double position) {
+        // ne dois jamais arriver, mais parfois il arrive que certaines edges aillent une
+        // longueur nulle, pour éviter des exceptions (voir piazza @1848_f2)
+        if (length == 0) return fromPoint;
         double x = position / length;
         return new PointCh(Math2.interpolate(fromPoint.e(), toPoint.e(), x),
                 Math2.interpolate(fromPoint.n(), toPoint.n(), x));
