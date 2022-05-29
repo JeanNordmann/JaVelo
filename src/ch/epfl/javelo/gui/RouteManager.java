@@ -101,8 +101,8 @@ public final class RouteManager {
         try {
             List<PointCh> pointChList = routeBean.getRoute().points();
             MapViewParameters actualMVP = mapViewParameters.get();
-            // Permet de mettre le premier de l'itinéraire à la coordonnée (0,0) de la polyline.
-            // Attention → il faut encore la placer à la bonne position sur l'écran.
+            //Permet de mettre le premier de l'itinéraire à la coordonnée (0,0) de la polyline.
+            //Attention → il faut encore la placer à la bonne position sur l'écran.
             double xOffset = actualMVP.viewX(PointWebMercator.ofPointCh(pointChList.get(0))),
                     yOffset = actualMVP.viewX(PointWebMercator.ofPointCh(pointChList.get(0)));
             for (PointCh pointCh : pointChList) {
@@ -110,9 +110,12 @@ public final class RouteManager {
                 coordinates.add(actualMVP.viewX(pointWebMercator) - xOffset);
                 coordinates.add(actualMVP.viewY(pointWebMercator) - yOffset);
             }
+            //Modifie toutes les coordonnées de la polyline.
             polyline.getPoints().setAll(coordinates);
+            //Modifie les coordonnées X et Y sur l'écran de la ligne à afficher.
             polyline.setLayoutX(xOffset);
             polyline.setLayoutY(yOffset);
+            //Ajoute la nouvelle ligne au panneau.
             pane.getChildren().add(polyline);
         } catch (NullPointerException ignored) {}
     }
@@ -144,7 +147,7 @@ public final class RouteManager {
         int indexOfNewWaypoint = routeBean.indexOfNonEmptySegmentAt(routeBean
                     .getHighlightedPosition()) + 1;
 
-            waypointList.add(indexOfNewWaypoint, waypointToAdd);
+        waypointList.add(indexOfNewWaypoint, waypointToAdd);
     }
 
 
@@ -203,12 +206,10 @@ public final class RouteManager {
             }
         });
 
-        //Auditeur nous permettant de rendre la route invisible si sa valeur est Nan
+        //Auditeur permettant de rendre la route invisible si sa valeur est NaN.
         routeBean.highlightedPositionProperty().addListener((observable, oldValue, newValue) -> {
-            //TODO demander à jean P s'ils ont réussi à utiliser la méthode isNan qui est plus clean !
             if (oldValue.equals(Double.NaN) && !newValue.equals(Double.NaN))
                 highlightCircle.setVisible(true);
-            // du higlighted dans 2 listeners ducoup jsp si ça peut faire de la merde
             if (!oldValue.equals(Double.NaN) && newValue.equals(Double.NaN))
                 highlightCircle.setVisible(false);
         });

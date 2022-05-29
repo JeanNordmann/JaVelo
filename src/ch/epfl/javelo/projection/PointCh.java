@@ -64,14 +64,4 @@ public record PointCh(double e, double n) {
     public double lat() {
         return Ch1903.lat(e, n);
     }
-
-
-    //Pour comparer des PointCh dans les tests
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PointCh pointCh = (PointCh) o;
-        return Double.compare(pointCh.e, e) == 0 && Double.compare(pointCh.n, n) == 0;
-    }
 }

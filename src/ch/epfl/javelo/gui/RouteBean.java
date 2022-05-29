@@ -25,6 +25,12 @@ import java.util.List;
 public final class RouteBean {
 
     /**
+     * Constante représentant le facteur de chargement du cache mémoire à donner à la
+     * construction de ce cache.
+     */
+    private static final float ROUTE_CACHE_LOAD_FACTOR = 0.75f;
+
+    /**
      * Constante représentant la taille du cache mémoire des itinéraires.
      */
     private static final int MEMORY_CACHE_SIZE = 50;
@@ -79,15 +85,19 @@ public final class RouteBean {
         this.highlightedPosition = new SimpleDoubleProperty();
         this.route = new SimpleObjectProperty<>();
         this.elevationProfile = new SimpleObjectProperty<>();
-        this.routeCacheMemory = new LinkedHashMap<>(MEMORY_CACHE_SIZE, 0.75f, true);
+        this.routeCacheMemory = new LinkedHashMap<>(MEMORY_CACHE_SIZE, ROUTE_CACHE_LOAD_FACTOR,
+                true);
 
         waypoints.addListener((ListChangeListener<? super Waypoint>) e -> computeNewRouteAndProfile());
 
     }
 
+    /**
+     * Méthode privée calculant la nouvelle route et son profil, si la route est valide.
+     */
     private void computeNewRouteAndProfile() {
         List<Waypoint> waypoints = getWaypoints();
-        if(isValidRoute()) {
+        if (isValidRoute()) {
             List<Route> routeList = new ArrayList<>();
             for (int i = 0; i < waypoints.size() - 1; i++) {
                 if (waypoints.get(i).nodeId() != waypoints.get(i + 1).nodeId()) {
@@ -99,10 +109,12 @@ public final class RouteBean {
             route.set(new MultiRoute(routeList));
             elevationProfile.set(computeElevationProfile(route.get()));
         }
-
-
     }
 
+    /**
+     * Méthode privée retournant si la route entre les points de passage est jugée valide.
+     * @return Retourne vrai si et seulement si la route est jugée valide.
+     */
     private boolean isValidRoute() {
         List<Waypoint> waypointList = getWaypoints();
         if (waypointList.size() < 2) {
@@ -111,7 +123,7 @@ public final class RouteBean {
             return false;
         }
         for (int i = 0; i < waypointList.size() - 1; i++) {
-            if(!isRouteExisting(waypointList.get(i), waypointList.get(i + 1))) {
+            if (!isRouteExisting(waypointList.get(i), waypointList.get(i + 1))) {
                 route.set(null);
                 elevationProfile.set(null);
                 return false;
@@ -120,24 +132,40 @@ public final class RouteBean {
         return true;
     }
 
+    /**
+     * Méthode privée accédant au cache mémoire et retournant la meilleure route calculée entre les
+     * deux points de passage donnés en paramètres. Elle la retourne directement si elle est déjà
+     * présente dans le cache, sinon la calcule, l'ajoute au cache et la retourne.
+     * @param firstWaypoint Premier point de passage et point de départ de la route à calculer.
+     * @param secondWaypoint Second point de passage et point d'arrivée de la route à calculer.
+     * @return Retourne la meilleure route calculée entre les deux points de passage passés en
+     * paramètres.
+     */
     private Route getRouteFromCacheMemory(Waypoint firstWaypoint, Waypoint secondWaypoint) {
         Pair<Integer, Integer> pair = new Pair<>(firstWaypoint.nodeId(), secondWaypoint.nodeId());
-        if (routeCacheMemory.containsKey(pair)) {
-            return routeCacheMemory.get(pair);
-        } else {
-            Route route = routeComputer.bestRouteBetween(firstWaypoint.nodeId(),
-                    secondWaypoint.nodeId());
-            routeCacheMemory.put(pair, route);
-            return route;
-        }
+        return routeCacheMemory.computeIfAbsent(pair,
+                s -> routeComputer.bestRouteBetween(s.getKey(), s.getValue()));
     }
 
+    /**
+     * Méthode privée vérifiant si la route entre les deux points de passage passés en paramètres
+     * est valide ou non.
+     * @param firstWaypoint Premier point de passage et point de départ de la route à vérifier.
+     * @param secondWaypoint Second point de passage et point d'arrivée de la route à vérifier.
+     * @return Retourne vrai si et seulement si la route entre les deux points de passage passés
+     * en paramètres est valide.
+     */
     private boolean isRouteExisting(Waypoint firstWaypoint, Waypoint secondWaypoint) {
         // Cas ou il y a 2 waypoint qui se suivent au même endroit
         if (firstWaypoint.nodeId() == secondWaypoint.nodeId()) return true;
         return getRouteFromCacheMemory(firstWaypoint, secondWaypoint) != null;
     }
 
+    /**
+     * Méthode privée calculant le profil d'une route passée en paramètre de la fonction.
+     * @param route Route de laquelle il faut calculer le profil.
+     * @return Retourne le profil de la route donnée en paramètre.
+     */
     private ElevationProfile computeElevationProfile(Route route) {
         return ElevationProfileComputer.elevationProfile(route, MAX_STEP_LENGTH);
     }
@@ -232,6 +260,13 @@ public final class RouteBean {
         return elevationProfile.get();
     }
 
+    /**
+     * Méthode privée (donnée sur l'énoncé), retournant l'index du segment contenant une position
+     * le long de l'itinéraire donnée en paramètre, en ignorant les segments vides.
+     * @param position Position donnée le long de l'itinéraire.
+     * @return Retourne l'index du segment contenant la position le long de l'itinéraire donnée
+     * en paramètre, en ignorant les segments vides.
+     */
     public int indexOfNonEmptySegmentAt(double position) {
         int index = route.get().indexOfSegmentAt(position);
         for (int i = 0; i <= index; i += 1) {

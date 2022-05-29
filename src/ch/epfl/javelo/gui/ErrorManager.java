@@ -1,5 +1,6 @@
 package ch.epfl.javelo.gui;
 
+import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -31,20 +32,25 @@ public final class ErrorManager {
      */
     private final VBox vBox;
 
+    /**
+     * Attribut représentant la transition sur laquelle afficher l'erreur demandée.
+     */
     private static SequentialTransition transition;
 
-    private boolean displayIfNeeded;
-
-    private SequentialTransition previousTransition;
-
+    /**
+     * Constructeur public de la classe ErrorManager, qui initialise les attributs de la classe à
+     * leurs valeurs par défaut, initialise la feuille de style du panneau et gère si les
+     * interactions avec le panneau masque les panneaux en arrière de celui-ci.
+     */
     public ErrorManager() {
         vBox = new VBox();
         vBox.getStylesheets().add("error.css");
         vBox.getChildren().add(new Text());
         vBox.setMouseTransparent(true);
 
-        previousTransition = null;
         pane = new StackPane(vBox);
+
+        //Empêche que ce panneau masque les interactions avec les panneaux en arrière-plan.
         pane.setPickOnBounds(false);
     }
 
@@ -53,6 +59,8 @@ public final class ErrorManager {
     }
 
     public void displayError(String errorMessage) {
+
+        //Initialise les paramètres de l'affichage d'erreur demandée.
         FadeTransition fstFadeTransition = new FadeTransition(Duration.millis(200), vBox);
         fstFadeTransition.setFromValue(0);
         fstFadeTransition.setToValue(0.8);
@@ -61,20 +69,20 @@ public final class ErrorManager {
         sndFadeTransition.setFromValue(0.8);
         sndFadeTransition.setToValue(0);
 
+        //Arrête la précédente animation s'il y en a une en cours.
+        if (transition != null) transition.stop();
+
+        //Crée la nouvelle transition à afficher.
         transition = new SequentialTransition(fstFadeTransition,
                 new PauseTransition(Duration.seconds(2)), sndFadeTransition);
 
+        //Ajoute à la VBox le texte à afficher.
         vBox.getChildren().set(0, new Text(errorMessage));
-        errorAnimation();
-        previousTransition = null;
-        //Partie sonore
-        java.awt.Toolkit.getDefaultToolkit().beep();
-    }
 
-    public void errorAnimation() {
-        //Arrêter le précédent message s'il y en a déjà un.
-//TODO REGLER LES ANIMATIONS EN MEME TEMPS
-        //Afficher l'animation du nouveau message d'erreur.
+        //Partie sonore.
+        java.awt.Toolkit.getDefaultToolkit().beep();
+
+        //Joue l'animation demandée.
         transition.play();
     }
 }

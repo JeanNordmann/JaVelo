@@ -30,6 +30,12 @@ public final class TileManager {
     public static final int MEMORY_CACHE_SIZE = 100;
 
     /**
+     * Constante représentant le facteur de chargement du cache mémoire à donner à la
+     * construction de ce cache.
+     */
+    private static final float MEMORY_CACHE_LOAD_FACTOR = 0.75f;
+
+    /**
      * Attribut représentant le chemin d'accès au cache disque.
      */
     private final Path path;
@@ -50,18 +56,23 @@ public final class TileManager {
      */
 
     public record TileId(int zoomLevel, int xTile, int yTile) {
+
+        //Constante représentant le niveau de zoom minimum.
         private static final int MIN_ZOOM_LEVEL = 0;
+
+        //Constante représentant le niveau de zoom maximum.
         private static final int MAX_ZOOM_LEVEL = 20;
+
+        //Constante représentant la coordonnée minimale.
         private static final int MIN_COORDINATE = 0;
 
         /**
          * Constructeur compact lançant une exception si les arguments donnés à la
          * construction ne sont pas valides.
-         * @param zoomLevel Niveau de zoomLevel compris entre 0 et 19 (inclus).
+         * @param zoomLevel Niveau de zoom compris entre 0 et 19 (inclus).
          * @param xTile Coordonnée X donnée.
          * @param yTile Coordonnée Y donnée.
          */
-
         public TileId {
             Preconditions.checkArgument(isValid(zoomLevel, xTile, yTile));
         }
@@ -73,7 +84,6 @@ public final class TileManager {
          * @param y Coordonnée Y entre 0 et (2 ^ z) - 1 (inclus).
          * @return Vrai si la tuile est valide.
          */
-
         public static boolean isValid(int z, int x, int y) {
             int maxCoordinate = (int) Math.pow(2, z) - 1;
             return (z >= MIN_ZOOM_LEVEL) && (z <= MAX_ZOOM_LEVEL)
@@ -92,14 +102,14 @@ public final class TileManager {
     public TileManager(Path path, String name) {
         this.path = path;
         this.name = name;
-        this.memoryCache = new LinkedHashMap<>(MEMORY_CACHE_SIZE, 0.75f, true);
+        this.memoryCache = new LinkedHashMap<>(MEMORY_CACHE_SIZE, MEMORY_CACHE_LOAD_FACTOR, true);
     }
 
     /**
-     * Retourne l'image associée à la tuile donnée en paramètre de la méthode.
+     * Méthode publique retournant l'image associée à la tuile donnée en paramètre de la méthode.
      * @param tileId Identité de la tuile.
      * @return Retourne l'image associée à la tuile donnée.
-     * @throws IOException en cas de flot corrompu, ou si une erreur liée aux flots se produit.
+     * @throws IOException En cas de flot corrompu, ou si une erreur liée aux flots se produit.
      */
 
     public Image imageForTileAt(TileId tileId) throws IOException {
@@ -111,7 +121,7 @@ public final class TileManager {
         // Cas où l'image est dans le diskMemory
         if (Files.exists(filePath)) {
             //Bloc Try-with-resource pour fermer le flot à la sortie.
-            try(InputStream inputStream = new FileInputStream(filePath.toFile())) {
+            try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
                 Image image = new Image(inputStream);
                 //Méthode privée gérant le cache-mémoire et supprimant le Least Recently Used,
                 //pour le remplacer par le Most Recently Used (l'image actuelle).
@@ -126,11 +136,11 @@ public final class TileManager {
             Files.createDirectories(directoryPath);
             //De nouveau, un bloc try-with-resource est utilisé pour fermer les flots.
             //Crée un flot de sortie écrivant dans le fichier désiré.
-            try(InputStream i = c.getInputStream();
+            try (InputStream i = c.getInputStream();
                 OutputStream outputStream = new FileOutputStream(filePath.toFile())) {
                 //Transfère les données du flot d'entrée, vers le flot de sortie.
                 i.transferTo(outputStream);
-                try(InputStream inputStream = new FileInputStream(filePath.toFile())) {
+                try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
                     Image image = new Image(inputStream);
                     //Méthode privée gérant le cache-mémoire et supprimant le Least Recently Used,
                     //pour le remplacer par le Most Recently Used (l'image actuelle).
@@ -165,8 +175,8 @@ public final class TileManager {
      */
 
     private String suffixOfTileId(TileId tileId) {
-        return "/" + tileId.zoomLevel + '/' + tileId.xTile + '/' +
-                tileId.yTile + ".png";
+        return "/" + tileId.zoomLevel + '/' + tileId.xTile + '/'
+                + tileId.yTile + ".png";
     }
 
     /**
@@ -189,7 +199,6 @@ public final class TileManager {
      * @return Retourne le lien sous forme de String correspondant à la tuile, avec le serveur
      * donné à la construction du TileManager.
      */
-
     private String linkOfTileId(TileId tileId) {
          return "https://" + name + suffixOfTileId(tileId);
     }
