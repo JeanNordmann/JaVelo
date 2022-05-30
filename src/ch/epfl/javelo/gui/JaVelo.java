@@ -6,6 +6,7 @@ import ch.epfl.javelo.routing.CityBikeCF;
 import ch.epfl.javelo.routing.GpxGenerator;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -44,15 +45,12 @@ public class JaVelo extends Application {
                         routeBean.highlightedPositionProperty());
         SplitPane splitPane = new SplitPane(annotatedMapManager.pane());
         splitPane.setOrientation(Orientation.VERTICAL);
-        //TODO essayer de modifier avec :
-        //Bindings.when et .then c'est hyper stylé.
-        routeBean.highlightedPositionProperty().bind(createDoubleBinding(() ->{
-        if (annotatedMapManager.mousePositionOnRouteProperty().get() >= 0) {
-            return annotatedMapManager.mousePositionOnRouteProperty().get();
-        } else {
-            return elevationProfileManager.mousePositionOnProfileProperty().get();
-        }}, elevationProfileManager.mousePositionOnProfileProperty(),
-                annotatedMapManager.mousePositionOnRouteProperty()));
+
+        //Lie la propriété de la position surlignée.
+        routeBean.highlightedPositionProperty().bind(Bindings
+                .when(annotatedMapManager.mousePositionOnRouteProperty().greaterThanOrEqualTo(0))
+                .then(annotatedMapManager.mousePositionOnRouteProperty())
+                .otherwise(elevationProfileManager.mousePositionOnProfileProperty()));
 
         //Auditeur permettant d'ajouter ou enlever le profil
         routeBean.elevationProfileProperty().addListener((observable, oldValue, newValue) -> {

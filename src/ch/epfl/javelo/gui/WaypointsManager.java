@@ -116,6 +116,35 @@ public final class WaypointsManager {
         return pane; }
 
     /**
+     * Méthode permettant d'ajouter un point de passage sur la carte à l'aide de ses coordonnées
+     * relatives sur la carte affichée à l'écran.
+     * @param x Coordonnée X depuis le coin haut gauche.
+     * @param y Coordonnée Y depuis le coin haut gauche.
+     */
+
+    public void addWaypoint(double x, double y) {
+        PointCh pointCh = mapViewParameters.get().pointAt(x, y).toPointCh();
+        //Si le PointCh correspondant à la position où l'on veut ajouter un point de passage est
+        //nul, ce qui correspond à un point hors des limites suisses définies par la classe
+        //SwissBounds.
+        if (pointCh == null) {
+            //Dans le cas où le point n'est pas dans les limites de la Suisse.
+            stringConsumer.accept("Aucune route à proximité !");
+        } else {
+            //Sinon, une recherche du nœud le plus proche est entamée.
+            int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
+            if (idNodeClosestTo == -1) {
+                //Dans le cas où aucun nœud n'a été trouvé dans la distance de recherche.
+                stringConsumer.accept("Aucune route à proximité !");
+            } else {
+                //Ajoute le point de passage trouvé à la liste de points de passage de la classe.
+                Waypoint waypointToAdd = new Waypoint(pointCh, idNodeClosestTo);
+                waypointList.add(waypointToAdd);
+            }
+        }
+    }
+
+    /**
      * Méthode modifiant les coordonnées des points de passage en cas de déplacement de ceux-ci.
      */
 
@@ -185,34 +214,6 @@ public final class WaypointsManager {
         pane.getChildren().add(groupToAdd);
     }
 
-    /**
-     * Méthode permettant d'ajouter un point de passage sur la carte à l'aide de ses coordonnées
-     * relatives sur la carte affichée à l'écran.
-     * @param x Coordonnée X depuis le coin haut gauche.
-     * @param y Coordonnée Y depuis le coin haut gauche.
-     */
-
-    public void addWaypoint(double x, double y) {
-        PointCh pointCh = mapViewParameters.get().pointAt(x, y).toPointCh();
-        //Si le PointCh correspondant à la position où l'on veut ajouter un point de passage est
-        //nul, ce qui correspond à un point hors des limites suisses définies par la classe
-        //SwissBounds.
-        if (pointCh == null) {
-            //Dans le cas où le point n'est pas dans les limites de la Suisse.
-            stringConsumer.accept("Aucune route à proximité !");
-        } else {
-            //Sinon, une recherche du nœud le plus proche est entamée.
-            int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
-            if (idNodeClosestTo == -1) {
-                //Dans le cas où aucun nœud n'a été trouvé dans la distance de recherche.
-                stringConsumer.accept("Aucune route à proximité !");
-            } else {
-                //Ajoute le point de passage trouvé à la liste de points de passage de la classe.
-                Waypoint waypointToAdd = new Waypoint(pointCh, idNodeClosestTo);
-                waypointList.add(waypointToAdd);
-            }
-        }
-    }
 
     /**
      * Méthode permettant de déplacer un marqueur lorsqu'un évènement de souris a été détecté.

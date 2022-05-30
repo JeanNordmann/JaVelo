@@ -1,6 +1,5 @@
 package ch.epfl.javelo.gui;
 
-import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;

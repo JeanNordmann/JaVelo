@@ -95,15 +95,17 @@ public final class AnnotatedMapManager {
                     .toPointCh();
             if (mousePointCh == null) return Double.NaN;
 
+            //Calcule le point le plus proche du curseur sur la route.
             PointCh closestMousePointCh = bean.getRoute().pointClosestTo(mousePointCh).point();
-            if (closestMousePointCh == null) return Double.NaN;
+            //Convertit ce point en coordonnées PointWebMercator.
             PointWebMercator closestMousePWM = PointWebMercator.ofPointCh(closestMousePointCh);
             Point2D closestMousePoint2D = new Point2D(mapViewParametersP.get().viewX(closestMousePWM),
                     mapViewParametersP.get().viewY(closestMousePWM));
-            return mousePosition.get().distance(closestMousePoint2D) <= 15
+            //Retourne la position le long de l'itinéraire ou NaN si elle est à plus de quinze
+            //pixels JavaFX.
+            return mousePosition.get().distance(closestMousePoint2D) <= HIGHLIGHTED_POSITION_MAX_PIXEL_DISTANCE
                 ? bean.getRoute().pointClosestTo(closestMousePointCh).position()
                     : Double.NaN;
-
         }, mousePosition, bean.routeProperty()));
 
     }

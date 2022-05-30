@@ -112,7 +112,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         //Récupère le type de profil (les deux bits de poids fort).
         byte profilType = (byte) Bits.extractUnsigned(profileIds.get(edgeId), 30, 2);
 
-        //TODO check si prpof nous demande de tout corriger
         //Traite les différents cas.
         switch (profilType) {
             case (byte) 1:

@@ -111,6 +111,14 @@ public final class BaseMapManager {
     }
 
     /**
+     * Méthode nous permettant d'accéder à l'attribut panneau de BaseMapManager.
+     * @return Le panneau servant de conteneur à ses nœuds enfants notamment le canevas.
+     */
+    public Pane pane() {
+        return pane;
+    }
+
+    /**
      * Méthode privée permettant de dessiner la carte sur le canvas, qui est dans le panneau.
      */
     private void drawMap() {
@@ -250,13 +258,6 @@ public final class BaseMapManager {
         });
     }
 
-    /**
-     * Méthode nous permettant d'accéder à l'attribut panneau de BaseMapManager.
-     * @return Le panneau servant de conteneur à ses nœuds enfants notamment le canevas.
-     */
-    public Pane pane() {
-        return pane;
-    }
 
     /**
      * Méthode redessinant la carte si le booléen le demande.

@@ -53,7 +53,6 @@ public final class TileManager {
      * OSM est valide.
      */
 
-    //TODO-check si privée/public avec les autres groupes
     public record TileId(int zoomLevel, int xTile, int yTile) {
 
         //Constante représentant le niveau de zoom minimum.

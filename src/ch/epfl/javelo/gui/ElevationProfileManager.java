@@ -41,7 +41,7 @@ public final class ElevationProfileManager {
     //Constante représentant la taille de la police souhaitée.
     private static final int FONT_SIZE = 10;
 
-    //Constante repentant la police utilisé pour tout les textes
+    //Constante repentant la police utilisé pour tou les textes
     private static final String FONT = "Avenir";
 
     /**
@@ -54,6 +54,7 @@ public final class ElevationProfileManager {
      * du profil à mettre en évidence.
      */
     private final ReadOnlyDoubleProperty highlightedPosition;
+
     /**
      * Attribut représentant le panneau contenant le dessin du profil.
      */
@@ -220,7 +221,6 @@ public final class ElevationProfileManager {
         });
 
     }
-
     /**
      * Méthode privée configurant l'affichage du profil.
      */
@@ -323,6 +323,28 @@ public final class ElevationProfileManager {
         return point2DMoveTo;
     }
 
+    /**
+     * Méthode privée ajoutant une ligne à la liste de PathElement donnée avec les coordonnées
+     * passées en paramètres, ainsi qu'avec la transformation.
+     * @param moveToX Coordonnée X du point de départ de la ligne.
+     * @param moveToY Coordonnée Y du point de départ de ligne.
+     * @param lineToX Coordonnée X du point d'arrivée de la ligne
+     * @param lineToY Coordonnée Y du point d'arrivée de la ligne.
+     * @param worldToScreen Transformation calculant les coordonnées sur l'écran à partir de
+     *                      celles dans le monde réel.
+     * @param pathElementList Liste des PathElements construits avec toutes les lignes de la
+     *                        grille.
+     * @return Le point en deux dimensions à partir duquel la ligne est tracée.
+     */
+    private Point2D addLineToPathElementList(double moveToX, double moveToY, double lineToX,
+                                          double lineToY, Transform worldToScreen,
+                                          List<PathElement> pathElementList) {
+        Point2D point2DMoveTo = worldToScreen.transform(moveToX, moveToY);
+        Point2D point2DLineTo = worldToScreen.transform(lineToX, lineToY);
+        pathElementList.add(new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY()));
+        pathElementList.add(new LineTo(point2DLineTo.getX(), point2DLineTo.getY()));
+        return point2DMoveTo;
+    }
 
     /**
      * Méthode privée permettant de configurer une étiquette et son texte.
@@ -335,6 +357,24 @@ public final class ElevationProfileManager {
     private void setUpLabel(Text text, Point2D point2DMoveTo, VPos vPos, double textPrefWidth,
                             String orientation) {
         text.setTextOrigin(vPos);
+        text.setFont(Font.font(FONT, FONT_SIZE));
+        text.setLayoutX(point2DMoveTo.getX() - textPrefWidth);
+        text.setLayoutY(point2DMoveTo.getY());
+        text.getStyleClass().add("grid_label");
+        text.getStyleClass().add(orientation);
+    }
+
+    /**
+     * Méthode privée permettant de configurer une étiquette et son texte.
+     * @param text Texte donné.
+     * @param point2DMoveTo Emplacement du texte donné sous forme de Point2D.
+     * @param textOrigin Position verticale donnée.
+     * @param textPrefWidth Décalage du texte par rapport au point donné en Point2D.
+     * @param orientation Chaîne de caractère liée à la feuille de style du texte.
+     */
+    private void setUpLabel(Text text, Point2D point2DMoveTo, VPos textOrigin, double textPrefWidth,
+                            String orientation) {
+        text.setTextOrigin(textOrigin);
         text.setFont(Font.font(FONT, FONT_SIZE));
         text.setLayoutX(point2DMoveTo.getX() - textPrefWidth);
         text.setLayoutY(point2DMoveTo.getY());
@@ -356,6 +396,7 @@ public final class ElevationProfileManager {
         line.visibleProperty().bind(highlightedPosition.greaterThanOrEqualTo(0));
 
     }
+
     /**
      * Méthode privée configurant les gestionnaires d'évènements, pour obtenir la coordonnée X de
      * la souris si elle se situe sur le rectangle bleu, et sinon à NaN, lorsqu'elle sort du
@@ -374,13 +415,23 @@ public final class ElevationProfileManager {
         pane.setOnMouseExited(event -> mousePositionOnProfile.set(Double.NaN));
     }
 
-
     /**
      * Méthode privée determinant si une paire de coordonnées x et y donnés en paramètres sont
      * situés dans le rectangle bleu contenant le profil.
      * @param x coordonnée x donnée.
      * @param y coordonnée y donnée.
      * @return true si et seulement si la paire de coordonnée est dans le rectangle bleu.
+     */
+    private boolean isInBlueRectangle(double x, double y) {
+        return rectangle2D.get().contains(x, y);
+    }
+
+    /**
+     * Méthode privée determinant si une paire de coordonnées x et y donnés en paramètres sont
+     * situés dans le rectangle bleu contenant le profil.
+     * @param x Coordonnée x donnée.
+     * @param y Coordonnée y donnée.
+     * @return Vrai si et seulement si la paire de coordonnée est dans le rectangle bleu.
      */
     private boolean isInBlueRectangle(double x, double y) {
         return rectangle2D.get().contains(x, y);
@@ -539,23 +590,6 @@ public final class ElevationProfileManager {
     }
 
     /**
-     * Méthode publique retournant le panneau de la classe.
-     * @return Le panneau contenant le dessin du profil, de type Pane.
-     */
-    public BorderPane pane() {
-        return borderPane;
-    }
-
-    /**
-     * Méthode publique retournant la propriété en lecture seule contenant la position de la souris
-     * sur le profil.
-     * @return la propriété en lecture seule contenant la position de la souris sur le profil.
-     */
-    public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
-        return mousePositionOnProfile;
-    }
-
-    /**
      * Méthode privée calculant la transformation passant des coordonnées du panneau JavaFX aux
      * coordonnées du monde "réel", et la transformation inverse.
      */
@@ -564,10 +598,7 @@ public final class ElevationProfileManager {
         //Décale au coin au gauche du rectangle.
         affine.prependTranslation(-insets.getLeft(), -insets.getTop());
         //Inverse les coordonnées de l'altitude. Puis Ajout de la hauteur
-        //Dans le but que pour une hauteur de 50
-        //50 → 400 deviennent 0 → 400
-        //25 → 800 deviennent 25 → 800
-        //0 → 1200 deviennent 50 → 1200
+
         affine.prependScale(1, -1);
         affine.prependTranslation(0, rectangle2D.get().getHeight());
         //Changement d'échelle.

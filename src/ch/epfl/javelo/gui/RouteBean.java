@@ -85,6 +85,90 @@ public final class RouteBean {
     }
 
     /**
+     * Accesseur retournant la propriété de la liste observable de points de passage.
+     * @return La propriété de la liste observable de points de passage.
+     */
+    public ObservableList<Waypoint> waypointsProperty() {
+        // Pas immuable, pas grave, car on offre dans tous les cas un setter.
+        return waypoints;
+    }
+
+    /**
+     * Accesseur retournant la liste observable de points de passage.
+     * @return La liste observable de points de passage.
+     */
+    public List<Waypoint> getWaypoints() {
+        return waypoints;
+    }
+
+    /**
+     * Accesseur retournant la propriété de l'itinéraire permettant de relier les points
+     * de passage, en lecture seule.
+     * @return La propriété de l'itinéraire permettant de relier les points de passage.
+     */
+    public ReadOnlyObjectProperty<Route> routeProperty() {
+        return route;
+    }
+
+    /**
+     * Accesseur retournant l'itinéraire permettant de relier les points de passage.
+     * @return L'itinéraire permettant de relier les points de passage.
+     */
+    public Route getRoute() {
+        return route.get();
+    }
+
+    /**
+     * Accesseur retournant la propriété de la position mise en évidence.
+     * @return La propriété de la position mise en évidence.
+     */
+    public DoubleProperty highlightedPositionProperty() {
+        return highlightedPosition;
+    }
+
+    /**
+     * Accesseur retournant la position mise en évidence.
+     * @return La position mise en évidence.
+     */
+    public double getHighlightedPosition() {
+        return highlightedPosition.get();
+    }
+
+
+    /**
+     * Accesseur retournant la propriété du profil de l'itinéraire, en lecture seule.
+     * @return La propriété du profil de l'itinéraire.
+     */
+    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileProperty() {
+        return elevationProfile;
+    }
+
+    /**
+     * Accesseur retournant le profil de l'itinéraire.
+     * @return Le profil de l'itinéraire.
+     */
+    public ElevationProfile getElevationProfile() {
+        return elevationProfile.get();
+    }
+
+    /**
+     * Méthode privée (donnée sur l'énoncé), retournant l'index du segment contenant une position
+     * le long de l'itinéraire donnée en paramètre, en ignorant les segments vides.
+     * @param position Position donnée le long de l'itinéraire.
+     * @return Retourne l'index du segment contenant la position le long de l'itinéraire donnée
+     * en paramètre, en ignorant les segments vides.
+     */
+    public int indexOfNonEmptySegmentAt(double position) {
+        int index = route.get().indexOfSegmentAt(position);
+        for (int i = 0; i <= index; i += 1) {
+            int n1 = waypoints.get(i).nodeId();
+            int n2 = waypoints.get(i + 1).nodeId();
+            if (n1 == n2) index += 1;
+        }
+        return index;
+    }
+
+    /**
      * Méthode privée calculant la nouvelle route et son profil, si la route est valide.
      */
     private void computeNewRouteAndProfile() {
@@ -168,89 +252,5 @@ public final class RouteBean {
      */
     private ElevationProfile computeElevationProfile(Route route) {
         return ElevationProfileComputer.elevationProfile(route, MAX_STEP_LENGTH);
-    }
-
-    /**
-     * Accesseur retournant la propriété de la liste observable de points de passage.
-     * @return La propriété de la liste observable de points de passage.
-     */
-    public ObservableList<Waypoint> waypointsProperty() {
-        // Pas immuable, pas grave, car on offre dans tous les cas un setter.
-        return waypoints;
-    }
-
-    /**
-     * Accesseur retournant la liste observable de points de passage.
-     * @return La liste observable de points de passage.
-     */
-    public List<Waypoint> getWaypoints() {
-        return waypoints;
-    }
-
-    /**
-     * Accesseur retournant la propriété de l'itinéraire permettant de relier les points
-     * de passage, en lecture seule.
-     * @return La propriété de l'itinéraire permettant de relier les points de passage.
-     */
-    public ReadOnlyObjectProperty<Route> routeProperty() {
-        return route;
-    }
-
-    /**
-     * Accesseur retournant l'itinéraire permettant de relier les points de passage.
-     * @return L'itinéraire permettant de relier les points de passage.
-     */
-    public Route getRoute() {
-        return route.get();
-    }
-
-    /**
-     * Accesseur retournant la propriété de la position mise en évidence.
-     * @return La propriété de la position mise en évidence.
-     */
-    public DoubleProperty highlightedPositionProperty() {
-        return highlightedPosition;
-    }
-
-    /**
-     * Accesseur retournant la position mise en évidence.
-     * @return La position mise en évidence.
-     */
-    public double getHighlightedPosition() {
-        return highlightedPosition.get();
-    }
-
-
-    /**
-     * Accesseur retournant la propriété du profil de l'itinéraire, en lecture seule.
-     * @return La propriété du profil de l'itinéraire.
-     */
-    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileProperty() {
-        return elevationProfile;
-    }
-
-    /**
-     * Accesseur retournant le profil de l'itinéraire.
-     * @return Le profil de l'itinéraire.
-     */
-    public ElevationProfile getElevationProfile() {
-        return elevationProfile.get();
-    }
-
-    /**
-     * Méthode privée (donnée sur l'énoncé), retournant l'index du segment contenant une position
-     * le long de l'itinéraire donnée en paramètre, en ignorant les segments vides.
-     * @param position Position donnée le long de l'itinéraire.
-     * @return Retourne l'index du segment contenant la position le long de l'itinéraire donnée
-     * en paramètre, en ignorant les segments vides.
-     */
-    public int indexOfNonEmptySegmentAt(double position) {
-        int index = route.get().indexOfSegmentAt(position);
-        for (int i = 0; i <= index; i += 1) {
-            int n1 = waypoints.get(i).nodeId();
-            int n2 = waypoints.get(i + 1).nodeId();
-            if (n1 == n2) index += 1;
-        }
-        return index;
     }
 }
