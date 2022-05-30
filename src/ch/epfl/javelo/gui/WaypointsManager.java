@@ -201,7 +201,8 @@ public final class WaypointsManager {
         //nul, ce qui correspond à un point hors des limites suisses définies par la classe
         //SwissBounds.
         if (pointCh == null) {
-            stringConsumer.accept("Point hors de la Suisse !");
+            //Dans le cas où le point n'est pas dans les limites de la Suisse.
+            stringConsumer.accept("Aucune route à proximité !");
         } else {
             int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
             if (idNodeClosestTo == -1) {

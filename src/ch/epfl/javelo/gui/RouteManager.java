@@ -168,7 +168,9 @@ public final class RouteManager {
 
         mapViewParameters.addListener((p, oldS, newS) -> {
             if (oldS.zoomLevel() != newS.zoomLevel()) {
-                constructPolyline();
+                //Pour éviter de redessiner la ligne de l'itinéraire si la route est nulle.
+                if (routeBean.getRoute() != null) constructPolyline();
+
                 constructMarker();
             }
         });
@@ -191,10 +193,10 @@ public final class RouteManager {
         //Auditeur nous permettant de d'actualiser la visibilité de la polyline et du marqueur,
         //afin qu'ils deviennent invisibles s'il n'y a pas d'itinéraire.
         routeBean.routeProperty().addListener((observable, oldValue, newValue) -> {
-            constructPolyline();
-            if (oldValue == null && newValue != null) {
+            if (newValue != null) {
                 //Permet de rendre visible la ligne et le marqueur si le nouvel itinéraire n'est
                 //plus nul.
+                constructPolyline();
                 polyline.setVisible(true);
                 highlightCircle.setVisible(true);
             }

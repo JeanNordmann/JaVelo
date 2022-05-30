@@ -235,13 +235,6 @@ public final class RouteBean {
         return highlightedPosition.get();
     }
 
-    /**
-     * Modificateur de la propriété de la position mise en évidence.
-     * @param newHighlightedPosition nouvelle position mise en évidence.
-     */
-    public void setHighlightedPosition(double newHighlightedPosition) {
-        this.highlightedPosition.set(newHighlightedPosition);
-    }
 
     /**
      * Accesseur retournant la propriété du profil de l'itinéraire.

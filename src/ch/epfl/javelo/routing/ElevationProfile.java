@@ -25,6 +25,10 @@ public final class ElevationProfile {
 
     private final double length;
     private final float[] elevationSamples;
+    private final double MIN_ELE;
+    private final double MAX_ELE;
+    private final double TOTAL_ASCENT;
+    private final double TOTAL_DESCENT;
 
     /**
      * Constructeur public.
@@ -37,6 +41,30 @@ public final class ElevationProfile {
         Preconditions.checkArgument(length > 0 && elevationSamples.length >= 2);
         this.length = length;
         this.elevationSamples = Arrays.copyOf(elevationSamples, elevationSamples.length);
+        DoubleSummaryStatistics s = new DoubleSummaryStatistics();
+        for (float i : elevationSamples) s.accept(i);
+        // Calcul du max, min elevation et du total de monté et descente.
+        MIN_ELE = s.getMin();
+        MAX_ELE = s.getMax();
+        double totalA = 0;
+        double memoryA = elevationSamples[0];
+        double deltaA;
+        for (float i : elevationSamples) {
+            deltaA = (double) i - memoryA;
+            totalA = deltaA > 0 ? totalA + deltaA : totalA;
+            memoryA = i;
+        }
+        TOTAL_ASCENT = totalA;
+
+        double totalD = 0;
+        double memoryD = elevationSamples[0];
+        double deltaD;
+        for (float i : elevationSamples) {
+            deltaD = (double) i - memoryD;
+            totalD = deltaD < 0 ? totalD - deltaD : totalD;
+            memoryD = i;
+        }
+        TOTAL_DESCENT = totalD;
     }
 
     /**
@@ -54,9 +82,7 @@ public final class ElevationProfile {
      */
 
     public double minElevation() {
-        DoubleSummaryStatistics s = new DoubleSummaryStatistics();
-        for (float i : elevationSamples) s.accept(i);
-        return s.getMin();
+        return MIN_ELE;
     }
 
     /**
@@ -65,9 +91,7 @@ public final class ElevationProfile {
      */
 
     public double maxElevation() {
-        DoubleSummaryStatistics s = new DoubleSummaryStatistics();
-        for (float i : elevationSamples) s.accept(i);
-        return s.getMax();
+        return MAX_ELE;
     }
 
     /**
@@ -76,15 +100,7 @@ public final class ElevationProfile {
      */
 
     public double totalAscent() {
-        double total = 0;
-        double memory = elevationSamples[0];
-        double delta;
-        for (float i : elevationSamples) {
-            delta = (double) i - memory;
-            total = delta > 0 ? total + delta : total;
-            memory = i;
-        }
-        return total;
+        return TOTAL_ASCENT;
     }
 
     /**
@@ -93,15 +109,7 @@ public final class ElevationProfile {
      */
 
     public double totalDescent() {
-        double total = 0;
-        double memory = elevationSamples[0];
-        double delta;
-        for (float i : elevationSamples) {
-            delta = (double) i - memory;
-            total = delta < 0 ? total - delta : total;
-            memory = i;
-        }
-        return total;
+       return TOTAL_DESCENT;
     }
 
     /**
