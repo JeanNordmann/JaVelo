@@ -26,25 +26,12 @@ import java.util.function.Consumer;
 
 public final class AnnotatedMapManager {
 
+    private static final int HIGHLIGHTED_POSITION_MAX_PIXEL_DISTANCE = 15;
+
     /**
      * Attribut représentant le panneau de la carte annotée.
      */
     private final StackPane pane;
-
-    /**
-     * Attribut représentant un gestionnaire de fond de carte.
-     */
-    private final BaseMapManager baseMapManager;
-
-    /**
-     * Attribut représentant un gestionnaire de points de passage.
-     */
-    private final WaypointsManager waypointsManager;
-
-    /**
-     * Attribut représentant un gestionnaire d'itinéraire.
-     */
-    private final RouteManager routeManager;
 
     /**
      * Attribut représentant une propriété sur les paramètres de vue de la carte.
@@ -61,11 +48,10 @@ public final class AnnotatedMapManager {
      */
     private final ObjectProperty<Point2D> mousePosition;
 
-    //private static final ObjectProperty<Point2D> NAN_POINT_2D = new Point2D(D);
-
     /**
      * Constructeur public prenant en arguments un graphe, un gestionnaire de tuiles, le bean de
-     * l'itinéraire et un consommateur d'erreurs.
+     * l'itinéraire et un consommateur d'erreurs, et initialisant ses attributs à leurs valeurs
+     * par défaut.
      * @param graph Graphe donné.
      * @param tileManager Gestionnaire de tuiles OpenStreetMap donné.
      * @param bean Bean donné de l'itinéraire.
@@ -73,26 +59,39 @@ public final class AnnotatedMapManager {
      */
     public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean bean,
                                Consumer<String> consumer) {
+
         mapViewParametersP =
                 new SimpleObjectProperty<>(new MapViewParameters(12, 543200, 370650));
-        waypointsManager = new WaypointsManager(graph, mapViewParametersP, bean.waypointsProperty(), consumer);
-        baseMapManager = new BaseMapManager(tileManager, waypointsManager, mapViewParametersP);
-        routeManager = new RouteManager(bean, mapViewParametersP);
+
+        WaypointsManager waypointsManager =
+                new WaypointsManager(graph, mapViewParametersP, bean.waypointsProperty(), consumer);
+
+        BaseMapManager baseMapManager =
+                new BaseMapManager(tileManager, waypointsManager, mapViewParametersP);
+
+        RouteManager routeManager = new RouteManager(bean, mapViewParametersP);
+
+        //Construction du panneau avec les trois sous-panneaux.
         pane = new StackPane(baseMapManager.pane(), waypointsManager.pane(), routeManager.pane());
+        //Ajout de la feuille de style.
         pane.getStylesheets().add("map.css");
+
+        //Valeurs par défaut de la propriété de la position de la souris, ainsi que de la position
+        //elle-même.
         mousePositionOnRouteProperty = new SimpleDoubleProperty(Double.NaN);
         mousePosition = new SimpleObjectProperty<>(new Point2D(Double.NaN, Double.NaN));
 
-        //TODO, pas très beaux nan ?
-        pane.setOnMouseExited(e -> mousePosition.set(null));
-        pane.setOnMouseMoved(e -> mousePosition.set(new Point2D(e.getX(), e.getY())));
+        //Configure les gestionnaires d'évènements liés aux mouvements de la souris.
+        setUpHandlers();
 
         mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
-            if(bean.getRoute() == null) return Double.NaN ;
-            if (mousePosition.get() == null) return Double.NaN;
+            //Assigne la valeur à NaN si la route ou la position de la souris est nulle.
+            if(bean.getRoute() == null || mousePosition.get() == null) return Double.NaN;
+
             PointCh mousePointCh = mapViewParametersP.get().
                     pointAt(mousePosition.get().getX(), mousePosition.get().getY())
                     .toPointCh();
+            //Vérifie que le point actuel du curseur de la souris est bien en Suisse.
             if (mousePointCh == null) return Double.NaN;
 
             //Calcule le point le plus proche du curseur sur la route.
@@ -128,4 +127,16 @@ public final class AnnotatedMapManager {
         return mousePositionOnRouteProperty;
     }
 
+    /**
+     * Méthode privée configurant les gestionnaires d'évènements liés aux mouvements de la
+     * souris, et de sa sortie du panneau.
+     */
+    private void setUpHandlers() {
+        //Gestionnaire d'évènement correspondant à la sortie de la souris du panneau.
+        pane.setOnMouseExited(e -> mousePosition.set(null));
+
+        //Gestionnaire d'évènement correspondant au mouvement de la souris sur le panneau.
+        pane.setOnMouseMoved(e -> mousePosition.set(new Point2D(e.getX(), e.getY())));
+
+    }
 }

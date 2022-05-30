@@ -49,6 +49,7 @@ public final class ElevationProfileManager {
      * contenant le profil à afficher.
      */
     private final ReadOnlyObjectProperty<ElevationProfile> elevationProfile;
+
     /**
      * Propriété, accessible en lecture seule, contenant la position le long
      * du profil à mettre en évidence.
@@ -197,6 +198,22 @@ public final class ElevationProfileManager {
         vBox.getChildren().add(statisticsText);
     }
 
+    /**
+     * Méthode publique retournant le panneau de la classe.
+     * @return Le panneau contenant le dessin du profil, de type Pane.
+     */
+    public BorderPane pane() {
+        return borderPane;
+    }
+
+    /**
+     * Méthode publique retournant la propriété en lecture seule contenant la position de la souris
+     * sur le profil.
+     * @return la propriété en lecture seule contenant la position de la souris sur le profil.
+     */
+    public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
+        return mousePositionOnProfile;
+    }
 
     /**
      * Méthode privée configurant les auditeurs liés aux changements de dimensions du rectangle
@@ -238,6 +255,7 @@ public final class ElevationProfileManager {
         //Ajoute tous les nouveaux nœuds au panneau gérant l'affichage du profil.
         pane.getChildren().setAll(group, path, polygon, line);
     }
+
     /**
      * Méthode privée calculant les positions des lignes de la grille du graphe représentant le
      * profil, ainsi que les étiquettes des valeurs le long des axes.
@@ -260,7 +278,7 @@ public final class ElevationProfileManager {
         Transform worldToScreen = worldToScreenTransform.get();
 
         List<PathElement> pathElementList = new ArrayList<>();
-        List<Text> textList = new ArrayList<>();;
+        List<Text> textList = new ArrayList<>();
 
         //Ajout de la ligne en bas du rectangle bleu si elle ne nécessite pas d'étiquette.
         if (minElevation % spaceBetween2HLines != 0) {
@@ -292,35 +310,14 @@ public final class ElevationProfileManager {
             double variable = i * spaceBetween2VLines;
             Point2D point2DMoveTo = addLineToPathElementList(variable, minElevation, variable,
                     maxElevation, worldToScreen, pathElementList);
-            Text text = new Text(Integer
-                    .toString((int) variable / NUMBER_OF_METERS_IN_A_KILOMETER));
-            setUpLabel(text, point2DMoveTo, VPos.TOP, text.prefWidth(0) / 2,
-                    "horizontal");
+            Text text =
+                    new Text(Integer.toString((int) variable / NUMBER_OF_METERS_IN_A_KILOMETER));
+            setUpLabel(text, point2DMoveTo, VPos.TOP, text.prefWidth(0) / 2, "horizontal");
             textList.add(text);
         }
 
         group.getChildren().setAll(textList);
         path.getElements().setAll(pathElementList);
-    }
-
-    /**
-     * Méthode privée permettant d'ajouter une ligne à la grille.
-     * @param fromMoveTo
-     * @param toMoveTo
-     * @param fromLineTo
-     * @param toLineTo
-     * @param worldToScreen
-     * @param pathElementList
-     * @return
-     */
-    private Point2D addLineToPathElementList(double fromMoveTo, double toMoveTo, double fromLineTo,
-                                          double toLineTo, Transform worldToScreen,
-                                          List<PathElement> pathElementList) {
-        Point2D point2DMoveTo = worldToScreen.transform(fromMoveTo, toMoveTo);
-        Point2D point2DLineTo = worldToScreen.transform(fromLineTo, toLineTo);
-        pathElementList.add(new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY()));
-        pathElementList.add(new LineTo(point2DLineTo.getX(), point2DLineTo.getY()));
-        return point2DMoveTo;
     }
 
     /**
@@ -346,23 +343,6 @@ public final class ElevationProfileManager {
         return point2DMoveTo;
     }
 
-    /**
-     * Méthode privée permettant de configurer une étiquette et son texte.
-     * @param text Texte donné.
-     * @param point2DMoveTo Emplacement du texte donné sous forme de Point2D.
-     * @param vPos Position verticale donnée.
-     * @param textPrefWidth Décalage du texte par rapport au point donné en Point2D.
-     * @param orientation Chaîne de caractère liée à la feuille de style du texte.
-     */
-    private void setUpLabel(Text text, Point2D point2DMoveTo, VPos vPos, double textPrefWidth,
-                            String orientation) {
-        text.setTextOrigin(vPos);
-        text.setFont(Font.font(FONT, FONT_SIZE));
-        text.setLayoutX(point2DMoveTo.getX() - textPrefWidth);
-        text.setLayoutY(point2DMoveTo.getY());
-        text.getStyleClass().add("grid_label");
-        text.getStyleClass().add(orientation);
-    }
 
     /**
      * Méthode privée permettant de configurer une étiquette et son texte.
@@ -394,7 +374,6 @@ public final class ElevationProfileManager {
         line.startYProperty().bind(Bindings.select(rectangle2D, "minY"));
         line.endYProperty().bind(Bindings.select(rectangle2D, "maxY"));
         line.visibleProperty().bind(highlightedPosition.greaterThanOrEqualTo(0));
-
     }
 
     /**
@@ -403,28 +382,25 @@ public final class ElevationProfileManager {
      * rectangle bleu ou du panneau.
      */
     private void setUpEventHandlers() {
+
+        //Gestionnaire d'évènements concernant le cas où la souris bouge.
         pane.setOnMouseMoved(event -> {
+            //Si la souris est dans le rectangle bleu.
             if (isInBlueRectangle(event.getX(), event.getY())) {
                 Point2D worldCoordinates = screenToWorldTransform.get().transform(event.getX(),
                         event.getY());
                 mousePositionOnProfile.set(Math.round(worldCoordinates.getX()));
             } else {
+                //Si elle n'est pas dans le rectangle bleu, sa position sur le profil est mise à
+                //une valeur NaN.
                 mousePositionOnProfile.set(Double.NaN);
             }
         });
+
+        //Gestionnaire d'évènements concernant le cas où la souris quitte le panneau.
         pane.setOnMouseExited(event -> mousePositionOnProfile.set(Double.NaN));
     }
 
-    /**
-     * Méthode privée determinant si une paire de coordonnées x et y donnés en paramètres sont
-     * situés dans le rectangle bleu contenant le profil.
-     * @param x coordonnée x donnée.
-     * @param y coordonnée y donnée.
-     * @return true si et seulement si la paire de coordonnée est dans le rectangle bleu.
-     */
-    private boolean isInBlueRectangle(double x, double y) {
-        return rectangle2D.get().contains(x, y);
-    }
 
     /**
      * Méthode privée determinant si une paire de coordonnées x et y donnés en paramètres sont
@@ -441,10 +417,9 @@ public final class ElevationProfileManager {
      * Méthode privée calculant le polygone représentant le profil.
      */
     private void computePolygon() {
-
         //Le point du polygone à la coordonnée (0,0) est le coin haut gauche.
         List<Double> coordinate = new LinkedList<>();
-        //Coordonnées des points des points de l'itinéraire
+        //Coordonnées des points de l'itinéraire.
         for (int i = 0; i <= (int) rectangle2D.get().getWidth(); i++) {
             double xOnScreen = insets.getLeft() + i;
             double xOnWorld = screenToWorldTransform.get().transform(xOnScreen, 0).getX();
@@ -501,7 +476,7 @@ public final class ElevationProfileManager {
     /**
      * Méthode privée nous permettant de calculer l'espacement des lignes verticales,
      * c'est-à-dire l'espacement entre deux indications de distance.
-     * @return l'espacement des lignes verticales.
+     * @return L'espacement des lignes verticales.
      */
     private int computeVerticalLinesSpacing() {
         for (int posStep : POS_STEPS) {
@@ -519,7 +494,7 @@ public final class ElevationProfileManager {
     /**
      * Méthode privée nous permettant de calculer l'espacement des lignes horizontales,
      * c'est-à-dire l'espacement entre deux indications d'altitude.
-     * @return l'espacement des lignes horizontales.
+     * @return L'espacement des lignes horizontales.
      */
     private int computeHorizontalLinesSpacing() {
         for (int eleStep : ELE_STEPS) {
@@ -539,7 +514,7 @@ public final class ElevationProfileManager {
      * Méthode privée retournant le nombre de lignes horizontales ayant un texte d'altitude associé.
      * C'est-à-dire incluant la première si l'altitude minimale est un multiple de l'espacement
      * et incluant également la dernière si l'altitude maximale est un multiple de l'espacement.
-     * @return le nombre de lignes horizontales ayant un texte d'altitude associé.
+     * @return Le nombre de lignes horizontales ayant un texte d'altitude associé.
      */
     private int numberOfHorizontalLine() {
         double minEle = elevationProfile.get().minElevation();
@@ -559,7 +534,7 @@ public final class ElevationProfileManager {
      * Méthode privée retournant le nombre de lignes verticales ayant un texte de distance associé.
      * C'est-à-dire incluant la ligne ayant l'indication "0" dans tous les cas
      * et incluant la dernière ligne si la longueur de l'itinéraire est un multiple de l'espacement.
-     * @return le nombre de lignes verticales ayant un texte de distance associé.
+     * @return Le nombre de lignes verticales ayant un texte de distance associé.
      */
     private int numberOfVerticalLine() {
         int maxPos = (int) elevationProfile.get().length();

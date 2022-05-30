@@ -18,7 +18,6 @@ import javafx.util.Duration;
  * @author Maxime Ducourau (329544)
  */
 
-
 public final class ErrorManager {
 
     /**
@@ -53,12 +52,21 @@ public final class ErrorManager {
         pane.setPickOnBounds(false);
     }
 
+    /**
+     * Méthode retournant le panneau du gestionnaire d'erreurs.
+     * @return Le panneau du gestionnaire d'erreurs.
+     */
     public StackPane pane() {
         return pane;
     }
 
+    /**
+     * Méthode permettant d'afficher un message sous forme de chaîne de caractères passés en
+     * paramètres, sur le panneau du gestionnaire d'erreurs.
+     * @param errorMessage Chaîne de caractères contenant le message à afficher sur le panneau du
+     *                    gestionnaire d'erreurs.
+     */
     public void displayError(String errorMessage) {
-
         //Initialise les paramètres de l'affichage d'erreur demandée.
         FadeTransition fstFadeTransition = new FadeTransition(Duration.millis(200), vBox);
         fstFadeTransition.setFromValue(0);
