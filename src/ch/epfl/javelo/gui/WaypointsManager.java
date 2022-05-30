@@ -119,7 +119,7 @@ public final class WaypointsManager {
      * Méthode modifiant les coordonnées des points de passage en cas de déplacement de ceux-ci.
      */
 
-    public void updateWaypointsLocations() {
+    private void updateWaypointsLocations() {
         //Itère sur tous les points de passage de l'attribut waypointList.
         for (int i = 0; i < waypointList.size(); i++) {
             //Crée un pointWebMercator correspondant aux coordonnées PointCh du point de passage.
@@ -314,17 +314,17 @@ public final class WaypointsManager {
         PointCh pointCh = mapViewParameters.get().pointAt(actualPosition.getX(),
                 actualPosition.getY()).toPointCh();
         if (pointCh == null) {
-            stringConsumer.accept("Point hors de la Suisse !");
-            //La liste de points de passage n'est pas modifiée, mais doit malgré tout être
-            //redessinée.
+            stringConsumer.accept("Aucune route à proximité !");
+            //La liste de points de passage n'est pas modifiée, mais doit malgré tout
+            //être redessinée afin que le point de passage retourne à son point initial.
             updateWaypointsLocations();
         } else {
 
             int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
             if (idNodeClosestTo == -1) {
                 stringConsumer.accept("Aucune route à proximité !");
-                //La liste de points de passage n'est pas modifiée, mais doit malgré tout être
-                //redessinée.
+                //La liste de points de passage n'est pas modifiée, mais doit malgré tout
+                //être redessinée afin que le point de passage retourne à son point initial.
                 updateWaypointsLocations();
             } else {
                 int position = pane.getChildren().indexOf(pin);

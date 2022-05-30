@@ -98,7 +98,7 @@ public class GraphTest {
 
     //pour que ces tests passe, il faut simplement enlever le copyOf de la liste d'attribut et mettre = attributList
     //(cérer une faille d'encapsulation qui facilite le test en permettant d'utiliser "null"
-    /*@Test
+    @Test
     void nodeClosetToWorkProperly() {
         ByteBuffer sectorBuffer = ByteBuffer.allocate(6 * 16384);
         //mettre 3 noeud  dans chaque seteur
@@ -204,5 +204,5 @@ public class GraphTest {
         };
 
         assertEquals(Functions.sampled(expectedSamples, 5.5), graph.edgeProfile(0));
-    }*/
+    }
 }

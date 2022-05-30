@@ -41,7 +41,7 @@ public final class Q28_4 {
 
     /**
      * Retourne la valeur de type float correspondant à la valeur Q28.4 donnée.
-     * @param q28_4 Nombre de type float donné.
+     * @param q28_4 Valeur de type float donnée.
      * @return La valeur de type float correspondant à la valeur Q28.4 donnée.
      */
 

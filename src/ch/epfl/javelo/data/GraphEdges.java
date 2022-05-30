@@ -58,9 +58,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
 
     public int targetNodeId(int edgeId) {
-        return isInverted(edgeId) ? ~(
-                edgesBuffer.getInt(edgeId * EDGE_INTS + OFFSET_WAY_AND_ID)) :
-                edgesBuffer.getInt(edgeId * EDGE_INTS + OFFSET_WAY_AND_ID);
+        int targetNodeId = edgesBuffer.getInt(edgeId * EDGE_INTS + OFFSET_WAY_AND_ID);
+        return isInverted(edgeId) ? ~(targetNodeId) : targetNodeId;
     }
 
     /**
@@ -173,7 +172,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 }
         }
         //Inverse le tableau si l'arête est inversée.
-        //TODO Parcourir jusqu'au milieu et switch
         if (isInverted(edgeId)) {
             float[] inverted = new float[numberSamples];
             for (int i = 0; i < numberSamples; i++) {
@@ -187,8 +185,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     /**
      * Méthode privée retournant la valeur de type float correspondant à la valeur
      * Q12.4 donnée.
-     * @param q12_4 Nombre de type short donné
-     * @return La valeur de type float correspondant à la valeur Q12.4 donnée
+     * @param q12_4 Valeur de type short donnée.
+     * @return La valeur de type float correspondant à la valeur Q12.4 donnée.
      */
 
     private static float asFloat16(int q12_4) {
@@ -197,9 +195,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
     /**
      * Méthode privée retournant la valeur de type float correspondant à la valeur
-     * Q8.4 donnée.
-     * @param q4_4 Nombre de type float donné
-     * @return La valeur de type float correspondant à la valeur Q8.4 donnée
+     * Q4.4 donnée.
+     * @param q4_4 Valeur de type float donnée.
+     * @return La valeur de type float correspondant à la valeur Q4.4 donnée.
      */
 
     private static float asFloat8(int q4_4) {

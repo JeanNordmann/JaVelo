@@ -56,13 +56,13 @@ public final class Graph {
      * @param edges Arêtes données.
      * @param attributeSets Ensemble d'attributs donnés.
      */
-
     public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges,
                  List<AttributeSet> attributeSets) {
         this.nodes = nodes;
         this.sectors = sectors;
         this.edges = edges;
         this.attributeSets = List.copyOf(attributeSets);
+
     }
 
     /**
@@ -175,7 +175,7 @@ public final class Graph {
 
     public int nodeClosestTo(PointCh point, double searchDistance) {
         List<GraphSectors.Sector> sectorList = sectors.sectorsInArea(point, searchDistance);
-        double min = Double.POSITIVE_INFINITY;
+        double min = searchDistance * searchDistance;
         int nodeId = -1;
         //Itère sur tous les secteurs du Graph.
         for (GraphSectors.Sector sector : sectorList) {
@@ -184,7 +184,7 @@ public final class Graph {
             for (int j = startNode; j < endNode; j++) {
                 //Compare les distances au carré au lieu des distances pour gagner de l'efficacité.
                 double squaredDistance = point.squaredDistanceTo(nodePoint(j));
-                if (squaredDistance < min && squaredDistance <= searchDistance * searchDistance) {
+                if (squaredDistance <= min) {
                     min = squaredDistance;
                     nodeId = j;
                 }

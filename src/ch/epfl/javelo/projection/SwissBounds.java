@@ -15,7 +15,6 @@ public final class SwissBounds {
     /**
      * Constructeur privé, car cette classe n'est pas censée être instantiable.
      */
-
     private SwissBounds() {}
 
 

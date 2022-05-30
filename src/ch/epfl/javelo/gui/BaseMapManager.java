@@ -227,9 +227,10 @@ public final class BaseMapManager {
                         deltaY = e.getY() - previousCoordsOnScreen.get().getY();
                 int zoomLevel = mapViewParameters.get().zoomLevel();
                 PointWebMercator pointWebMercator = mapViewParameters.get().pointAt(0, 0);
-                mapViewParameters.set(new MapViewParameters(zoomLevel,
-                        pointWebMercator.xAtZoomLevel(zoomLevel) - deltaX,
-                        pointWebMercator.yAtZoomLevel(zoomLevel) - deltaY));
+
+            mapViewParameters.set(mapViewParameters.get().withMinXY(
+                    pointWebMercator.xAtZoomLevel(zoomLevel) - deltaX,
+                    pointWebMercator.yAtZoomLevel(zoomLevel) - deltaY));
 
                 // Mise à jour de la coordonnée actuelle.
                 previousCoordsOnScreen.set(new Point2D(e.getX(), e.getY()));

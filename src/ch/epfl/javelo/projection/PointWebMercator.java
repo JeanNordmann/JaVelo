@@ -14,7 +14,8 @@ import ch.epfl.javelo.Preconditions;
 
 public record PointWebMercator(double x, double y) {
 
-    public final static int INITIAL_POWER_OF_TWO = 8;
+    //Constante représentant
+    public final static int INITIAL_EXPONENT_FOR_MIN_TILES = 8;
 
     /**
      * Constructeur vérifiant si les valeurs passées sont bien comprises entre 0 et 1.
@@ -33,8 +34,8 @@ public record PointWebMercator(double x, double y) {
      */
 
     public static PointWebMercator of(int zoomLevel, double x, double y) {
-        return new PointWebMercator(Math.scalb(x, -INITIAL_POWER_OF_TWO - zoomLevel),
-                Math.scalb(y, -INITIAL_POWER_OF_TWO - zoomLevel));
+        return new PointWebMercator(Math.scalb(x, -INITIAL_EXPONENT_FOR_MIN_TILES - zoomLevel),
+                Math.scalb(y, -INITIAL_EXPONENT_FOR_MIN_TILES - zoomLevel));
     }
 
     /**
@@ -55,7 +56,7 @@ public record PointWebMercator(double x, double y) {
 
     public double xAtZoomLevel(int zoomLevel) {
         Preconditions.checkArgument(0 <= zoomLevel && zoomLevel <= 20);
-        return Math.scalb(x, INITIAL_POWER_OF_TWO + zoomLevel);
+        return Math.scalb(x, INITIAL_EXPONENT_FOR_MIN_TILES + zoomLevel);
     }
 
     /**
@@ -65,7 +66,7 @@ public record PointWebMercator(double x, double y) {
      */
     public double yAtZoomLevel(int zoomLevel) {
         Preconditions.checkArgument(0 <= zoomLevel && zoomLevel <= 20);
-        return Math.scalb(y, INITIAL_POWER_OF_TWO + zoomLevel);
+        return Math.scalb(y, INITIAL_EXPONENT_FOR_MIN_TILES + zoomLevel);
     }
 
     /**
