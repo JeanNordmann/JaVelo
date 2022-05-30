@@ -65,7 +65,7 @@ public final class AnnotatedMapManager {
 
     /**
      * Constructeur public prenant en arguments un graphe, un gestionnaire de tuiles, le bean de
-     * l'itinéraire, et un consommateur d'erreurs.
+     * l'itinéraire et un consommateur d'erreurs.
      * @param graph Graphe donné.
      * @param tileManager Gestionnaire de tuiles OpenStreetMap donné.
      * @param bean Bean donné de l'itinéraire.

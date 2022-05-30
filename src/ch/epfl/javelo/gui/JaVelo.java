@@ -12,7 +12,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
-import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -90,7 +89,6 @@ public class JaVelo extends Application {
         mainPane.setTop(menuBar);
         mainPane.setCenter(pane);
 
-        primaryStage.getIcons().add(new Image("icon.jpg"));
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.setTitle("JaVelo");

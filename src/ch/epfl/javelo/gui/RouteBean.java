@@ -24,20 +24,14 @@ import java.util.List;
 
 public final class RouteBean {
 
-    /**
-     * Constante représentant le facteur de chargement du cache mémoire à donner à la
-     * construction de ce cache.
-     */
+    //Constante représentant le facteur de chargement du cache mémoire à donner à la
+    //construction de ce cache.
     private static final float ROUTE_CACHE_LOAD_FACTOR = 0.75f;
 
-    /**
-     * Constante représentant la taille du cache mémoire des itinéraires.
-     */
+    //Constante représentant la taille du cache mémoire des itinéraires.
     private static final int MEMORY_CACHE_SIZE = 50;
 
-    /**
-     * Constance représentant la distance maximale entre deux échantillons.
-     */
+    //Constante représentant la distance maximale entre deux échantillons.
     private static final double MAX_STEP_LENGTH = 5;
 
     /**
@@ -46,8 +40,7 @@ public final class RouteBean {
     private final ObservableList<Waypoint> waypoints;
 
     /**
-     * Attribut représentant l'itinéraire permettant de relier les points de passage,
-     * en lecture seule.
+     * Attribut représentant l'itinéraire permettant de relier les points de passage.
      */
     private final ObjectProperty<Route> route;
 
@@ -57,7 +50,7 @@ public final class RouteBean {
     private final DoubleProperty highlightedPosition;
 
     /**
-     * Attribut représentant le profil de l'itinéraire, mise en lecture seule.
+     * Attribut représentant le profil de l'itinéraire.
      */
     private final ObjectProperty<ElevationProfile> elevationProfile;
 
@@ -74,9 +67,9 @@ public final class RouteBean {
     private final LinkedHashMap<Pair<Integer, Integer>, Route> routeCacheMemory;
 
     /**
-     * Constructeur initialisant le calcul d'itinéraire à celui passé en paramètres et les autres
-     * attributs à leurs valeurs de base.
-     * @param routeComputer calculateur d'itinéraire, de type RouteComputer, utilisé pour déterminer
+     * Constructeur initialisant le calculateur d'itinéraire à celui passé en paramètres et les
+     * autres attributs à leurs valeurs de base.
+     * @param routeComputer Calculateur d'itinéraire, de type RouteComputer, utilisé pour déterminer
      *                      le meilleur itinéraire reliant deux points de passage.
      */
     public RouteBean(RouteComputer routeComputer) {
@@ -89,7 +82,6 @@ public final class RouteBean {
                 true);
 
         waypoints.addListener((ListChangeListener<? super Waypoint>) e -> computeNewRouteAndProfile());
-
     }
 
     /**
@@ -117,11 +109,17 @@ public final class RouteBean {
      */
     private boolean isValidRoute() {
         List<Waypoint> waypointList = getWaypoints();
+        //Si la liste contient moins de deux points de passage, alors il n'y a aucune route et
+        //aucun profil. Ainsi, la route n'est pas valide.
         if (waypointList.size() < 2) {
             route.set(null);
             elevationProfile.set(null);
             return false;
         }
+
+        //Si aucune route n'existe entre deux points de passage consécutifs de la liste, alors
+        //l'attribut route et celui du profil sont mis à une valeur nulle. Ainsi, la route n'est
+        //toujours pas valide.
         for (int i = 0; i < waypointList.size() - 1; i++) {
             if (!isRouteExisting(waypointList.get(i), waypointList.get(i + 1))) {
                 route.set(null);
@@ -129,6 +127,8 @@ public final class RouteBean {
                 return false;
             }
         }
+
+        //Si les deux précédents cas sont évités, alors la route est bien valide.
         return true;
     }
 
@@ -156,7 +156,7 @@ public final class RouteBean {
      * en paramètres est valide.
      */
     private boolean isRouteExisting(Waypoint firstWaypoint, Waypoint secondWaypoint) {
-        // Cas ou il y a 2 waypoint qui se suivent au même endroit
+        //Cas où deux points de passage se suivent.
         if (firstWaypoint.nodeId() == secondWaypoint.nodeId()) return true;
         return getRouteFromCacheMemory(firstWaypoint, secondWaypoint) != null;
     }
@@ -170,13 +170,9 @@ public final class RouteBean {
         return ElevationProfileComputer.elevationProfile(route, MAX_STEP_LENGTH);
     }
 
-
-    // accesseur et modicateur
-    // PS check si on n'a pas utilisé le mot get/ set dans des commentaires en français
-
     /**
      * Accesseur retournant la propriété de la liste observable de points de passage.
-     * @return la propriété de la liste observable de points de passage.
+     * @return La propriété de la liste observable de points de passage.
      */
     public ObservableList<Waypoint> waypointsProperty() {
         // Pas immuable, pas grave, car on offre dans tous les cas un setter.
@@ -185,25 +181,16 @@ public final class RouteBean {
 
     /**
      * Accesseur retournant la liste observable de points de passage.
-     * @return la liste observable de points de passage.
+     * @return La liste observable de points de passage.
      */
     public List<Waypoint> getWaypoints() {
         return waypoints;
     }
 
     /**
-     * Modificateur de la liste observable de points de passage.
-     * @param newWaypoints nouvelle liste de points de passage.
-     */
-    public void setWaypoints(ObservableList<Waypoint> newWaypoints) {
-        waypoints.clear();
-        waypoints.addAll(newWaypoints);
-    }
-
-    /**
      * Accesseur retournant la propriété de l'itinéraire permettant de relier les points
-     * de passage.
-     * @return La propriété de l'itinéraire permettant de relier les points de passage. .
+     * de passage, en lecture seule.
+     * @return La propriété de l'itinéraire permettant de relier les points de passage.
      */
     public ReadOnlyObjectProperty<Route> routeProperty() {
         return route;
@@ -211,7 +198,6 @@ public final class RouteBean {
 
     /**
      * Accesseur retournant l'itinéraire permettant de relier les points de passage.
-     * (Ok vis-à-vis de l'immuabilité, car toutes les classes implémentant Route sont immuables.(finales))
      * @return L'itinéraire permettant de relier les points de passage.
      */
     public Route getRoute() {
@@ -223,13 +209,12 @@ public final class RouteBean {
      * @return La propriété de la position mise en évidence.
      */
     public DoubleProperty highlightedPositionProperty() {
-        // Pas immuable, pas grave, car on offre dans tous les cas un setter.
         return highlightedPosition;
     }
 
     /**
      * Accesseur retournant la position mise en évidence.
-     * @return la position mise en évidence.
+     * @return La position mise en évidence.
      */
     public double getHighlightedPosition() {
         return highlightedPosition.get();
@@ -237,8 +222,8 @@ public final class RouteBean {
 
 
     /**
-     * Accesseur retournant la propriété du profil de l'itinéraire.
-     * @return la propriété du profil de l'itinéraire.
+     * Accesseur retournant la propriété du profil de l'itinéraire, en lecture seule.
+     * @return La propriété du profil de l'itinéraire.
      */
     public ReadOnlyObjectProperty<ElevationProfile> elevationProfileProperty() {
         return elevationProfile;
@@ -246,8 +231,7 @@ public final class RouteBean {
 
     /**
      * Accesseur retournant le profil de l'itinéraire.
-     * (Ok vis-à-vis de l'immuabilité, car elevationProfile est immuable.(finales))
-     * @return le profil de l'itinéraire.
+     * @return Le profil de l'itinéraire.
      */
     public ElevationProfile getElevationProfile() {
         return elevationProfile.get();

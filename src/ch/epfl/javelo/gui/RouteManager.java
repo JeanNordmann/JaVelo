@@ -23,10 +23,7 @@ import java.util.List;
 
 public final class RouteManager {
 
-    /**
-     * Constante définissant le rayon du disque représentant la position mise
-     * en évidence.
-     */
+    //Constante définissant le rayon du disque représentant la position mise en évidence.
     private static final double RADIUS_HIGHLIGHTED_POINT = 5;
 
     /**
@@ -51,7 +48,7 @@ public final class RouteManager {
     private final Circle highlightCircle;
 
     /**
-     * Attribut représentant le panneau contenant
+     * Attribut représentant le panneau de la classe.
      */
     private final Pane pane;
 
@@ -96,39 +93,45 @@ public final class RouteManager {
      * Méthode privée construisant la polyline.
      */
     private void constructPolyline() {
+        //Retire l'ancienne ligne.
         pane.getChildren().remove(polyline);
         List<Double> coordinates = new ArrayList<>();
-        try {
-            List<PointCh> pointChList = routeBean.getRoute().points();
-            MapViewParameters actualMVP = mapViewParameters.get();
-            //Permet de mettre le premier de l'itinéraire à la coordonnée (0,0) de la polyline.
-            //Attention → il faut encore la placer à la bonne position sur l'écran.
-            double xOffset = actualMVP.viewX(PointWebMercator.ofPointCh(pointChList.get(0))),
-                    yOffset = actualMVP.viewX(PointWebMercator.ofPointCh(pointChList.get(0)));
-            for (PointCh pointCh : pointChList) {
-                PointWebMercator pointWebMercator = PointWebMercator.ofPointCh(pointCh);
-                coordinates.add(actualMVP.viewX(pointWebMercator) - xOffset);
-                coordinates.add(actualMVP.viewY(pointWebMercator) - yOffset);
-            }
-            //Modifie toutes les coordonnées de la polyline.
-            polyline.getPoints().setAll(coordinates);
-            //Modifie les coordonnées X et Y sur l'écran de la ligne à afficher.
-            polyline.setLayoutX(xOffset);
-            polyline.setLayoutY(yOffset);
-            //Ajoute la nouvelle ligne au panneau.
-            pane.getChildren().add(polyline);
-        } catch (NullPointerException ignored) {}
+        List<PointCh> pointChList = routeBean.getRoute().points();
+        MapViewParameters actualMVP = mapViewParameters.get();
+        //Permet de mettre le premier point de l'itinéraire à la coordonnée (0,0) de la
+        //polyline.
+        //Attention → il faut encore la placer à la bonne position sur l'écran.
+        double xOffset = actualMVP.viewX(PointWebMercator.ofPointCh(pointChList.get(0))),
+                yOffset = actualMVP.viewX(PointWebMercator.ofPointCh(pointChList.get(0)));
+        for (PointCh pointCh : pointChList) {
+            PointWebMercator pointWebMercator = PointWebMercator.ofPointCh(pointCh);
+            coordinates.add(actualMVP.viewX(pointWebMercator) - xOffset);
+            coordinates.add(actualMVP.viewY(pointWebMercator) - yOffset);
+        }
+        //Modifie toutes les coordonnées de la polyline.
+        polyline.getPoints().setAll(coordinates);
+
+        //Modifie les coordonnées X et Y sur l'écran de la ligne à afficher.
+        polyline.setLayoutX(xOffset);
+        polyline.setLayoutY(yOffset);
+        //Ajoute la nouvelle ligne au panneau.
+        pane.getChildren().add(polyline);
+
     }
 
     /**
      * Méthode privée construisant le marqueur.
      */
     private void constructMarker() {
+        //Construire le marqueur que si la route existe.
         if (routeBean.getRoute() != null) {
+            //On enlève le cercle precedent.
             pane.getChildren().remove(highlightCircle);
             MapViewParameters actualMVP = mapViewParameters.get();
             PointWebMercator highlightedPWM = PointWebMercator.ofPointCh(routeBean.getRoute()
                     .pointAt(routeBean.getHighlightedPosition()));
+
+            //On affecte ses coordonnées d'affichage à celles calculées plus haut.
             highlightCircle.setLayoutX(actualMVP.viewX(highlightedPWM));
             highlightCircle.setLayoutY(actualMVP.viewY(highlightedPWM));
             pane.getChildren().add(highlightCircle);
@@ -156,7 +159,7 @@ public final class RouteManager {
      * rendre (in)visible le disque indiquant la position mise en évidence
      * lorsque celle-ci change, lorsque la route change, ou lorsque les
      * paramètres de la carte changent, ensuite de reconstruire totalement
-     * et/ou rendre (in)visible la polyline représentant l'itinéraire
+     * et/ou rendre (in)visible la ligne représentant l'itinéraire
      * lorsque ce dernier change, enfin de repositionner -sans la reconstruire-
      * la polyline lorsque la carte a été glissée, mais que son niveau de zoom
      * n'a pas changé.
@@ -174,9 +177,9 @@ public final class RouteManager {
                 constructMarker();
             }
         });
-        //Auditeur nous permettant de déplacer la polyline et le marqueur si on bouge la carte
-        //(mais pas le niveau de zoom, car s'il est aussi modifié l'itinéraire est de toute façon
-        //redessiné).
+        //Auditeur nous permettant de déplacer la ligne de l'itinéraire et le marqueur si on bouge
+        //la carte (mais pas le niveau de zoom, car s'il est aussi modifié l'itinéraire est de
+        //toute façon redessiné).
         mapViewParameters.addListener((p, oldS, newS) -> {
             if (!oldS.topLeft().equals(newS.topLeft()) && oldS.zoomLevel() == newS.zoomLevel()) {
                 polyline.setLayoutX(polyline.getLayoutX() + oldS.topLeft().getX()
@@ -190,7 +193,7 @@ public final class RouteManager {
             }
         });
 
-        //Auditeur nous permettant de d'actualiser la visibilité de la polyline et du marqueur,
+        //Auditeur nous permettant de d'actualiser la visibilité de la ligne et du marqueur,
         //afin qu'ils deviennent invisibles s'il n'y a pas d'itinéraire.
         routeBean.routeProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {

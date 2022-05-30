@@ -17,7 +17,7 @@ import java.util.Map;
  * TileManager
  *
  * Classe publique et finale, représentant un gestionnaire de tuiles OSM. Son rôle est d'obtenir
- * les tuiles depuis un serveur de tuile et de les stocker dans un cache mémoire et dans un cache
+ * les tuiles depuis un serveur de tuiles et de les stocker dans un cache mémoire et dans un cache
  * disque.
  *
  * @author Jean Nordmann (344692)
@@ -27,12 +27,10 @@ import java.util.Map;
 public final class TileManager {
 
     //Constante représentant la taille du cache mémoire.
-    public static final int MEMORY_CACHE_SIZE = 100;
+    private static final int MEMORY_CACHE_SIZE = 100;
 
-    /**
-     * Constante représentant le facteur de chargement du cache mémoire à donner à la
-     * construction de ce cache.
-     */
+    //Constante représentant le facteur de chargement du cache mémoire à donner à la
+    //construction de ce cache.
     private static final float MEMORY_CACHE_LOAD_FACTOR = 0.75f;
 
     /**
@@ -51,10 +49,11 @@ public final class TileManager {
     private final LinkedHashMap<TileId, Image> memoryCache;
 
     /**
-     * Record contenant une unique méthode statique nous permettant de vérifier si la tuile OSM
-     * est valide.
+     * Enregistrement contenant une unique méthode statique nous permettant de vérifier si la tuile
+     * OSM est valide.
      */
 
+    //TODO-check si privée/public avec les autres groupes
     public record TileId(int zoomLevel, int xTile, int yTile) {
 
         //Constante représentant le niveau de zoom minimum.
@@ -80,9 +79,9 @@ public final class TileManager {
         /**
          * Méthode permettant de vérifier si une tuile est valide.
          * @param z Niveau de zoomLevel compris entre 0 et 20 (inclus).
-         * @param x Coordonnée X entre 0 et (2 ^ z) - 1 (inclus).
-         * @param y Coordonnée Y entre 0 et (2 ^ z) - 1 (inclus).
-         * @return Vrai si la tuile est valide.
+         * @param x Coordonnée X entre zéro et (2 ^ z) - 1 (inclus).
+         * @param y Coordonnée Y entre zéro et (2 ^ z) - 1 (inclus).
+         * @return Vrai si et seulement si la tuile est valide.
          */
         public static boolean isValid(int z, int x, int y) {
             int maxCoordinate = (int) Math.pow(2, z) - 1;
@@ -118,18 +117,20 @@ public final class TileManager {
         Path directoryPath = pathOfTileId(tileId);
         Path filePath = directoryPath.resolve(tileId.yTile + ".png");
 
-        // Cas où l'image est dans le diskMemory
+        //Cas où l'image est dans le cache disque.
         if (Files.exists(filePath)) {
             //Bloc Try-with-resource pour fermer le flot à la sortie.
             try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
                 Image image = new Image(inputStream);
-                //Méthode privée gérant le cache-mémoire et supprimant le Least Recently Used,
-                //pour le remplacer par le Most Recently Used (l'image actuelle).
+                //Méthode privée gérant le cache-mémoire et supprimant celui utilisé le moins
+                //récemment, pour le remplacer par celui utilisé le plus récemment (l'image
+                //actuelle).
                 addMRUAndRemoveLRU(tileId, image);
                 return image;
             }
         } else {
-            //Cas où l'image doit être récupérée sur le serveur.
+            //Cas où l'image doit être récupérée sur le serveur, car non-présente dans le cache
+            //disque.
             URL u = new URL(linkOfTileId(tileId));
             URLConnection c = u.openConnection();
             c.setRequestProperty("User-Agent", "JaVelo");
@@ -142,8 +143,9 @@ public final class TileManager {
                 i.transferTo(outputStream);
                 try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
                     Image image = new Image(inputStream);
-                    //Méthode privée gérant le cache-mémoire et supprimant le Least Recently Used,
-                    //pour le remplacer par le Most Recently Used (l'image actuelle).
+                    //Méthode privée gérant le cache-mémoire et supprimant celui utilisé le moins
+                    //récemment, pour le remplacer par celui utilisé le plus récemment (l'image
+                    //actuelle).
                     addMRUAndRemoveLRU(tileId, image);
                     return image;
                 }

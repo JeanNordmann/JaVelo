@@ -20,7 +20,7 @@ public record AttributeSet(long bits) {
 
     /**
      * Le constructeur compact de AttributeSet lève une IllegalArgumentException si la valeur passée
-     * au constructeur contient un bit à 1 qui ne correspond à aucun attribut valide.
+     * au constructeur contient un bit à un qui ne correspond à aucun attribut valide.
      */
     public AttributeSet {
         Preconditions.checkArgument(bits < (1L << Attribute.COUNT) && bits >= 0);

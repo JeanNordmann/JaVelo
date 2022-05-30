@@ -34,6 +34,16 @@ import java.util.List;
  */
 
 public final class ElevationProfileManager {
+
+    //Constante représentant le nombre de mètres dans un kilomètre.
+    private static final int NUMBER_OF_METERS_IN_A_KILOMETER = 1000;
+
+    //Constante représentant la taille de la police souhaitée.
+    private static final int FONT_SIZE = 10;
+
+    //Constante repentant la police utilisé pour tout les textes
+    private static final String FONT = "Avenir";
+
     /**
      * Attribut représentant une propriété, accessible en lecture seule,
      * contenant le profil à afficher.
@@ -69,7 +79,7 @@ public final class ElevationProfileManager {
     private Path path;
 
     /**
-     * Attribut de type Group représentant le groupe contenant les étiquettes de la grille.
+     * Attribut représentant le groupe contenant les étiquettes de la grille.
      */
     private Group group;
 
@@ -157,18 +167,20 @@ public final class ElevationProfileManager {
         this.highlightedPosition = highlightedPosition;
         pane = new Pane();
         borderPane = new BorderPane();
+
         //Initialise tous les objets non finaux de la classe.
         createObject();
 
-        //Configure le grand panneau et indiquant quel panneau se place où.
+        //Configure le grand panneau et indiquant l'emplacement de chaque panneau secondaire dans
+        //le panneau général.
         borderPane.setCenter(pane);
         borderPane.setBottom(vBox);
+
         //Ajoute la feuille de style CSS à attacher au nœud.
         borderPane.getStylesheets().add("elevation_profile.css");
 
         //Lie les dimensions du "petit" panneau aux dimensions du panneau "général".
-        //TODO MagicNumber 40 je crois qu'il faut faire avec le insert mais jsp comment
-        pane.prefHeightProperty().bind(borderPane.heightProperty().subtract(40));
+        pane.prefHeightProperty().bind(borderPane.heightProperty());
         pane.prefWidthProperty().bind(borderPane.widthProperty());
 
         //Lie les coordonnées du rectangle bleu, et celles de la ligne de mise en évidence.
@@ -178,10 +190,10 @@ public final class ElevationProfileManager {
         //Configure l'affichage du profil, les auditeurs et les gestionnaires d'évènements.
         setUpListener();
         setUpEventHandlers();
+
         //Calcule les nouvelles statistiques du profil.
         vBox.getChildren().clear();
         vBox.getChildren().add(statisticsText);
-
     }
 
 
@@ -196,7 +208,7 @@ public final class ElevationProfileManager {
 
         //Auditeur détectant les changements du profil et recalculant les transformations et
         //l'affichage du profil.
-        elevationProfile.addListener((p,oldV,newV) -> {
+        elevationProfile.addListener((p, oldV, newV) -> {
             if (oldV != newV && newV != null) {
                 if (elevationProfile.get() != null) setUpProfileDisplay();
 
@@ -213,7 +225,9 @@ public final class ElevationProfileManager {
      * Méthode privée configurant l'affichage du profil.
      */
     private void setUpProfileDisplay() {
+        //Calcule les nouvelles transformations utiles.
         setTransformation();
+
         //Calcule le polygone représentant le profil.
         computePolygon();
 
@@ -238,96 +252,94 @@ public final class ElevationProfileManager {
         int numberOfHLines = numberOfHorizontalLine();
         int numberOfVLines = numberOfVerticalLine();
 
-        //Calculant le multiple de la valeur de la ligne initiale à dessiner.
-        //int initialHLine = Math2.ceilDiv(minElevation, spaceBetween2HLines);
+        //Variable calculant le multiple de la valeur de la ligne initiale à dessiner.
         double initialHLine = Math.ceil(minElevation / spaceBetween2HLines);
+
         //Variable représentant la transformation passant des coordonnées du monde, à celles du
         //de JavaFX.
         Transform worldToScreen = worldToScreenTransform.get();
 
         List<PathElement> pathElementList = new ArrayList<>();
-        List<Text> textList = new ArrayList<>();
-
-        //Supprimant les anciens enfants du groupe représentant la grille, et du panneau gérant
-        //l'affichage du profil.
-        //group.getChildren().clear();
-        //pane.getChildren().clear();
+        List<Text> textList = new ArrayList<>();;
 
         //Ajout de la ligne en bas du rectangle bleu si elle ne nécessite pas d'étiquette.
         if (minElevation % spaceBetween2HLines != 0) {
-            Point2D point2DMoveTo = worldToScreen.transform(0, minElevation);
-            Point2D point2DLineTo = worldToScreen.transform(elevationLength, minElevation);
-            pathElementList.add(new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY()));
-            pathElementList.add(new LineTo(point2DLineTo.getX(), point2DLineTo.getY()));
+            addLineToPathElementList(0, minElevation, elevationLength, minElevation,
+                    worldToScreen, pathElementList);
         } else {
+            //S'il s'agit d'un multiple de l'espacement, alors la ligne est dessinée, et donc la
+            //ligne initiale de la boucle for suivante commence à la ligne suivante.
             ++initialHLine;
         }
 
         //Ajout de la ligne à droite du rectangle bleu si elle ne nécessite pas d'étiquette.
         if (elevationLength % spaceBetween2VLines != 0) {
-            Point2D point2DMoveTo = worldToScreen.transform(elevationLength, minElevation);
-            Point2D point2DLineTo = worldToScreen.transform(elevationLength, maxElevation);
-            pathElementList.add(new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY()));
-            pathElementList.add(new LineTo(point2DLineTo.getX(), point2DLineTo.getY()));
+            addLineToPathElementList(elevationLength, minElevation, elevationLength, maxElevation,
+                    worldToScreen, pathElementList);
         }
 
         for (int i = 0; i < numberOfHLines; i++) {
             double variable = (initialHLine + i) * spaceBetween2HLines;
-            Point2D point2DMoveTo = worldToScreen.transform(0, variable);
-            Point2D point2DLineTo = worldToScreen.transform(elevationLength, variable);
-            PathElement moveTo = new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY());
-            PathElement lineTo = new LineTo(point2DLineTo.getX(), point2DLineTo.getY());
-            pathElementList.add(moveTo);
-            pathElementList.add(lineTo);
+            Point2D point2DMoveTo = addLineToPathElementList(0, variable, elevationLength,
+                    variable, worldToScreen, pathElementList);
             Text text = new Text(Integer.toString((int) variable));
-            setUpVerticalLabel(text, point2DMoveTo);
+            setUpLabel(text, point2DMoveTo, VPos.CENTER, text.prefWidth(0) + 2,
+                    "vertical");
             textList.add(text);
         }
 
         for (int i = 0; i < numberOfVLines; i++) {
             double variable = i * spaceBetween2VLines;
-            Point2D point2DMoveTo = worldToScreen.transform(variable, minElevation);
-            Point2D point2DLineTo = worldToScreen.transform(variable, maxElevation);
-            PathElement moveTo = new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY());
-            PathElement lineTo = new LineTo(point2DLineTo.getX(), point2DLineTo.getY());
-            pathElementList.add(moveTo);
-            pathElementList.add(lineTo);
-            Text text = new Text(Integer.toString((int) variable / 1000));
-            setUpHorizontalLabel(text, point2DMoveTo);
+            Point2D point2DMoveTo = addLineToPathElementList(variable, minElevation, variable,
+                    maxElevation, worldToScreen, pathElementList);
+            Text text = new Text(Integer
+                    .toString((int) variable / NUMBER_OF_METERS_IN_A_KILOMETER));
+            setUpLabel(text, point2DMoveTo, VPos.TOP, text.prefWidth(0) / 2,
+                    "horizontal");
             textList.add(text);
         }
+
         group.getChildren().setAll(textList);
         path.getElements().setAll(pathElementList);
     }
 
     /**
-     * Méthode privée configurant une étiquette horizontale (de position).
-     * @param text texte donné, avec sa valeur.
-     * @param point2DMoveTo coordonnées de l'extrémité de la ligne à côté de laquelle il faut
-     *                      placer l'étiquette.
+     * Méthode privée permettant d'ajouter une ligne à la grille.
+     * @param fromMoveTo
+     * @param toMoveTo
+     * @param fromLineTo
+     * @param toLineTo
+     * @param worldToScreen
+     * @param pathElementList
+     * @return
      */
-    private void setUpHorizontalLabel(Text text, Point2D point2DMoveTo) {
-        text.setTextOrigin(VPos.TOP);
-        text.setFont(Font.font("Avenir", 10));
-        text.setLayoutX(point2DMoveTo.getX() - text.prefWidth(0) / 2);
-        text.setLayoutY(point2DMoveTo.getY());
-        text.getStyleClass().add("grid_label");
-        text.getStyleClass().add("horizontal");
+    private Point2D addLineToPathElementList(double fromMoveTo, double toMoveTo, double fromLineTo,
+                                          double toLineTo, Transform worldToScreen,
+                                          List<PathElement> pathElementList) {
+        Point2D point2DMoveTo = worldToScreen.transform(fromMoveTo, toMoveTo);
+        Point2D point2DLineTo = worldToScreen.transform(fromLineTo, toLineTo);
+        pathElementList.add(new MoveTo(point2DMoveTo.getX(), point2DMoveTo.getY()));
+        pathElementList.add(new LineTo(point2DLineTo.getX(), point2DLineTo.getY()));
+        return point2DMoveTo;
     }
 
+
     /**
-     * Méthode privée configurant une étiquette verticale (d'altitude).
-     * @param text texte donné, avec sa valeur.
-     * @param point2DMoveTo coordonnées de l'extrémité de la ligne à côté de laquelle il faut
-     *                      placer l'étiquette.
+     * Méthode privée permettant de configurer une étiquette et son texte.
+     * @param text Texte donné.
+     * @param point2DMoveTo Emplacement du texte donné sous forme de Point2D.
+     * @param vPos Position verticale donnée.
+     * @param textPrefWidth Décalage du texte par rapport au point donné en Point2D.
+     * @param orientation Chaîne de caractère liée à la feuille de style du texte.
      */
-    private void setUpVerticalLabel(Text text, Point2D point2DMoveTo) {
-        text.setTextOrigin(VPos.CENTER);
-        text.setFont(Font.font("Avenir", 10));
-        text.setLayoutX(point2DMoveTo.getX() - (text.prefWidth(0) + 2));
+    private void setUpLabel(Text text, Point2D point2DMoveTo, VPos vPos, double textPrefWidth,
+                            String orientation) {
+        text.setTextOrigin(vPos);
+        text.setFont(Font.font(FONT, FONT_SIZE));
+        text.setLayoutX(point2DMoveTo.getX() - textPrefWidth);
         text.setLayoutY(point2DMoveTo.getY());
         text.getStyleClass().add("grid_label");
-        text.getStyleClass().add("vertical");
+        text.getStyleClass().add(orientation);
     }
 
     /**
@@ -354,7 +366,7 @@ public final class ElevationProfileManager {
             if (isInBlueRectangle(event.getX(), event.getY())) {
                 Point2D worldCoordinates = screenToWorldTransform.get().transform(event.getX(),
                         event.getY());
-                mousePositionOnProfile.set(worldCoordinates.getX());
+                mousePositionOnProfile.set(Math.round(worldCoordinates.getX()));
             } else {
                 mousePositionOnProfile.set(Double.NaN);
             }
@@ -370,10 +382,8 @@ public final class ElevationProfileManager {
      * @param y coordonnée y donnée.
      * @return true si et seulement si la paire de coordonnée est dans le rectangle bleu.
      */
-    //TODO CHANGER CA POUR LA METhODE CONTAINS
     private boolean isInBlueRectangle(double x, double y) {
-        return x >= insets.getLeft() && x <= pane.getWidth() - insets.getRight()
-                && y >= insets.getTop() && y <= pane.getHeight() - insets.getBottom();
+        return rectangle2D.get().contains(x, y);
     }
 
     /**
@@ -409,28 +419,28 @@ public final class ElevationProfileManager {
         rectangle2D.bind(Bindings.createObjectBinding(() -> {
             //Si les dimensions du panneau sont suffisantes pour accueillir un rectangle bleu,
             //alors on le renvoie.
-            if(pane.getWidth() >= insets.getLeft() + insets.getRight() && pane.getHeight() >= insets.getTop() +
-                    insets.getBottom()) {
+            if(pane.getWidth() >= insets.getLeft() + insets.getRight() && pane.getHeight() >=
+                    insets.getTop() + insets.getBottom()) {
                 return new Rectangle2D(insets.getLeft(), insets.getTop(),
                         pane().getWidth() - insets.getRight() - insets.getLeft(),
                         pane.getHeight() - insets.getBottom() - insets.getTop());
 
             }
-            //Sinon, on renvoie un rectangle nul (dimensions nulles).
+            //Sinon, on renvoie un rectangle de dimensions nulles.
             return new Rectangle2D(0, 0, 0, 0);
         }, pane.widthProperty(), pane.heightProperty()));
     }
 
     /**
-     * Méthode privée mettant les statistiques du profil selon un certain format, de sorte à ce
-     * qu'elles s'affichent en ligne en dessous du profil.
+     * Méthode privée mettant les statistiques du profil selon un certain format, de sorte qu'elles
+     * s'affichent en ligne en dessous du profil.
      */
     private void formatStatistics() {
-        statisticsText.setText(String.format("Longueur : %.1f km" +
-                        "     Montée : %.0f m" +
-                        "     Descente : %.0f m" +
-                        "     Altitude : de %.0f m à %.0f m",
-                elevationProfile.get().length() / 1000,
+        statisticsText.setText(String.format("Longueur : %.1f km"
+                        + "     Montée : %.0f m"
+                        + "     Descente : %.0f m"
+                        + "     Altitude : de %.0f m à %.0f m",
+                elevationProfile.get().length() / NUMBER_OF_METERS_IN_A_KILOMETER,
                 elevationProfile.get().totalAscent(),
                 elevationProfile.get().totalDescent(),
                 elevationProfile.get().minElevation(),
@@ -444,8 +454,8 @@ public final class ElevationProfileManager {
      */
     private int computeVerticalLinesSpacing() {
         for (int posStep : POS_STEPS) {
-            double minPixel = rectangle2D.get().getWidth() /
-                    (elevationProfile.get().length() / (double) posStep);
+            double minPixel = rectangle2D.get().getWidth()
+                   / (elevationProfile.get().length() / (double) posStep);
             //Teste si on respecte la condition pour le l'espacement actuel.
             if (minPixel >= MIN_PIXEL_POS) {
                 return posStep;
@@ -463,7 +473,8 @@ public final class ElevationProfileManager {
     private int computeHorizontalLinesSpacing() {
         for (int eleStep : ELE_STEPS) {
             double minPixel = rectangle2D.get().getHeight()
-                    / ((elevationProfile.get().maxElevation() - elevationProfile.get().minElevation())/(double) eleStep);
+                    / ((elevationProfile.get().maxElevation() - elevationProfile.get().minElevation())
+                    / (double) eleStep);
             //Teste si on respecte la condition pour le l'espacement actuel.
             if (minPixel >= MIN_PIXEL_ELE) {
                 return eleStep;
@@ -489,8 +500,8 @@ public final class ElevationProfileManager {
         double spaceDown = minEle % step;
         double newDeltaEle = maxEle - spaceUp  - (minEle - spaceDown);
         //Cas limite où il faut dessiner la première ligne (donc une de +).
-        if (spaceDown == 0 ) newDeltaEle += step;
-        return (int) newDeltaEle / step ;
+        if (spaceDown == 0) newDeltaEle += step;
+        return (int) newDeltaEle / step;
     }
 
     /**
@@ -521,8 +532,8 @@ public final class ElevationProfileManager {
         vBox = new VBox();
         vBox.setId("profile_data");
         rectangle2D = new SimpleObjectProperty<>(new Rectangle2D(0, 0, 0, 0));
-        worldToScreenTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
-        screenToWorldTransform = new SimpleObjectProperty<>(Transform.translate(0,0));
+        worldToScreenTransform = new SimpleObjectProperty<>(Transform.translate(0, 0));
+        screenToWorldTransform = new SimpleObjectProperty<>(Transform.translate(0, 0));
         mousePositionOnProfile = new SimpleDoubleProperty(Double.NaN);
 
     }
@@ -564,7 +575,7 @@ public final class ElevationProfileManager {
         affine.prependScale(1 / rectangle2D.get().getWidth(), 1 / rectangle2D.get().getHeight());
         affine.prependScale(elevationProfile.get().length(), deltaElevation);
         //Décalage de l'altitude.
-        affine.prependTranslation(0,elevationProfile.get().minElevation());
+        affine.prependTranslation(0, elevationProfile.get().minElevation());
         screenToWorldTransform.set(affine);
         //Si la transformation inverse est possible, alors elle est calculée.
         try {

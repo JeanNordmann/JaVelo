@@ -112,6 +112,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         //Récupère le type de profil (les deux bits de poids fort).
         byte profilType = (byte) Bits.extractUnsigned(profileIds.get(edgeId), 30, 2);
 
+        //TODO check si prpof nous demande de tout corriger
         //Traite les différents cas.
         switch (profilType) {
             case (byte) 1:
@@ -121,65 +122,87 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 break;
 
             case (byte) 2:
-                int shortsToRead2 = numberSamples / OFFSET_CASE_2;
-                toReturn[0] = asFloat16(Short.toUnsignedInt(elevations.get(firstAltiId)));
-                for (int i = 1; i <= shortsToRead2; i++) {
-                    //Première altitude.
-                    int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
-
-                    float firstShift = asFloat16(Bits.extractSigned(extractShort, 8, 8));
-                    toReturn[OFFSET_CASE_2 * i - 1] = toReturn[OFFSET_CASE_2 * (i - 1)]
-                            + firstShift;
-
-                    //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles.
-                    if (numberSamples - 1 < OFFSET_CASE_2 * i) break;
-
-                    //Remplit les valeurs en fonction de la précédente, et du shift.
-                    float secondShift = asFloat16(Bits.extractSigned(extractShort, 0, 8));
-                    toReturn[OFFSET_CASE_2 * i] = toReturn[OFFSET_CASE_2 * i - 1] + secondShift;
-                }
+                samplesForType2Profile(numberSamples, toReturn, firstAltiId);
                 break;
 
             case (byte) 3:
-                //Nombre de shorts à lire après le premier short, sachant qu'un short contient
-                //4 nibble.
-                int shortsToRead4 = (numberSamples + 2) / OFFSET_CASE_3;
-                toReturn[0] = asFloat16(Short.toUnsignedInt(elevations.get(firstAltiId)));
-                for (int i = 1; i <= shortsToRead4; i++) {
-                    int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
-
-                    float firstShift = asFloat8(Bits.extractSigned(extractShort, 12, 4));
-                    toReturn[OFFSET_CASE_3 * i - 3] = toReturn[OFFSET_CASE_3 * i - 4] + firstShift;
-
-                    //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
-                    if (numberSamples + 1 < OFFSET_CASE_3 * i) break;
-
-                    float secondShift = asFloat8(Bits.extractSigned(extractShort, 8, 4));
-                    toReturn[OFFSET_CASE_3 * i - 2] = toReturn[OFFSET_CASE_3 * i - 3] + secondShift;
-
-                    //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
-                    if (numberSamples < OFFSET_CASE_3 * i) break;
-
-                    float thirdShift = asFloat8(Bits.extractSigned(extractShort, 4, 4));
-                    toReturn[OFFSET_CASE_3 * i - 1] = toReturn[OFFSET_CASE_3 * i - 2] + thirdShift;
-
-                    //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
-                    if (numberSamples - 1 < OFFSET_CASE_3 * i) break;
-
-                    //Ajoute les valeurs en fonction du shift et de la valeur précédente.
-                    float fourthShift = asFloat8(Bits.extractSigned(extractShort, 0, 4));
-                    toReturn[OFFSET_CASE_3 * i] = toReturn[OFFSET_CASE_3 * i - 1] + fourthShift;
-                }
+                samplesForType3Profile(numberSamples, toReturn, firstAltiId);
         }
         //Inverse le tableau si l'arête est inversée.
         if (isInverted(edgeId)) {
-            float[] inverted = new float[numberSamples];
-            for (int i = 0; i < numberSamples; i++) {
-                inverted[i] = toReturn[numberSamples - 1 - i];
+            for (int i = 0; i < Math2.ceilDiv(numberSamples,2); i++) {
+                float tempFloatToSwap = toReturn[i];
+                toReturn[i] = toReturn[numberSamples - 1 - i];
+                toReturn[numberSamples - 1 - i] = tempFloatToSwap;
             }
-            return inverted;
         }
         return toReturn;
+    }
+
+    /**
+     * Méthode privée extrayant le profil d'une arête avec un profil de type 2, et le mettant
+     * dans un tableau passé en paramètre.
+     * @param numberSamples Nombre d'échantillons du profil.
+     * @param toReturn Tableau dans lequel les valeurs du profil de l'arête sont mises.
+     * @param firstAltiId Identité de la première altitude donnée.
+     */
+    private void samplesForType2Profile(int numberSamples, float[] toReturn, int firstAltiId) {
+        int shortsToRead2 = numberSamples / OFFSET_CASE_2;
+        toReturn[0] = asFloat16(Short.toUnsignedInt(elevations.get(firstAltiId)));
+        for (int i = 1; i <= shortsToRead2; i++) {
+            //Première altitude.
+            int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
+
+            float firstShift = asFloat16(Bits.extractSigned(extractShort, 8, 8));
+            toReturn[OFFSET_CASE_2 * i - 1] = toReturn[OFFSET_CASE_2 * (i - 1)]
+                    + firstShift;
+
+            //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles.
+            if (numberSamples - 1 < OFFSET_CASE_2 * i) break;
+
+            //Remplit les valeurs en fonction de la précédente, et du shift.
+            float secondShift = asFloat16(Bits.extractSigned(extractShort, 0, 8));
+            toReturn[OFFSET_CASE_2 * i] = toReturn[OFFSET_CASE_2 * i - 1] + secondShift;
+        }
+    }
+
+    /**
+     * Méthode privée extrayant le profil d'une arête avec un profil de type 3, et le mettant
+     * dans un tableau passé en paramètre.
+     * @param numberSamples Nombre d'échantillons du profil.
+     * @param toReturn Tableau dans lequel les valeurs du profil de l'arête sont mises.
+     * @param firstAltiId Identité de la première altitude donnée.
+     */
+    private void samplesForType3Profile(int numberSamples, float[] toReturn, int firstAltiId) {
+        //Nombre de shorts à lire après le premier short, sachant qu'un short contient
+        //4 nibble.
+        int shortsToRead4 = (numberSamples + 2) / OFFSET_CASE_3;
+        toReturn[0] = asFloat16(Short.toUnsignedInt(elevations.get(firstAltiId)));
+        for (int i = 1; i <= shortsToRead4; i++) {
+            int extractShort = Short.toUnsignedInt(elevations.get(firstAltiId + i));
+
+            float firstShift = asFloat8(Bits.extractSigned(extractShort, 12, 4));
+            toReturn[OFFSET_CASE_3 * i - 3] = toReturn[OFFSET_CASE_3 * i - 4] + firstShift;
+
+            //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
+            if (numberSamples + 1 < OFFSET_CASE_3 * i) break;
+
+            float secondShift = asFloat8(Bits.extractSigned(extractShort, 8, 4));
+            toReturn[OFFSET_CASE_3 * i - 2] = toReturn[OFFSET_CASE_3 * i - 3] + secondShift;
+
+            //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
+            if (numberSamples < OFFSET_CASE_3 * i) break;
+
+            float thirdShift = asFloat8(Bits.extractSigned(extractShort, 4, 4));
+            toReturn[OFFSET_CASE_3 * i - 1] = toReturn[OFFSET_CASE_3 * i - 2] + thirdShift;
+
+            //Pour éviter OutOfBoundException si les 8 derniers bits du short sont inutiles
+            if (numberSamples - 1 < OFFSET_CASE_3 * i) break;
+
+            //Ajoute les valeurs en fonction du shift et de la valeur précédente.
+            float fourthShift = asFloat8(Bits.extractSigned(extractShort, 0, 4));
+            toReturn[OFFSET_CASE_3 * i] = toReturn[OFFSET_CASE_3 * i - 1] + fourthShift;
+        }
     }
 
     /**

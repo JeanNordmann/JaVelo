@@ -27,10 +27,8 @@ import java.util.function.Consumer;
 
 public final class WaypointsManager {
 
-    /**
-     * Constante représentant le rayon de recherche d'un nœud lorsque l'on veut placer un nouveau
-     * point de passage.
-     */
+    //Constante représentant le rayon de recherche d'un nœud lorsque l'on veut placer un nouveau
+    //point de passage.
     private static final int SEARCH_DISTANCE = 500;
 
     /**
@@ -49,7 +47,7 @@ public final class WaypointsManager {
     private final ObservableList<Waypoint> waypointList;
 
     /**
-     * Objet permettant de signaler les erreurs, qui est un consommateur de String.
+     * Objet permettant de signaler les erreurs, qui est un consommateur de chaîne de caractères.
      */
     private final Consumer<String> stringConsumer;
 
@@ -79,10 +77,10 @@ public final class WaypointsManager {
     /**
      * Constructeur initialisant les attributs à leurs valeurs données, et sinon à leurs valeurs
      * par défaut.
-     * @param graph graph du réseau routier.
-     * @param mapViewParameters paramètres du fond de carte actuel.
-     * @param waypointList liste observable de tous les points de passages.
-     * @param stringConsumer consumer nous permettant de signaler les erreurs à afficher sur
+     * @param graph Graphe du réseau routier.
+     * @param mapViewParameters Paramètres du fond de carte actuels.
+     * @param waypointList Liste observable de tous les points de passages.
+     * @param stringConsumer Consommateur nous permettant de signaler les erreurs à afficher sur
      *                       l'interface graphique.
      */
 
@@ -97,11 +95,13 @@ public final class WaypointsManager {
         actualCoordinatesPoint2D = new Point2D(0, 0);
         pane = new Pane();
 
-        //Ajoute un auditeur sur la liste de points de passage.
+        //Ajoute un auditeur sur la liste de points de passage, pour actualiser les couleurs des
+        //marqueurs lorsque la liste de points de passage change.
         waypointList.addListener((ListChangeListener<? super Waypoint>) e -> recreateGroups());
 
-        //Recrée l'ordre des points de passage dans les groupes.
-        recreateGroups();
+        //Ajoute un auditeur sur les paramètres de vue de la carte, pour permettre aux points de
+        //passage de bouger avec la carte, lorsque cette dernière se déplace ou bien redimensionnée.
+        mapViewParameters.addListener((p, oldS, newS) -> updateWaypointsLocations());
 
         //Permet au panneau de ne pas bloquer les interactions avec les panneaux en arrière-plan.
         pane.setPickOnBounds(false);
@@ -132,13 +132,11 @@ public final class WaypointsManager {
             pane.getChildren().get(i).setLayoutX(xWayPoint);
             pane.getChildren().get(i).setLayoutY(yWayPoint);
         }
-        //Fait en sorte de ne pas empêcher que les gestionnaires d'évènement de la classe
-        //n'empêchent pas à ceux du fond de carte d'être activés.
-        pane.setPickOnBounds(false);
     }
 
     /**
-     * Méthode privée recréant entièrement les groupes à chaque fois qu'un point a été ajouté.
+     * Méthode privée recréant entièrement les groupes à chaque fois qu'un point a été ajouté ou
+     * supprimé.
      */
 
     private void recreateGroups() {
@@ -166,11 +164,11 @@ public final class WaypointsManager {
     /**
      * Méthode privée ajoutant un marqueur au panneau, en fonction de son emplacement dans la
      * liste donnée en paramètre.
-     * @param emplacement chaîne de caractères donnée représentant la position dans la liste, (peut
-     *                   être first, middle ou last).
+     * @param emplacement Chaîne de caractères donnée représentant la position dans la liste, (peut
+     * être first, middle ou last).
      */
 
-    private void addPinToPane(final String emplacement) {
+    private void addPinToPane(String emplacement) {
         //Crée le groupe à ajouter.
         Group groupToAdd = new Group(getAndSetOutsideBorder(), getAndSetInsideBorder());
         //Ajoute à sa classe de style le "pin" commun à tous.
@@ -180,7 +178,7 @@ public final class WaypointsManager {
         //points de passage.
         groupToAdd.getStyleClass().add(emplacement);
 
-        //Ajoute tous les listeners au groupe concerné.
+        //Ajoute tous les auditeurs au groupe concerné.
         setUpListeners(groupToAdd);
 
         //Ajoute enfin le groupe au panneau.
@@ -188,15 +186,14 @@ public final class WaypointsManager {
     }
 
     /**
-     * Méthode permettant d'ajouter une point de passage sur la carte à l'aide de ses coordonnées
+     * Méthode permettant d'ajouter un point de passage sur la carte à l'aide de ses coordonnées
      * relatives sur la carte affichée à l'écran.
-     * @param x Coordonnée X partante depuis le coin haut gauche.
-     * @param y Coordonnée Y partante depuis le coin haut gauche.
+     * @param x Coordonnée X depuis le coin haut gauche.
+     * @param y Coordonnée Y depuis le coin haut gauche.
      */
 
-    public void addWaypoint(final double x, final double y) {
+    public void addWaypoint(double x, double y) {
         PointCh pointCh = mapViewParameters.get().pointAt(x, y).toPointCh();
-
         //Si le PointCh correspondant à la position où l'on veut ajouter un point de passage est
         //nul, ce qui correspond à un point hors des limites suisses définies par la classe
         //SwissBounds.
@@ -204,6 +201,7 @@ public final class WaypointsManager {
             //Dans le cas où le point n'est pas dans les limites de la Suisse.
             stringConsumer.accept("Aucune route à proximité !");
         } else {
+            //Sinon, une recherche du nœud le plus proche est entamée.
             int idNodeClosestTo = graph.nodeClosestTo(pointCh, SEARCH_DISTANCE);
             if (idNodeClosestTo == -1) {
                 //Dans le cas où aucun nœud n'a été trouvé dans la distance de recherche.
@@ -222,7 +220,7 @@ public final class WaypointsManager {
      * @param pin Marqueur à déplacer.
      */
 
-    public void moveWaypoint(MouseEvent event, Node pin) {
+    private void moveWaypoint(MouseEvent event, Node pin) {
         Point2D translation = previousCoordsOnScreen.subtract(event.getX(), event.getY());
         pin.setLayoutX(pin.getLayoutX() - translation.getX());
         pin.setLayoutY(pin.getLayoutY() - translation.getY());

@@ -22,9 +22,8 @@ import java.util.List;
  * 7.3.5
  * GpxGenerator
  * <p>
- * Class permettant d'écrire dans un fichier un itinéraire au format GPX à partir d'une Route,
- * et de son profil, qu'on obtient facilement via : ElevationProfileComputer.elevationProfile
- * (route, ...)
+ * Classe permettant d'écrire dans un fichier un itinéraire au format GPX à partir d'une Route,
+ * et de son profil.
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
@@ -32,20 +31,22 @@ import java.util.List;
 
 public class GpxGenerator {
 
+    /**
+     * Constructeur privé, car cette classe n'est pas censée être instantiable.
+     */
     private GpxGenerator() {}
 
     /**
      * Méthode permettant de créer un Document au format GPX à partir d'un itinéraire.
      * @param route Route de l'itinéraire.
-     * @param elevationProfile Profile altimétrique de l'itinéraire.
-     * @return Un Document contenant l'itinéraire au format GPX.
+     * @param elevationProfile Profil altimétrique de l'itinéraire.
+     * @return Un document de type Document contenant l'itinéraire au format GPX.
      */
-
     public static Document createGpx(Route route, ElevationProfile elevationProfile) {
-        // Création du document qu'on va rendre
+        //Création du document que l'on va retourner.
         Document doc = newDocument();
 
-        // Ajout des MetaDatas.
+        //Ajout des MetaDatas.
         Element root = doc
                 .createElementNS("http://www.topografix.com/GPX/1/1",
                         "gpx");
@@ -66,27 +67,31 @@ public class GpxGenerator {
         metadata.appendChild(name);
         name.setTextContent("Route JaVelo");
 
-        // Ajout des points.
+        //Ajout des points.
         Element rte = doc.createElement("rte");
         root.appendChild(rte);
 
         List<PointCh> pointChList = route.points();
-        // Position actuelle, utile pour le Elevation At.
+
+        //Position actuelle, utile pour la méthode retournant l'élévation à une certaine position.
         double actualPos = 0;
-        // Iterator sur la liste des edges permettant d'incrémenter la position actuelle.
+
+        //Itérateur sur la liste des arêtes permettant d'incrémenter la position actuelle.
         Iterator<Edge> edgeIterator = route.edges().iterator();
 
         for (PointCh pointCh : pointChList) {
-            // Ajout des coordonnées.
+            //Ajout des coordonnées.
             Element rtept = doc.createElement("rtept");
             rtept.setAttribute("lat", Double.toString(Math.toDegrees(pointCh.lat())));
             rtept.setAttribute("lon", Double.toString(Math.toDegrees(pointCh.lon())));
             rte.appendChild(rtept);
-            // Ajout de l'altitude.
+
+            //Ajout de l'altitude.
             Element ele = doc.createElement("ele");
             rtept.appendChild(ele);
             ele.setTextContent(Double.toString(elevationProfile.elevationAt(actualPos)));
-            // Condition nous permettant de ne pas ajouter la dernière longueur d'arête.
+
+            //Condition nous permettant de ne pas ajouter la dernière longueur d'arête.
             if(edgeIterator.hasNext()) {
                actualPos += edgeIterator.next().length();
            }
@@ -95,21 +100,23 @@ public class GpxGenerator {
     }
 
     /**
-     * Méthode permettant d'écrire un itinéraire à partir d'une route et de son profile dans un fichier GPX.
-     * @param name Nom du fichier dans le quel on écrit notre document.
+     * Méthode permettant d'écrire un itinéraire à partir d'une route et de son profile dans un
+     * fichier GPX.
+     * @param name Nom du fichier dans lequel on écrit notre document.
      * @param route Route de notre itinéraire.
-     * @param elevationProfilef Profil altimétrique de notre itinéraire.
+     * @param elevationProfile Profil altimétrique de notre itinéraire.
      * @throws IOException Exception liée à une erreur dûe au FileWriter.
      */
 
-    public static void writeGpx(String name, Route route, ElevationProfile elevationProfilef) throws IOException {
-        // Création du document et du fichier dans lequel on veut écrire.
-        Document doc = createGpx(route, elevationProfilef);
+    public static void writeGpx(String name, Route route, ElevationProfile elevationProfile) throws
+            IOException {
+        //Création du document et du fichier dans lequel on souhaite écrire.
+        Document doc = createGpx(route, elevationProfile);
         Writer w = new FileWriter(name);
 
         try {
-            //Création du Transformer qui adapte le document GPX en Writer qui est ensuite
-            //écrit dans le fichier
+            //Création du transformateur qui adapte le document GPX en écriture qui est ensuite
+            //écrit dans le fichier souhaité.
             Transformer transformer = TransformerFactory
                     .newDefaultInstance()
                     .newTransformer();
@@ -117,13 +124,13 @@ public class GpxGenerator {
             transformer.transform(new DOMSource(doc),
                     new StreamResult(w));
         } catch (TransformerException e) {
-            throw new Error(e); // Cela ne doit jamais arriver.
+            throw new Error(e); //Cela ne doit jamais arriver.
         }
     }
 
     /**
      * Méthode privée permettant la création d'un Document.
-     * @return Le Document en question.
+     * @return Le document en question.
      */
     private static Document newDocument() {
         try {
@@ -132,7 +139,7 @@ public class GpxGenerator {
                     .newDocumentBuilder()
                     .newDocument();
         } catch (ParserConfigurationException e) {
-            throw new Error(e); // Should never happen
+            throw new Error(e); //Cela ne doit jamais arriver.
         }
     }
 }
