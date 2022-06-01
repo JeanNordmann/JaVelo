@@ -31,10 +31,18 @@ import java.nio.file.Path;
  * @author Jean Nordmann (344692)
  */
 
-public class JaVelo extends Application {
+public final class JaVelo extends Application {
+
+    private final static double MIN_WINDOW_WIDTH = 800;
+    private final static double MIN_WINDOW_HEIGHT = 600;
 
     public static void main(String[] args) { launch(args); }
-
+    //TODO
+    /**
+     *
+     * @param primaryStage
+     * @throws Exception
+     */
     public void start(Stage primaryStage) throws Exception {
         //Création et chargement du graphe.
         Graph graph = Graph.loadFrom(Path.of("javelo-data"));
@@ -114,8 +122,8 @@ public class JaVelo extends Application {
         mainPane.setCenter(pane);
 
         //Dimensions minimales de la fenêtre.
-        primaryStage.setMinWidth(800);
-        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(MIN_WINDOW_WIDTH);
+        primaryStage.setMinHeight(MIN_WINDOW_HEIGHT);
 
         //Nom de l'application.
         primaryStage.setTitle("JaVelo");

@@ -27,6 +27,9 @@ import java.util.function.Consumer;
 public final class AnnotatedMapManager {
 
     private static final int HIGHLIGHTED_POSITION_MAX_PIXEL_DISTANCE = 15;
+    private static final int INITIAL_ZOOM_LEVEL = 12;
+    private static final int INITIAL_TOP_LEFT_X = 543200;
+    private static final int INITIAL_TOP_LEFT_Y = 370650;
 
     /**
      * Attribut représentant le panneau de la carte annotée.
@@ -61,7 +64,8 @@ public final class AnnotatedMapManager {
                                Consumer<String> consumer) {
 
         mapViewParametersP =
-                new SimpleObjectProperty<>(new MapViewParameters(12, 543200, 370650));
+                new SimpleObjectProperty<>(new MapViewParameters(INITIAL_ZOOM_LEVEL,
+                        INITIAL_TOP_LEFT_X, INITIAL_TOP_LEFT_Y));
 
         WaypointsManager waypointsManager =
                 new WaypointsManager(graph, mapViewParametersP, bean.waypointsProperty(), consumer);
