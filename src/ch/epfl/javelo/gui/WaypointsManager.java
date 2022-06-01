@@ -271,7 +271,8 @@ public final class WaypointsManager {
                 //Si oui, supprimer le point de passage de la liste.
                 waypointList.remove(pane.getChildren().indexOf(pin));
         });
-
+//TODO dis moi si tu penses que je devrais essayer de clean un peu, je trouve que 3 attributs
+// c'est bcp
         pin.setOnMousePressed(event -> {
             //Vérifie si le curseur bouge depuis le clic sur le marqueur.
             if (!event.isStillSincePress()) {

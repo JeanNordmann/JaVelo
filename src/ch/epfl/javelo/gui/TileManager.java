@@ -124,6 +124,7 @@ public final class TileManager {
         //Cas où l'image est dans le cache disque.
         if (Files.exists(filePath)) {
             //Bloc Try-with-resource pour fermer le flot à la sortie.
+            //TODO modularisé ce bloc nan ?
             try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
                 Image image = new Image(inputStream);
                 //Méthode privée gérant le cache-mémoire et supprimant celui utilisé le moins
@@ -132,6 +133,7 @@ public final class TileManager {
                 addMRUAndRemoveLRU(tileId, image);
                 return image;
             }
+            //TODO FIN bloc a modularisé
         } else {
             //Cas où l'image doit être récupérée sur le serveur, car non-présente dans le cache
             //disque.
@@ -145,6 +147,7 @@ public final class TileManager {
                 OutputStream outputStream = new FileOutputStream(filePath.toFile())) {
                 //Transfère les données du flot d'entrée, vers le flot de sortie.
                 i.transferTo(outputStream);
+                //TODO modularisé ce bloc nan ?
                 try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
                     Image image = new Image(inputStream);
                     //Méthode privée gérant le cache-mémoire et supprimant celui utilisé le moins
@@ -153,6 +156,7 @@ public final class TileManager {
                     addMRUAndRemoveLRU(tileId, image);
                     return image;
                 }
+                //TODO FIN bloc a modularisé
             }
         }
     }
