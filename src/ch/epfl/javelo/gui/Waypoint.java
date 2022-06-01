@@ -12,6 +12,10 @@ import ch.epfl.javelo.projection.PointCh;
  *
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
+ *
+ * //TODO
+ * @param pointCh
+ * @param nodeId
  */
 
 public record Waypoint (PointCh pointCh, int nodeId) {}

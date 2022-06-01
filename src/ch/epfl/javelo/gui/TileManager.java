@@ -51,6 +51,11 @@ public final class TileManager {
     /**
      * Enregistrement contenant une unique méthode statique nous permettant de vérifier si la tuile
      * OSM est valide.
+     * //TODO
+     * @param zoomLevel
+     * @param xTile
+     * @param yTile
+     *
      */
 
     public record TileId(int zoomLevel, int xTile, int yTile) {

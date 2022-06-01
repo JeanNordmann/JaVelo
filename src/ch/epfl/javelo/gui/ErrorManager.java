@@ -20,6 +20,12 @@ import javafx.util.Duration;
 
 public final class ErrorManager {
 
+
+    private static final double UP_FADE_TRANSITION_DURATION_MS = 200;
+    private static final double DOWN_FADE_TRANSITION_DURATION_MS = 500;
+    private static final double LOW_OPACITY_COEFFICIENT = 0;
+    private static final double HIGH_OPACITY_COEFFICIENT = 0.8;
+
     /**
      * Attribut représentant le panneau sur lequel apparaissent les messages d'erreur.
      */
@@ -66,15 +72,17 @@ public final class ErrorManager {
      * @param errorMessage Chaîne de caractères contenant le message à afficher sur le panneau du
      *                    gestionnaire d'erreurs.
      */
+
     public void displayError(String errorMessage) {
         //Initialise les paramètres de l'affichage d'erreur demandée.
-        FadeTransition fstFadeTransition = new FadeTransition(Duration.millis(200), vBox);
-        fstFadeTransition.setFromValue(0);
-        fstFadeTransition.setToValue(0.8);
-        FadeTransition sndFadeTransition = new FadeTransition(Duration.millis(500),
+        //TODO vire tout les magic number, on fais des constante, juste je n'était pas sure des noms
+        FadeTransition fstFadeTransition = new FadeTransition(Duration.millis(UP_FADE_TRANSITION_DURATION_MS), vBox);
+        fstFadeTransition.setFromValue(LOW_OPACITY_COEFFICIENT);
+        fstFadeTransition.setToValue(HIGH_OPACITY_COEFFICIENT);
+        FadeTransition sndFadeTransition = new FadeTransition(Duration.millis(DOWN_FADE_TRANSITION_DURATION_MS),
                 vBox);
-        sndFadeTransition.setFromValue(0.8);
-        sndFadeTransition.setToValue(0);
+        sndFadeTransition.setFromValue(HIGH_OPACITY_COEFFICIENT);
+        sndFadeTransition.setToValue(LOW_OPACITY_COEFFICIENT);
 
         //Arrête la précédente animation s'il y en a une en cours.
         if (transition != null) transition.stop();
