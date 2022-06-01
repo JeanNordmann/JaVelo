@@ -1,8 +1,6 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Preconditions;
-import javafx.scene.image.Image;
-
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -11,6 +9,8 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javafx.scene.image.Image;
+
 
 /**
  * 7.3.2
@@ -51,13 +51,10 @@ public final class TileManager {
     /**
      * Enregistrement contenant une unique méthode statique nous permettant de vérifier si la tuile
      * OSM est valide.
-     * //TODO
-     * @param zoomLevel
-     * @param xTile
-     * @param yTile
-     *
+     * @param zoomLevel Niveau de zoom passé en paramètre.
+     * @param xTile Coordonnée X donnée.
+     * @param yTile Coordonnée Y donnée.
      */
-
     public record TileId(int zoomLevel, int xTile, int yTile) {
 
         //Constante représentant le niveau de zoom minimum.
@@ -123,17 +120,8 @@ public final class TileManager {
 
         //Cas où l'image est dans le cache disque.
         if (Files.exists(filePath)) {
-            //Bloc Try-with-resource pour fermer le flot à la sortie.
-            //TODO modularisé ce bloc nan ?
-            try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-                Image image = new Image(inputStream);
-                //Méthode privée gérant le cache-mémoire et supprimant celui utilisé le moins
-                //récemment, pour le remplacer par celui utilisé le plus récemment (l'image
-                //actuelle).
-                addMRUAndRemoveLRU(tileId, image);
-                return image;
-            }
-            //TODO FIN bloc a modularisé
+            return getImageFromDisk(tileId, filePath);
+
         } else {
             //Cas où l'image doit être récupérée sur le serveur, car non-présente dans le cache
             //disque.
@@ -147,24 +135,36 @@ public final class TileManager {
                 OutputStream outputStream = new FileOutputStream(filePath.toFile())) {
                 //Transfère les données du flot d'entrée, vers le flot de sortie.
                 i.transferTo(outputStream);
-                //TODO modularisé ce bloc nan ?
-                try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-                    Image image = new Image(inputStream);
-                    //Méthode privée gérant le cache-mémoire et supprimant celui utilisé le moins
-                    //récemment, pour le remplacer par celui utilisé le plus récemment (l'image
-                    //actuelle).
-                    addMRUAndRemoveLRU(tileId, image);
-                    return image;
-                }
-                //TODO FIN bloc a modularisé
+                return getImageFromDisk(tileId, filePath);
             }
         }
     }
 
     /**
-     * //TODO langue, je sais pas comment écrir tileID en fr,
-     * Ajoute la TileId et l'image données au cache-mémoire, tout en supprimant la paire utilisée
-     * la moins récemment (LRU).
+     * Méthode privée permettant d'obtenir une image en fonction d'une identité de tuile donnée
+     * et du chemin d'accès au fichier.
+     * @param tileId Identité de la tuile donnée.
+     * @param filePath Chemin d'accès au fichier donné.
+     * @return Retourne l'image correspondant à l'identité de la tuile donnée en paramètre,
+     * présente dans le cache disque.
+     * @throws IOException Lance une exception en cas d'erreur liée à l'obtention de l'image
+     * dans le flot.
+     */
+    private Image getImageFromDisk(TileId tileId, Path filePath) throws IOException {
+        //Bloc Try-with-resource pour fermer le flot à la sortie.
+        try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
+            Image image = new Image(inputStream);
+            //Méthode privée gérant le cache-mémoire et supprimant celui utilisé le moins
+            //récemment, pour le remplacer par celui utilisé le plus récemment (l'image
+            //actuelle).
+            addMRUAndRemoveLRU(tileId, image);
+            return image;
+        }
+    }
+
+    /**
+     * Ajoute l'identité de la tuile et l'image données au cache-mémoire, tout en supprimant la
+     * paire utilisée la moins récemment (LRU).
      * @param tileId Identité de la tuile donnée.
      * @param image Image donnée.
      */

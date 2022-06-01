@@ -1,9 +1,11 @@
 package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.projection.PointCh;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Iterator;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -12,11 +14,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Iterator;
-import java.util.List;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * 7.3.5
@@ -92,7 +91,7 @@ public class GpxGenerator {
             ele.setTextContent(Double.toString(elevationProfile.elevationAt(actualPos)));
 
             //Condition nous permettant de ne pas ajouter la dernière longueur d'arête.
-            if(edgeIterator.hasNext()) {
+            if (edgeIterator.hasNext()) {
                actualPos += edgeIterator.next().length();
            }
         }

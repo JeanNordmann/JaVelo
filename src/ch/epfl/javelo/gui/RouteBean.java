@@ -81,7 +81,8 @@ public final class RouteBean {
         this.routeCacheMemory = new LinkedHashMap<>(MEMORY_CACHE_SIZE, ROUTE_CACHE_LOAD_FACTOR,
                 true);
 
-        waypoints.addListener((ListChangeListener<? super Waypoint>) e -> computeNewRouteAndProfile());
+        waypoints.addListener((ListChangeListener<? super Waypoint>) e ->
+                computeNewRouteAndProfile());
     }
 
     /**

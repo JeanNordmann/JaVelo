@@ -20,11 +20,20 @@ import javafx.util.Duration;
 
 public final class ErrorManager {
 
-
+    //Constante représentant la durée, en millisecondes, de l'apparition de la transition.
     private static final double UP_FADE_TRANSITION_DURATION_MS = 200;
+
+    //Constante représentant la durée, en millisecondes, de la disparition de la transition.
     private static final double DOWN_FADE_TRANSITION_DURATION_MS = 500;
+
+    //Constante représentant le coefficient opaque de la transition lorsqu'elle n'est pas active.
     private static final double LOW_OPACITY_COEFFICIENT = 0;
+
+    //Constante représentant le coefficient opaque de la transition lorsqu'elle est active.
     private static final double HIGH_OPACITY_COEFFICIENT = 0.8;
+
+    //Constante représentant la durée de la transition en secondes.
+    private static final int TRANSITION_DURATION = 2;
 
     /**
      * Attribut représentant le panneau sur lequel apparaissent les messages d'erreur.
@@ -75,12 +84,12 @@ public final class ErrorManager {
 
     public void displayError(String errorMessage) {
         //Initialise les paramètres de l'affichage d'erreur demandée.
-        //TODO vire tout les magic number, on fais des constante, juste je n'était pas sure des noms
-        FadeTransition fstFadeTransition = new FadeTransition(Duration.millis(UP_FADE_TRANSITION_DURATION_MS), vBox);
+        FadeTransition fstFadeTransition =
+                new FadeTransition(Duration.millis(UP_FADE_TRANSITION_DURATION_MS), vBox);
         fstFadeTransition.setFromValue(LOW_OPACITY_COEFFICIENT);
         fstFadeTransition.setToValue(HIGH_OPACITY_COEFFICIENT);
-        FadeTransition sndFadeTransition = new FadeTransition(Duration.millis(DOWN_FADE_TRANSITION_DURATION_MS),
-                vBox);
+        FadeTransition sndFadeTransition =
+                new FadeTransition(Duration.millis(DOWN_FADE_TRANSITION_DURATION_MS), vBox);
         sndFadeTransition.setFromValue(HIGH_OPACITY_COEFFICIENT);
         sndFadeTransition.setToValue(LOW_OPACITY_COEFFICIENT);
 
@@ -89,7 +98,7 @@ public final class ErrorManager {
 
         //Crée la nouvelle transition à afficher.
         transition = new SequentialTransition(fstFadeTransition,
-                new PauseTransition(Duration.seconds(2)), sndFadeTransition);
+                new PauseTransition(Duration.seconds(TRANSITION_DURATION)), sndFadeTransition);
 
         //Ajoute à la VBox le texte à afficher.
         vBox.getChildren().set(0, new Text(errorMessage));

@@ -13,9 +13,9 @@ import ch.epfl.javelo.projection.PointCh;
  * @author Jean Nordmann (344692)
  * @author Maxime Ducourau (329544)
  *
- * //TODO
- * @param pointCh
- * @param nodeId
+ *
+ * @param pointCh Position du point de passage dans le système de coordonnées suisse (PointCh).
+ * @param nodeId Identité du nœud donné.
  */
 
 public record Waypoint (PointCh pointCh, int nodeId) {}

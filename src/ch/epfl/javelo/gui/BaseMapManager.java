@@ -25,20 +25,18 @@ import java.io.IOException;
 
 public final class BaseMapManager {
 
-    /**
-     * Constante représentant la taille en pixels d'une tuile.
-     */
+    //Constante représentant la taille en pixels d'une tuile.
     private static final int TILE_SIZE = 256;
 
-    /**
-     * Constante représentant le niveau de zoom minimal de la carte, pour l'affichage.
-     */
+    //Constante représentant le niveau de zoom minimal de la carte, pour l'affichage.
     private static final int MIN_ZOOM_LEVEL = 8;
 
-    /**
-     * Constante représentant le niveau de zoom maximal de la carte, pour l'affichage.
-     */
+    //Constante représentant le niveau de zoom maximal de la carte, pour l'affichage.
     private static final int MAX_ZOOM_LEVEL = 19;
+
+    //Constante représentant le temps minimal, en millisecondes, entre deux glissements de
+    //roulettes, pour être comptabilisé.
+    private static final int MIN_TIME_BETWEEN_TWO_SCROLLS_MS = 200;
 
     /**
      * Attribut représentant le gestionnaire de tuiles.
@@ -205,7 +203,7 @@ public final class BaseMapManager {
             if (e.getDeltaY() == 0d) return;
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
-            minScrollTime.set(currentTime + 200);
+            minScrollTime.set(currentTime + MIN_TIME_BETWEEN_TWO_SCROLLS_MS);
             int zoomDelta = (int) Math.signum(e.getDeltaY());
             double xOnScreen = e.getX(), yOnScreen = e.getY();
 

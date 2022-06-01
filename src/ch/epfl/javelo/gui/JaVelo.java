@@ -5,6 +5,9 @@ import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.routing.CityBikeCF;
 import ch.epfl.javelo.routing.GpxGenerator;
 import ch.epfl.javelo.routing.RouteComputer;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;
@@ -17,9 +20,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Path;
 
 
 /**
@@ -34,15 +34,18 @@ import java.nio.file.Path;
 
 public final class JaVelo extends Application {
 
-    private final static double MIN_WINDOW_WIDTH = 800;
-    private final static double MIN_WINDOW_HEIGHT = 600;
+    //Constante représentant la valeur minimale de la largeur de la fenêtre de l'application.
+    private static final double MIN_WINDOW_WIDTH = 800;
+
+    //Constante représentant la valeur minimale de la hauteur de la fenêtre de l'application.
+    private static final double MIN_WINDOW_HEIGHT = 600;
 
     public static void main(String[] args) { launch(args); }
-    //TODO
+
     /**
-     *
-     * @param primaryStage
-     * @throws Exception
+     * Méthode permettant le lancement de l'application sur l'emplacement donné en paramètres.
+     * @param primaryStage Emplacement sur lequel les acteurs de l'application sont placés.
+     * @throws Exception En cas d'erreur liée au lancement de l'application.
      */
     public void start(Stage primaryStage) throws Exception {
         //Création et chargement du graphe.
@@ -77,7 +80,7 @@ public final class JaVelo extends Application {
         //Auditeur permettant d'ajouter ou d'enlever le profil si la route existe ou non.
         routeBean.elevationProfileProperty().addListener((observable, oldValue, newValue) -> {
             //Dessine le nouveau profil si l'ancien profil était nul, et pas le nouveau.
-            if(newValue != null && oldValue == null) {
+            if (newValue != null && oldValue == null) {
                 splitPane.getItems().add(elevationProfileManager.pane());
                 //Permet de ne pas redimensionner le panneau du gestionnaire de profil avec le
                 //panneau général.

@@ -3,6 +3,7 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
+import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -13,7 +14,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
-import java.util.function.Consumer;
 
 /**
  * 8.3.3
@@ -30,11 +30,6 @@ public final class WaypointsManager {
     //Constante représentant le rayon de recherche d'un nœud lorsque l'on veut placer un nouveau
     //point de passage.
     private static final int SEARCH_DISTANCE = 500;
-
-    //TODO relire + avi sur pertinence de cette constante.
-    //Constante représentant un vecteur de translation nulle, vecteur origine, pour éviter de
-    // recréer des instance de point centrée à l'origine à chaque remise à zero.
-    private static final Point2D ORIGINE_POINT2D = new Point2D(0, 0);
 
     /**
      * Graphe du réseau routier.
@@ -57,23 +52,20 @@ public final class WaypointsManager {
     private final Consumer<String> stringConsumer;
 
     /**
-     * //TODO relire
-     * Point2D stockant les coordonnées du curseur sur le point de passage, nous permet de garder
-     * la même position relative au point de passage quand on déplace un point de passage.
+     * Point2D stockant les coordonnées du curseur sur le point de passage, nous permettant de
+     * garder la même position relative au point de passage quand on le déplace.
      */
     private Point2D mouseCoordinatesOnTheWaypoint;
 
     /**
-     * //TODO relire
-     * Point2D stockant les coordonnées initiales du point de passage relative au fond de carte
+     * Point2D stockant les coordonnées initiales du point de passage relatives au fond de carte
      * au début du déplacement.
      */
     private Point2D initialCoordinatesPoint2D;
 
     /**
-     * //TODO relire
-     * Point2D stockant les coordonnées actuelles du point de passage relative au fond de carte,
-     * utile au moment de relocaliser le point de
+     * Point2D stockant les coordonnées actuelles du point de passage relatives au fond de carte,
+     * utile au moment de relocaliser le point de passage.
      */
     private Point2D actualCoordinatesPoint2D;
 
@@ -98,9 +90,9 @@ public final class WaypointsManager {
         this.mapViewParameters = mapViewParameters;
         this.waypointList = waypointList;
         this.stringConsumer = stringConsumer;
-        mouseCoordinatesOnTheWaypoint = ORIGINE_POINT2D;
-        initialCoordinatesPoint2D = ORIGINE_POINT2D;
-        actualCoordinatesPoint2D = ORIGINE_POINT2D;
+        mouseCoordinatesOnTheWaypoint = new Point2D(0, 0);
+        initialCoordinatesPoint2D = new Point2D(0, 0);
+        actualCoordinatesPoint2D = new Point2D(0, 0);
         pane = new Pane();
 
         //Ajoute un auditeur sur la liste de points de passage, pour actualiser les couleurs des
@@ -121,7 +113,8 @@ public final class WaypointsManager {
      */
 
     public Pane pane() {
-        return pane; }
+        return pane;
+    }
 
     /**
      * Méthode permettant d'ajouter un point de passage sur la carte à l'aide de ses coordonnées
@@ -222,21 +215,6 @@ public final class WaypointsManager {
         pane.getChildren().add(groupToAdd);
     }
 
-
-    /**
-     * Méthode permettant de déplacer un marqueur lorsqu'un évènement de souris a été détecté.
-     * @param event Évènement de souris détecté.
-     * @param pin Marqueur à déplacer.
-     */
-
-    private void moveWaypoint(MouseEvent event, Node pin) {
-        Point2D translation = mouseCoordinatesOnTheWaypoint.subtract(event.getX(), event.getY());
-        pin.setLayoutX(pin.getLayoutX() - translation.getX());
-        pin.setLayoutY(pin.getLayoutY() - translation.getY());
-        actualCoordinatesPoint2D = new Point2D(pin.getLayoutX() - translation.getX(),
-                pin.getLayoutY() - translation.getY());
-    }
-
     /**
      * Méthode privée créant le SVGPath correspondant au contour du marqueur, ajoutant sa classe
      * de style et le retournant.
@@ -268,49 +246,17 @@ public final class WaypointsManager {
     }
 
     /**
-     * Méthode privée configurant les gestionnaires d'évènement pour un groupe donné en paramètre.
-     * @param pin groupe donné en paramètre.
+     * Méthode permettant de déplacer un marqueur lorsqu'un évènement de souris a été détecté.
+     * @param event Évènement de souris détecté.
+     * @param pin Marqueur à déplacer.
      */
 
-    private void setUpListeners(Node pin) {
-        pin.setOnMouseClicked(event -> {
-            //Vérifie si le curseur ne bouge plus depuis le clic sur un marqueur.
-            if (event.isStillSincePress())
-                //Si oui, supprimer le point de passage de la liste.
-                waypointList.remove(pane.getChildren().indexOf(pin));
-        });
-//TODO dis moi si tu penses que je devrais essayer de clean un peu, je trouve que 3 attributs
-// c'est bcp
-        pin.setOnMousePressed(event -> {
-            //Vérifie si le curseur bouge depuis le clic sur le marqueur.
-            if (!event.isStillSincePress()) {
-                //Si oui, actualise les coordonnées précédentes, initiales et actuelles des
-                //attributs de la classe, utiles pour les différentes opérations de déplacement.
-                mouseCoordinatesOnTheWaypoint = new Point2D(event.getX(), event.getY());
-                initialCoordinatesPoint2D = pin.localToParent(event.getX(), event.getY());
-                actualCoordinatesPoint2D = pin.localToParent(event.getX(), event.getY());
-            }
-        });
-
-        //Si un glissement de la souris est détecté sur un marqueur, on le déplace en suivant la
-        //souris.
-        pin.setOnMouseDragged(event ->  moveWaypoint(event, pin));
-
-        pin.setOnMouseReleased(event -> {
-            //Lorsqu'un évènement de relâchement de la souris est détecté sur le marqueur, on
-            //le repose.
-            if (!initialCoordinatesPoint2D.equals(actualCoordinatesPoint2D)) {
-                //La méthode décide de replacer le point de passage soit à l'endroit du relâchement,
-                //soit à l'endroit initial, car aucune route n'a été détectée à proximité.
-                relocateWaypoint(new Point2D(actualCoordinatesPoint2D.getX(),
-                        actualCoordinatesPoint2D.getY()), pin);
-
-                //On remet les attributs Point2D à leurs valeurs d'origine.
-                mouseCoordinatesOnTheWaypoint = ORIGINE_POINT2D;
-                initialCoordinatesPoint2D = ORIGINE_POINT2D;
-                actualCoordinatesPoint2D = ORIGINE_POINT2D;
-            }
-        });
+    private void moveWaypoint(MouseEvent event, Node pin) {
+        Point2D translation = mouseCoordinatesOnTheWaypoint.subtract(event.getX(), event.getY());
+        pin.setLayoutX(pin.getLayoutX() - translation.getX());
+        pin.setLayoutY(pin.getLayoutY() - translation.getY());
+        actualCoordinatesPoint2D = new Point2D(pin.getLayoutX() - translation.getX(),
+                pin.getLayoutY() - translation.getY());
     }
 
     /**
@@ -340,5 +286,45 @@ public final class WaypointsManager {
                 waypointList.set(position, new Waypoint(pointCh, idNodeClosestTo));
             }
         }
+    }
+
+    /**
+     * Méthode privée configurant les gestionnaires d'évènement pour un groupe donné en paramètre.
+     * @param pin groupe donné en paramètre.
+     */
+
+    private void setUpListeners(Node pin) {
+        pin.setOnMouseClicked(event -> {
+            //Vérifie si le curseur ne bouge plus depuis le clic sur un marqueur.
+            if (event.isStillSincePress())
+                //Si oui, supprimer le point de passage de la liste.
+                waypointList.remove(pane.getChildren().indexOf(pin));
+        });
+
+        pin.setOnMousePressed(event -> {
+            //Vérifie si le curseur bouge depuis le clic sur le marqueur.
+            if (!event.isStillSincePress()) {
+                //Si oui, actualise les coordonnées précédentes, initiales et actuelles des
+                //attributs de la classe, utiles pour les différentes opérations de déplacement.
+                mouseCoordinatesOnTheWaypoint = new Point2D(event.getX(), event.getY());
+                initialCoordinatesPoint2D = pin.localToParent(event.getX(), event.getY());
+                actualCoordinatesPoint2D = pin.localToParent(event.getX(), event.getY());
+            }
+        });
+
+        //Si un glissement de la souris est détecté sur un marqueur, on le déplace en suivant la
+        //souris.
+        pin.setOnMouseDragged(event ->  moveWaypoint(event, pin));
+
+        pin.setOnMouseReleased(event -> {
+            //Lorsqu'un évènement de relâchement de la souris est détecté sur le marqueur, on
+            //le repose.
+            if (!initialCoordinatesPoint2D.equals(actualCoordinatesPoint2D)) {
+                //La méthode décide de replacer le point de passage soit à l'endroit du relâchement,
+                //soit à l'endroit initial, car aucune route n'a été détectée à proximité.
+                relocateWaypoint(new Point2D(actualCoordinatesPoint2D.getX(),
+                        actualCoordinatesPoint2D.getY()), pin);
+            }
+        });
     }
  }

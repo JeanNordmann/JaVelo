@@ -41,7 +41,7 @@ public final class ElevationProfileManager {
     //Constante représentant la taille de la police souhaitée.
     private static final int FONT_SIZE = 10;
 
-    //Constante repentant la police utilisé pour tou les textes
+    //Constante représentant la police utilisée pour tous les textes.
     private static final String FONT = "Avenir";
 
     /**
@@ -445,8 +445,10 @@ public final class ElevationProfileManager {
         rectangle2D.bind(Bindings.createObjectBinding(() -> {
             //Si les dimensions du panneau sont suffisantes pour accueillir un rectangle bleu,
             //alors on le renvoie.
-            if(pane.getWidth() >= insets.getLeft() + insets.getRight() && pane.getHeight() >=
-                    insets.getTop() + insets.getBottom()) {
+
+            if(pane.getWidth() >= insets.getLeft() + insets.getRight()
+                    && pane.getHeight() >= insets.getTop() + insets.getBottom()) {
+
                 return new Rectangle2D(insets.getLeft(), insets.getTop(),
                         pane().getWidth() - insets.getRight() - insets.getLeft(),
                         pane.getHeight() - insets.getBottom() - insets.getTop());

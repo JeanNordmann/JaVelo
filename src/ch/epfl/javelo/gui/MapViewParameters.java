@@ -14,7 +14,7 @@ import javafx.geometry.Point2D;
  * @author Maxime Ducourau (329544)
  */
 
-public record MapViewParameters (int zoomLevel, double x, double y) {
+public record MapViewParameters(int zoomLevel, double x, double y) {
 
     /**
      * Constructeur compact lançant une exception si les arguments donnés à la
@@ -58,7 +58,7 @@ public record MapViewParameters (int zoomLevel, double x, double y) {
      * @return Un PointWebMercator aux coordonnées voulues au format PointWebMercator.
      */
     public PointWebMercator pointAt(double relativeX, double relativeY) {
-        return PointWebMercator.of(zoomLevel, x +  relativeX, y +  relativeY );
+        return PointWebMercator.of(zoomLevel, x +  relativeX, y +  relativeY);
     }
 
     /**
