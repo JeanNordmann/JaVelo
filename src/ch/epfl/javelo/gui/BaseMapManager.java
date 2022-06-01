@@ -83,7 +83,7 @@ public final class BaseMapManager {
      * @param tileManager       Gestionnaire de tuile : nous permet de récupérer les tuiles.
      * @param waypointsManager  Gestionnaire de l'affichage et de l'interaction avec les points
      *                          de passage.
-     * @param mapViewParameters MapViewParameters observable dans une propriété JavaFX → observable
+     * @param mapViewParameters Fond de carte observable dans une propriété JavaFX → observable
      *                          et permet la mise à jour du fond de carte.
      */
 

@@ -162,6 +162,7 @@ public final class TileManager {
     }
 
     /**
+     * //TODO langue, je sais pas comment écrir tileID en fr,
      * Ajoute la TileId et l'image données au cache-mémoire, tout en supprimant la paire utilisée
      * la moins récemment (LRU).
      * @param tileId Identité de la tuile donnée.

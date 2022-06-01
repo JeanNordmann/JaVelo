@@ -31,6 +31,11 @@ public final class WaypointsManager {
     //point de passage.
     private static final int SEARCH_DISTANCE = 500;
 
+    //TODO relire + avi sur pertinence de cette constante.
+    //Constante représentant un vecteur de translation nulle, vecteur origine, pour éviter de
+    // recréer des instance de point centrée à l'origine à chaque remise à zero.
+    private static final Point2D ORIGINE_POINT2D = new Point2D(0, 0);
+
     /**
      * Graphe du réseau routier.
      */
@@ -52,20 +57,23 @@ public final class WaypointsManager {
     private final Consumer<String> stringConsumer;
 
     /**
-     * Point2D stockant les coordonnées précédentes du curseur pour les différentes opérations de
-     * translation.
+     * //TODO relire
+     * Point2D stockant les coordonnées du curseur sur le point de passage, nous permet de garder
+     * la même position relative au point de passage quand on déplace un point de passage.
      */
-    private Point2D previousCoordsOnScreen;
+    private Point2D mouseCoordinatesOnTheWaypoint;
 
     /**
-     * Point2D stockant les coordonnées initiales du curseur, utiles pour les opérations liées à
-     * la souris.
+     * //TODO relire
+     * Point2D stockant les coordonnées initiales du point de passage relative au fond de carte
+     * au début du déplacement.
      */
     private Point2D initialCoordinatesPoint2D;
 
     /**
-     * Point2D stockant les coordonnées actuelles du curseur, utiles pour les opérations liées à
-     * la souris.
+     * //TODO relire
+     * Point2D stockant les coordonnées actuelles du point de passage relative au fond de carte,
+     * utile au moment de relocaliser le point de
      */
     private Point2D actualCoordinatesPoint2D;
 
@@ -90,9 +98,9 @@ public final class WaypointsManager {
         this.mapViewParameters = mapViewParameters;
         this.waypointList = waypointList;
         this.stringConsumer = stringConsumer;
-        previousCoordsOnScreen = new Point2D(0, 0);
-        initialCoordinatesPoint2D= new Point2D(0, 0);
-        actualCoordinatesPoint2D = new Point2D(0, 0);
+        mouseCoordinatesOnTheWaypoint = ORIGINE_POINT2D;
+        initialCoordinatesPoint2D = ORIGINE_POINT2D;
+        actualCoordinatesPoint2D = ORIGINE_POINT2D;
         pane = new Pane();
 
         //Ajoute un auditeur sur la liste de points de passage, pour actualiser les couleurs des
@@ -222,7 +230,7 @@ public final class WaypointsManager {
      */
 
     private void moveWaypoint(MouseEvent event, Node pin) {
-        Point2D translation = previousCoordsOnScreen.subtract(event.getX(), event.getY());
+        Point2D translation = mouseCoordinatesOnTheWaypoint.subtract(event.getX(), event.getY());
         pin.setLayoutX(pin.getLayoutX() - translation.getX());
         pin.setLayoutY(pin.getLayoutY() - translation.getY());
         actualCoordinatesPoint2D = new Point2D(pin.getLayoutX() - translation.getX(),
@@ -278,7 +286,7 @@ public final class WaypointsManager {
             if (!event.isStillSincePress()) {
                 //Si oui, actualise les coordonnées précédentes, initiales et actuelles des
                 //attributs de la classe, utiles pour les différentes opérations de déplacement.
-                previousCoordsOnScreen = new Point2D(event.getX(), event.getY());
+                mouseCoordinatesOnTheWaypoint = new Point2D(event.getX(), event.getY());
                 initialCoordinatesPoint2D = pin.localToParent(event.getX(), event.getY());
                 actualCoordinatesPoint2D = pin.localToParent(event.getX(), event.getY());
             }
@@ -298,9 +306,9 @@ public final class WaypointsManager {
                         actualCoordinatesPoint2D.getY()), pin);
 
                 //On remet les attributs Point2D à leurs valeurs d'origine.
-                previousCoordsOnScreen = new Point2D(0, 0);
-                initialCoordinatesPoint2D =  new Point2D(0, 0);
-                actualCoordinatesPoint2D =  new Point2D(0, 0);
+                mouseCoordinatesOnTheWaypoint = ORIGINE_POINT2D;
+                initialCoordinatesPoint2D = ORIGINE_POINT2D;
+                actualCoordinatesPoint2D = ORIGINE_POINT2D;
             }
         });
     }
