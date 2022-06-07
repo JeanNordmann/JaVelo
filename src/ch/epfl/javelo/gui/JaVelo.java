@@ -88,9 +88,9 @@ public final class JaVelo extends Application {
             }
 
             //Retire le panneau du gestionnaire de profil s'il n'existe plus.
-            if (newValue == null) {
+            /*if (newValue == null) {
                 splitPane.getItems().remove(elevationProfileManager.pane());
-            }
+            }*/
         });
 
         //Crée la barre de menu, le bouton "Fichier", ouvrant un item appelé "Exporter GPX".
